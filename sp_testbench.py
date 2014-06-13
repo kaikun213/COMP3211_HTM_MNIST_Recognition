@@ -2,10 +2,10 @@ import numpy
 import math
 import pygame
 import time
+import hashlib
 
 from PIL import Image
 from pygame.color import THECOLORS
-from copy import copy
 from nupic.research.spatial_pooler import SpatialPooler
 from xml.dom import minidom
 
@@ -14,16 +14,48 @@ DEBUG = 0
 class SPTestBench(object):
   '''
   This class provides methods for characterizing the image recognition 
-  capabilities of the spatial pooler.
+  capabilities of the spatial pooler.  The goal is to put most of the details
+  in here so the top level can be as clear and concise as possible.
+
+  The top level should have the ability to try different encoding and 
+  classification schemes so there is a method for encoding with hopefully
+  more to follow.  Classification is not in here yet.
+
+  An example of how these methods might be used:
+
+  images, tags = getImagesAndTags(trainingXMLFileName)
+  vectors = imagesToVectors(images)
+  for i in range(10)
+    train(vectors,tags)
+  images, tags = getImagesAndTags(testingXMLFileName)
+  vectors = imagesToVectors(images)
+  test(vectors,tags)
+
   '''
   def __init__(self, sp):
     '''
-    Pass a reference to the spatial pooler once so we don't have to do it 
-    over and over.
+    The test bench has just a few things to keep track off:
+
+    - Number of training cycles completed, just to keep the top level clean
+
+    - Height and width of the spatial pooler's inputs and columns which are
+      used for producing images of permanences and connected synapses
+
+    - Images of permanences and connected synapses so these images do not have 
+      to be generated more than necessary
+
     '''
     self.sp = sp
 
+    self.trainingCyclesCompleted = 0
+
+    # These images are produced together so these properties are used to allow 
+    # them to be saved separately without having to generate the images twice.
+    self.permanencesImage = None
+    self.connectionsImage = None
+    
     # Limit inputs and columns to 1D and 2D layouts for now
+    # Note: only 1D seems to work with python SP
     inputDimensions = sp.getInputDimensions()
     try:
       assert(len(inputDimensions) < 3)
@@ -48,9 +80,7 @@ class SPTestBench(object):
       self.columnHeight = columnDimensions
       self.columnWidth = 1
     
-    self.permanencesImage = None
-    self.connectionsImage = None
-    
+
 
   '''
   ################################################################################
@@ -111,7 +141,20 @@ class SPTestBench(object):
   training images.  
   ################################################################################
   '''
-  def train(self, trainingVectors):
+  def train(self, trainingVectors, trainingTags):
+    # Print header if this is the first training cycle
+    if self.trainingCyclesCompleted == 0:
+      print "\nLet the training begin!\n"
+      print "%5s" % "Cycle", 
+      print "%34s" % "Connected Synapse MD5 Checksum",
+      print "%34s" % "Permanence MD5 Checksum",
+      print "%5s" % "Cycle"
+      print ""
+ 
+    # increment cycle number and print it
+    self.trainingCyclesCompleted += 1
+    print "%5s" % self.trainingCyclesCompleted,
+
     # Get rid of old permanence and connection images
     self.permanencesImage = None
     self.connectionsImage = None
@@ -125,6 +168,52 @@ class SPTestBench(object):
     # Feed training vectors into the spatial pooler
     for j,trainingVector in enumerate(trainingVectors):
       self.sp.compute(trainingVector, True, activeArray)
+  
+      # Convert activeArray to an integer
+      value = 0
+      for j,num in enumerate(activeArray):
+        value = value << 1
+        value += int(num)
+      outputValues.append(value)
+
+    # Calculate an MD5 checksum for the permanences and connected synapses so 
+    # we can see when learning has finished.
+    permsMD5 = hashlib.md5()
+    connsMD5 = hashlib.md5()
+    for i in range(self.columnHeight):
+      perms = self.sp._permanences.getRow(i)
+      connectedPerms = perms >= self.sp._synPermConnected
+      perms = perms.astype('string')
+      [permsMD5.update(word) for word in perms]
+      connectedPerms = connectedPerms.astype('string')
+      [connsMD5.update(word) for word in connectedPerms]
+    print "%34s" % connsMD5.hexdigest(), "%34s" % permsMD5.hexdigest(),
+    print "%5s" % self.trainingCyclesCompleted
+
+    return outputValues
+      
+  
+  
+  '''
+  ################################################################################
+  This routine tests the spatial pooler on the bit vectors produced from the 
+  testing images.  
+  ################################################################################
+  '''
+  def test(self, testingVectors, testingTags):
+    # Get rid of old permanence and connection images
+    self.permanencesImage = None
+    self.connectionsImage = None
+
+    # Return a list of all the output values
+    outputValues = []
+
+    # Initialize an array to store the column activity that results from the input.
+    activeArray = numpy.zeros(self.sp.getColumnDimensions())
+    
+    # Feed training vectors into the spatial pooler
+    for j,testingVector in enumerate(testingVectors):
+      self.sp.compute(testingVector, True, activeArray)
   
       # Convert activeArray to an integer
       value = 0

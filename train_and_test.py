@@ -8,7 +8,7 @@ specified by testingDataset.
 '''
 
 trainingDataset = 'Datasets/Jimbos/small_test.xml'
-trainingCycles = 10
+trainingCycles = 20
 testingDataset = 'Datasets/Jimbos/small_test.xml'
 
 from nupic.research.spatial_pooler import SpatialPooler
@@ -25,12 +25,13 @@ sp = SpatialPooler(
     numActiveColumnsPerInhArea = 1, # Only one feature active at a time
     # All input activity can contribute to feature output
     stimulusThreshold = 0,
-    synPermInactiveDec = 0.5,
-    synPermActiveInc = 0.5,
-    synPermConnected = 0.5, # Connected threshold
+    synPermInactiveDec = 0.1,
+    synPermActiveInc = 0.1,
+    synPermConnected = 0.1, # Connected threshold
     maxBoost = 3,
     seed = 1956, # The seed that Grok uses
     spVerbosity = 1)
+
 
 # Instantiate the spatial pooler test bench.
 tb = SPTestBench(sp)
@@ -43,29 +44,23 @@ trainingVectors = tb.imagesToVectors(trainingImages)
 #tb.showPermsAndConns()
 
 # Train the spatial pooler on trainingVectors.
-print "\nTraining begins!\n"
-for cycle in range(1,trainingCycles + 1):
-  print "Training cycle",cycle
-  SDRs = tb.train(trainingVectors)
-
-# Show the final sparse distributed representations for each input image
-print "\nFinal SDRs:"
-for i in range(len(SDRs)):
-  print trainingTags[i], '%6s' % hex(SDRs[i])
+for cycle in range(trainingCycles):
+  SDRs = tb.train(trainingVectors, trainingTags)
 
 # Show the permanences and connections after training.
-tb.showPermsAndConns()
-#tb.savePermsAndConns('perms_and_conns.jpg')
+#tb.showPermsAndConns()
+tb.savePermsAndConns('perms_and_conns.jpg')
 
 # Get testing images and convert them to vectors.
 testingImages, testingTags = tb.getImagesAndTags(testingDataset)
 testingVectors = tb.imagesToVectors(testingImages)
 
 # Test the spatial pooler on testingVectors.
-print "\nTesting begins!\n"
-testSDRs = tb.train(testingVectors)
+#print "\nTesting begins!\n"
+testSDRs = tb.test(testingVectors, testingTags)
 
-# Classifier Hack
+# Classifier Hack, uses the testing image tags along with the SDRs from the 
+# last training cycle to interpret the SDRs from testing.
 testResults = []
 [testResults.append('') for i in range(len(trainingTags))]
 for i,testSDR in enumerate(testSDRs):
@@ -77,13 +72,25 @@ for i,testSDR in enumerate(testSDRs):
         testResults[i] += "," + trainingTags[j]
 
 # Show the test results
-print "\nTest Results:"
+print "\nTest Results:\n"
 accuracy = 0.0
 for i in range(len(SDRs)):
   if trainingTags[i] == testResults[i]:
     accuracy += 100.0/len(trainingTags)
-  print trainingTags[i], '%6s' % testResults[i]
+
+print "Input:  ",
+for i in range(len(trainingTags)):
+  print trainingTags[i],
+print 
+
+print "Output: ",
+for i in range(len(testResults)):
+  print testResults[i],
+print 
+
+print 
 print "Accuracy:",accuracy,"%"
+print 
 
 
 
