@@ -84,59 +84,6 @@ class SPTestBench(object):
 
   '''
   ################################################################################
-  This routine reads the XML files that contain the paths to the images and the
-  tags which indicate what is in the image (i.e. "ground truth").
-  ################################################################################
-  '''
-  def getImagesAndTags(self, XMLFileName):
-    xmldoc = minidom.parse(XMLFileName)
-    # Find the path to the XML file so it can be used to find the image files.
-    directories = XMLFileName.split("/")
-    directories.pop()
-    directoryPath = ''
-    for directory in directories:
-      directoryPath += directory + '/'
-    # Read the image list from the XML file and populate images and tags.
-    imageList = xmldoc.getElementsByTagName('image') 
-    images = []
-    tags = []
-    for image in imageList:
-      tags.append(image.attributes['tag'].value)
-      filename = image.attributes['file'].value
-      images.append(Image.open(directoryPath + filename))
-      #imagePatches[-1].show()
-    return images, tags
-  
-  
-  
-  '''
-  ################################################################################
-  These routines convert images to bit vectors that can be used as input to
-  the spatial pooler.
-  ################################################################################
-  '''
-  def imageToVector(self, image):
-    '''
-    Returns a bit vector representation (list of ints) of a PIL image.
-    '''
-    # Convert the image to black and white
-    image = image.convert('1',dither=Image.NONE)
-    # Pull out the data, turn that into a list, then a numpy array,
-    # then convert from 0 255 space to binary with a threshold.
-    # Finally cast the values into a type CPP likes
-    vector = (numpy.array(list(image.getdata())) < 100).astype('uint32')
-    
-    return vector
-  
-  
-  def imagesToVectors(self, images):
-    vectors = [self.imageToVector(image) for image in images]
-    return vectors
-  
-  
-  
-  '''
-  ################################################################################
   This routine trains the spatial pooler on the bit vectors produced from the 
   training images.  
   ################################################################################

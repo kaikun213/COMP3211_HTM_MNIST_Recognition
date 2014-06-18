@@ -11,9 +11,25 @@ trainingDataset = 'Datasets/Jimbos/small_test.xml'
 trainingCycles = 20
 testingDataset = 'Datasets/Jimbos/small_test.xml'
 
+import dataset_readers as data
+import image_encoders as encoder
 from nupic.research.spatial_pooler import SpatialPooler
+#from nupic.encoders import ScalarEncoder
 from sp_testbench import SPTestBench
 
+
+# Get training images and convert them to vectors.
+trainingImages, trainingTags = data.getImagesAndTags(trainingDataset)
+trainingVectors = encoder.imagesToVectors(trainingImages)
+
+
+# Specify parameter ranges and resolutions to search
+  
+# Setup a table for all possible parameter combinations
+
+# Pick a random combination of parameters
+
+# If the table entry for this combination is empty then run the model
   
 # Instantiate our spatial pooler
 sp = SpatialPooler(
@@ -36,19 +52,11 @@ sp = SpatialPooler(
 # Instantiate the spatial pooler test bench.
 tb = SPTestBench(sp)
 
-# Get training images and convert them to vectors.
-trainingImages, trainingTags = tb.getImagesAndTags(trainingDataset)
-trainingVectors = tb.imagesToVectors(trainingImages)
-
-# Show the initial permanences and connections.
-#tb.showPermsAndConns()
-
 # Train the spatial pooler on trainingVectors.
 for cycle in range(trainingCycles):
   SDRs = tb.train(trainingVectors, trainingTags)
 
-# Show the permanences and connections after training.
-#tb.showPermsAndConns()
+# Save the permanences and connections after training.
 tb.savePermsAndConns('perms_and_conns.jpg')
 
 # Get testing images and convert them to vectors.
@@ -56,7 +64,6 @@ testingImages, testingTags = tb.getImagesAndTags(testingDataset)
 testingVectors = tb.imagesToVectors(testingImages)
 
 # Test the spatial pooler on testingVectors.
-#print "\nTesting begins!\n"
 testSDRs = tb.test(testingVectors, testingTags)
 
 # Classifier Hack, uses the testing image tags along with the SDRs from the 
@@ -78,14 +85,9 @@ for i in range(len(SDRs)):
   if trainingTags[i] == testResults[i]:
     accuracy += 100.0/len(trainingTags)
 
-print "Input:  ",
+print "%5s" % "Input", "Output"
 for i in range(len(trainingTags)):
-  print trainingTags[i],
-print 
-
-print "Output: ",
-for i in range(len(testResults)):
-  print testResults[i],
+  print "%-5s" % trainingTags[i], testResults[i]
 print 
 
 print 
