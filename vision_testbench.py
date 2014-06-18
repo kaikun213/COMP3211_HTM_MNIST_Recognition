@@ -11,26 +11,11 @@ from xml.dom import minidom
 
 DEBUG = 0
 
-class SPTestBench(object):
+class VisionTestBench(object):
   '''
-  This class provides methods for characterizing the image recognition 
-  capabilities of the spatial pooler.  The goal is to put most of the details
-  in here so the top level can be as clear and concise as possible.
-
-  The top level should have the ability to try different encoding and 
-  classification schemes so there is a method for encoding with hopefully
-  more to follow.  Classification is not in here yet.
-
-  An example of how these methods might be used:
-
-  images, tags = getImagesAndTags(trainingXMLFileName)
-  vectors = imagesToVectors(images)
-  for i in range(10)
-    train(vectors,tags)
-  images, tags = getImagesAndTags(testingXMLFileName)
-  vectors = imagesToVectors(images)
-  test(vectors,tags)
-
+  This class provides methods for characterizing nupic's image recognition 
+  capabilities.  The goal is to put most of the details in here so the top 
+  level can be as clear and concise as possible.
   '''
   def __init__(self, sp):
     '''

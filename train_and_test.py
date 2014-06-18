@@ -7,15 +7,15 @@ classification abilities are tested on the images listed in the XML file
 specified by testingDataset.
 '''
 
-trainingDataset = 'Datasets/Jimbos/small_test.xml'
+trainingDataset = 'Datasets/OCR/small_test.xml'
 trainingCycles = 20
-testingDataset = 'Datasets/Jimbos/small_test.xml'
+testingDataset = 'Datasets/OCR/small_test.xml'
 
 import dataset_readers as data
 import image_encoders as encoder
 from nupic.research.spatial_pooler import SpatialPooler
 #from nupic.encoders import ScalarEncoder
-from sp_testbench import SPTestBench
+from vision_testbench import VisionTestBench
 
 
 # Get training images and convert them to vectors.
@@ -33,24 +33,24 @@ trainingVectors = encoder.imagesToVectors(trainingImages)
   
 # Instantiate our spatial pooler
 sp = SpatialPooler(
-    inputDimensions = 32**2, # Size of image patch
-    columnDimensions = 16, # Number of potential features
-    potentialRadius = 10000, # Ensures 100% potential pool
-    potentialPct = 1, # Neurons can connect to 100% of input
-    globalInhibition = True,
-    numActiveColumnsPerInhArea = 1, # Only one feature active at a time
-    # All input activity can contribute to feature output
-    stimulusThreshold = 0,
-    synPermInactiveDec = 0.1,
-    synPermActiveInc = 0.1,
-    synPermConnected = 0.1, # Connected threshold
-    maxBoost = 3,
-    seed = 1956, # The seed that Grok uses
-    spVerbosity = 1)
+  inputDimensions = 32**2, # Size of image patch
+  columnDimensions = 16, # Number of potential features
+  potentialRadius = 10000, # Ensures 100% potential pool
+  potentialPct = 1, # Neurons can connect to 100% of input
+  globalInhibition = True,
+  numActiveColumnsPerInhArea = 1, # Only one feature active at a time
+  # All input activity can contribute to feature output
+  stimulusThreshold = 0,
+  synPermInactiveDec = 0.1,
+  synPermActiveInc = 0.1,
+  synPermConnected = 0.1, # Connected threshold
+  maxBoost = 3,
+  seed = 1956, # The seed that Grok uses
+  spVerbosity = 1)
 
 
 # Instantiate the spatial pooler test bench.
-tb = SPTestBench(sp)
+tb = VisionTestBench(sp)
 
 # Train the spatial pooler on trainingVectors.
 for cycle in range(trainingCycles):
@@ -60,8 +60,8 @@ for cycle in range(trainingCycles):
 tb.savePermsAndConns('perms_and_conns.jpg')
 
 # Get testing images and convert them to vectors.
-testingImages, testingTags = tb.getImagesAndTags(testingDataset)
-testingVectors = tb.imagesToVectors(testingImages)
+testingImages, testingTags = data.getImagesAndTags(testingDataset)
+testingVectors = encoder.imagesToVectors(testingImages)
 
 # Test the spatial pooler on testingVectors.
 testSDRs = tb.test(testingVectors, testingTags)
