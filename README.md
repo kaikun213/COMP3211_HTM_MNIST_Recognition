@@ -14,11 +14,11 @@ for i in range(10)
   VisionTestBench.train(vectors,tags)
 
 # get testing data set 
-images, tags = getImagesAndTags(testingXMLFileName)
+images, tags = dataset_readers.getImagesAndTags(testingXMLFileName)
 # convert images to bit vectors 
-vectors = imagesToVectors(images)
+vectors = image_encoders.imagesToVectors(images)
 # test nupic's image recognition accuracy 
-test(vectors,tags)
+VisionTestBench.test(vectors,tags)
 ```
 
 
