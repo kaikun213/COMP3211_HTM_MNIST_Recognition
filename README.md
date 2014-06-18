@@ -3,20 +3,20 @@ nupic on vision related problems.
 
 An simple example of how these tools can be used:
 
-<h6># get training data set </h6>
+<b># get training data set </b>
 images, tags = dataset_readers.getImagesAndTags(trainingXMLFileName)
-<h6># convert images to bit vectors </h6>
+<b># convert images to bit vectors </b>
 vectors = image_encoders.imagesToVectors(images)
 
-<h6># train nupic on the data set for 10 repetitions </h6>
+<b># train nupic on the data set for 10 repetitions </b>
 for i in range(10)
   VisionTestBench.train(vectors,tags)
 
-<h6># get testing data set </h6>
+<b># get testing data set </b>
 images, tags = getImagesAndTags(testingXMLFileName)
-<h6># convert images to bit vectors </h6>
+<b># convert images to bit vectors </b>
 vectors = imagesToVectors(images)
-<h6># test nupic's image recognition accuracy </h6>
+<b># test nupic's image recognition accuracy </b>
 test(vectors,tags)
 
 
