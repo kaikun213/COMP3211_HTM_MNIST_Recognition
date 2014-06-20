@@ -79,8 +79,8 @@ class VisionTestBench(object):
       print "\nLet the training begin!\n"
       print "%5s" % "Cycle", 
       print "%34s" % "Connected Synapse MD5 Checksum",
-      print "%34s" % "Permanence MD5 Checksum",
-      print "%5s" % "Cycle"
+      print "%34s" % "Permanence MD5 Checksum"
+      #print "%5s" % "Cycle"
       print ""
  
     # increment cycle number and print it
@@ -119,8 +119,8 @@ class VisionTestBench(object):
       [permsMD5.update(word) for word in perms]
       connectedPerms = connectedPerms.astype('string')
       [connsMD5.update(word) for word in connectedPerms]
-    print "%34s" % connsMD5.hexdigest(), "%34s" % permsMD5.hexdigest(),
-    print "%5s" % self.trainingCyclesCompleted
+    print "%34s" % connsMD5.hexdigest(), "%34s" % permsMD5.hexdigest()
+    #print "%5s" % self.trainingCyclesCompleted
 
     return outputValues
       
