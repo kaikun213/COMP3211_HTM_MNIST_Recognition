@@ -23,6 +23,9 @@ class VisionTestBench(object):
 
     - Number of training cycles completed, just to keep the top level clean
 
+    - A list of the output SDRs that is shared between the training and testing
+      routines
+
     - Height and width of the spatial pooler's inputs and columns which are
       used for producing images of permanences and connected synapses
 
@@ -33,6 +36,8 @@ class VisionTestBench(object):
     self.sp = sp
 
     self.trainingCyclesCompleted = 0
+
+    self.SDRs = []
 
     # These images are produced together so these properties are used to allow 
     # them to be saved separately without having to generate the images twice.
@@ -68,61 +73,61 @@ class VisionTestBench(object):
 
 
   '''
-  ################################################################################
-  This routine trains the spatial pooler on the bit vectors produced from the 
-  training images.  
-  ################################################################################
+  ##############################################################################
+  This routine trains the spatial pooler using the bit vectors produced from the 
+  training images by using these vectors as input to the SP.  It continues
+  training until there are no SDR collisions between input vectors that have
+  different tags (ground truth) and the output SDRs are stable for 2 cycles.  
+  It records the output SDRs as a list of integers that correspond to each SDR 
+  and uses this list to look for SDR collisions.
+  ##############################################################################
   '''
-  def train(self, trainingVectors, trainingTags):
-    # Print header if this is the first training cycle
+  def train(self, trainingVectors, trainingTags, maxTrainingCycles):
+    # print averages of starting permanence values
     if self.trainingCyclesCompleted == 0:
-      print "\nLet the training begin!\n"
-      print "%5s" % "Cycle", 
-      print "%34s" % "Connected Synapse MD5 Checksum",
-      print "%34s" % "Permanence MD5 Checksum"
-      #print "%5s" % "Cycle"
-      print ""
+      self.printPermanenceStats()
  
-    # increment cycle number and print it
-    self.trainingCyclesCompleted += 1
-    print "%5s" % self.trainingCyclesCompleted,
-
     # Get rid of old permanence and connection images
     self.permanencesImage = None
     self.connectionsImage = None
-
-    # Return a list of all the output values
-    outputValues = []
-
-    # Initialize an array to store the column activity that results from the input.
-    activeArray = numpy.zeros(self.sp.getColumnDimensions())
-    
-    # Feed training vectors into the spatial pooler
-    for j,trainingVector in enumerate(trainingVectors):
-      self.sp.compute(trainingVector, True, activeArray)
   
-      # Convert activeArray to an integer
-      value = 0
-      for j,num in enumerate(activeArray):
-        value = value << 1
-        value += int(num)
-      outputValues.append(value)
+    trained = False
+    LastCycleSDRNumbers = []
+    while not trained and self.trainingCyclesCompleted < maxTrainingCycles:
+      trained = True
 
-    # Calculate an MD5 checksum for the permanences and connected synapses so 
-    # we can see when learning has finished.
-    permsMD5 = hashlib.md5()
-    connsMD5 = hashlib.md5()
-    for i in range(self.columnHeight):
-      perms = self.sp._permanences.getRow(i)
-      connectedPerms = perms >= self.sp._synPermConnected
-      perms = perms.astype('string')
-      [permsMD5.update(word) for word in perms]
-      connectedPerms = connectedPerms.astype('string')
-      [connsMD5.update(word) for word in connectedPerms]
-    print "%34s" % connsMD5.hexdigest(), "%34s" % permsMD5.hexdigest()
-    #print "%5s" % self.trainingCyclesCompleted
+      # increment cycle number 
+      self.trainingCyclesCompleted += 1
+  
+      # Feed training vectors into the spatial pooler 
+      SDRNumbers = []
+      activeArray = numpy.zeros(self.sp.getColumnDimensions())
+      for j,trainingVector in enumerate(trainingVectors):
+        self.sp.compute(trainingVector, True, activeArray)
+        # Build a list of integers corresponding to each SDR
+        activeList = activeArray.tolist()
+        if activeList not in self.SDRs:
+          self.SDRs.append(activeList)
+        SDRNumbers.append(self.SDRs.index(activeList))
+    
+      # check for SDR collisions
+      for i in range(len(self.SDRs)):
+        if SDRNumbers.count(i) > 1:
+          tag = trainingTags[SDRNumbers.index(i)]
+          for j in range(SDRNumbers.index(i),len(SDRNumbers)):
+            if SDRNumbers[j] == i:
+              if trainingTags[j] != tag:
+                trained = False
+  
+      # check for SDR stability
+      if SDRNumbers != LastCycleSDRNumbers:
+        trained = False
+        LastCycleSDRNumbers = SDRNumbers
 
-    return outputValues
+      # print updated permanence stats for connected and unconnected synapses
+      self.printPermanenceStats()
+ 
+    return SDRNumbers, self.trainingCyclesCompleted
       
   
   
@@ -137,27 +142,98 @@ class VisionTestBench(object):
     self.permanencesImage = None
     self.connectionsImage = None
 
-    # Return a list of all the output values
-    outputValues = []
-
-    # Initialize an array to store the column activity that results from the input.
+    # Feed testing vectors into the spatial pooler 
+    SDRNumbers = []
     activeArray = numpy.zeros(self.sp.getColumnDimensions())
-    
-    # Feed training vectors into the spatial pooler
     for j,testingVector in enumerate(testingVectors):
-      self.sp.compute(testingVector, True, activeArray)
-  
-      # Convert activeArray to an integer
-      value = 0
-      for j,num in enumerate(activeArray):
-        value = value << 1
-        value += int(num)
-      outputValues.append(value)
+      self.sp.compute(testingVector, False, activeArray)
+      # Build a list of integers corresponding to each SDR
+      activeList = activeArray.tolist()
+      if activeList not in self.SDRs:
+        self.SDRs.append(activeList)
+      SDRNumbers.append(self.SDRs.index(activeList))
 
-    return outputValues
+    return SDRNumbers
       
   
   
+  '''
+  ################################################################################
+  This routine prints the mean values of the connected and unconnected synapse
+  permanences along with the percentage of synapses in each.
+  It also returns the percentage of connected synapses so it can be used to 
+  determine when training has finished.
+  ################################################################################
+  '''
+  def printPermanenceStats(self):
+    # Print header if this is the first training cycle
+    if self.trainingCyclesCompleted == 0:
+      print "\nTraining begins:\n"
+      print "%5s" % "", 
+      print "%17s" % "Connected", 
+      print "%19s" % "Unconnected"
+      print "%5s" % "Cycle", 
+      print "%10s" % "Percent", 
+      print "%8s" % "Mean", 
+      print "%10s" % "Percent", 
+      print "%8s" % "Mean"
+      print ""
+    pctConnected = 0
+    pctUnconnected = 0
+    permsMean = 0
+    connectedMean = 0
+    unconnectedMean = 0
+    for i in range(self.columnHeight):
+      perms = self.sp._permanences.getRow(i)
+      numPerms = perms.size
+      permsMean += perms.mean()/self.columnHeight
+      connectedPerms = perms >= self.sp._synPermConnected
+      numConnected = connectedPerms.sum()
+      pctConnected += 100.0/self.columnHeight*numConnected/numPerms
+      sumConnected = (perms*connectedPerms).sum()
+      connectedMean += sumConnected/(numConnected*self.columnHeight)
+      unconnectedPerms = perms < self.sp._synPermConnected
+      numUnconnected = unconnectedPerms.sum()
+      pctUnconnected += 100.0/self.columnHeight*numUnconnected/numPerms
+      sumUnconnected = (perms*unconnectedPerms).sum()
+      unconnectedMean += sumUnconnected/(numUnconnected*self.columnHeight)
+    print "%5s" % self.trainingCyclesCompleted,
+    print "%10s" % ("%.4f" % pctConnected),
+    print "%8s" % ("%.3f" % connectedMean),
+    print "%10s" % ("%.4f" % pctUnconnected),
+    print "%8s" % ("%.3f" % unconnectedMean)
+    return pctConnected
+
+
+
+  '''
+  ################################################################################
+  This routine prints the MD5 hash of the output SDRs.
+  ################################################################################
+  '''
+  def printOutputHash(self):
+    # Print header if this is the first training cycle
+    if self.trainingCyclesCompleted == 0:
+      print "\nTraining begins:\n"
+      print "%5s" % "Cycle", 
+      print "%34s" % "Connected MD5", "%34s" % "Permanence MD5"
+      print ""
+    # Calculate an MD5 checksum for the permanences and connected synapses so 
+    # we can see when learning has finished.
+    permsMD5 = hashlib.md5()
+    connsMD5 = hashlib.md5()
+    for i in range(self.columnHeight):
+      perms = self.sp._permanences.getRow(i)
+      connectedPerms = perms >= self.sp._synPermConnected
+      perms = perms.astype('string')
+      [permsMD5.update(word) for word in perms]
+      connectedPerms = connectedPerms.astype('string')
+      [connsMD5.update(word) for word in connectedPerms]
+    print "%5s" % self.trainingCyclesCompleted,
+    print "%34s" % connsMD5.hexdigest(), "%34s" % permsMD5.hexdigest()
+
+
+
   '''
   ################################################################################
   These routines generates images of the permanences and connections of each 
