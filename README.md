@@ -9,9 +9,8 @@ images, tags = dataset_readers.getImagesAndTags(trainingXMLFileName)
 # convert images to bit vectors 
 vectors = image_encoders.imagesToVectors(images)
 
-# train nupic on the data set for 10 repetitions 
-for i in range(10)
-  VisionTestBench.train(vectors,tags)
+# train nupic on the data set for a maximum of 10 repetitions 
+VisionTestBench.train(vectors,tags,10)
 
 # get testing data set 
 images, tags = dataset_readers.getImagesAndTags(testingXMLFileName)
@@ -21,6 +20,7 @@ vectors = image_encoders.imagesToVectors(images)
 VisionTestBench.test(vectors,tags)
 ```
 
+Look at demo.py for a more detailed example. To run the demo do this:
 
-Look at train_and_test.py for a more detailed example.
+python demo.py
 
