@@ -37,6 +37,13 @@ class Parameters(object):
       print "Parameter: ", name," is already defined!"
 
 
+  def getAllNames(self):
+    '''
+    This method returns the names of all defined parameters.
+    '''
+    return self.names
+
+
   def getValue(self,name):
     '''
     This method returns the current value of the parameter specified by name.

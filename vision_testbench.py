@@ -21,8 +21,6 @@ class VisionTestBench(object):
     '''
     The test bench has just a few things to keep track off:
 
-    - Number of training cycles completed, just to keep the top level clean
-
     - A list of the output SDRs that is shared between the training and testing
       routines
 
@@ -34,8 +32,6 @@ class VisionTestBench(object):
 
     '''
     self.sp = sp
-
-    self.trainingCyclesCompleted = 0
 
     self.SDRs = []
 
@@ -78,56 +74,64 @@ class VisionTestBench(object):
   training images by using these vectors as input to the SP.  It continues
   training until there are no SDR collisions between input vectors that have
   different tags (ground truth) and the output SDRs are stable for 2 cycles.  
-  It records the output SDRs as a list of integers that correspond to each SDR 
-  and uses this list to look for SDR collisions.
+  It records each output SDR as the index of that SDR in a list of all SDRs
+  seen during training.  These indexes are stored in a list and used to look for
+  SDR collisions.
   ##############################################################################
   '''
-  def train(self, trainingVectors, trainingTags, maxTrainingCycles):
-    # print averages of starting permanence values
-    if self.trainingCyclesCompleted == 0:
-      self.printPermanenceStats()
- 
-    # Get rid of old permanence and connection images
+  def train(self, trainingVectors, trainingTags, maxCycles):
+    # Get rid of permanence and connection images from previous training
     self.permanencesImage = None
     self.connectionsImage = None
   
+    # print starting stats
+    cyclesCompleted = 0
+    SDRIs = []
+    previousSDRIs = []
+    self.printTrainingStats(cyclesCompleted,SDRIs,previousSDRIs)
+ 
+    # keep training until there are no SDR collisions or maxCycles is reached
     trained = False
-    LastCycleSDRNumbers = []
-    while not trained and self.trainingCyclesCompleted < maxTrainingCycles:
+    while not trained and cyclesCompleted < maxCycles:
       trained = True
 
       # increment cycle number 
-      self.trainingCyclesCompleted += 1
+      cyclesCompleted += 1
   
       # Feed training vectors into the spatial pooler 
-      SDRNumbers = []
+      SDRIs = []
       activeArray = numpy.zeros(self.sp.getColumnDimensions())
       for j,trainingVector in enumerate(trainingVectors):
         self.sp.compute(trainingVector, True, activeArray)
         # Build a list of integers corresponding to each SDR
-        activeList = activeArray.tolist()
+        activeList = activeArray.astype('int32').tolist()
         if activeList not in self.SDRs:
           self.SDRs.append(activeList)
-        SDRNumbers.append(self.SDRs.index(activeList))
+        SDRIs.append(self.SDRs.index(activeList))
     
+      # print updated stats
+      ppm = self.printTrainingStats(cyclesCompleted,SDRIs,previousSDRIs)
+
+      # check for > 1 ppm of SDR bits changing
+      if ppm > 1:
+        trained = False
+        previousSDRIs = SDRIs
+
       # check for SDR collisions
-      for i in range(len(self.SDRs)):
-        if SDRNumbers.count(i) > 1:
-          tag = trainingTags[SDRNumbers.index(i)]
-          for j in range(SDRNumbers.index(i),len(SDRNumbers)):
-            if SDRNumbers[j] == i:
-              if trainingTags[j] != tag:
-                trained = False
+      #for i in range(len(self.SDRs)):
+      #  if SDRIs.count(i) > 1:
+      #    tag = trainingTags[SDRIs.index(i)]
+      #    for j in range(SDRIs.index(i),len(SDRIs)):
+      #      if SDRIs[j] == i:
+      #        if trainingTags[j] != tag:
+      #          trained = False
   
       # check for SDR stability
-      if SDRNumbers != LastCycleSDRNumbers:
-        trained = False
-        LastCycleSDRNumbers = SDRNumbers
+      #if SDRIs != previousSDRIs:
+      #  trained = False
+      #  previousSDRIs = SDRIs
 
-      # print updated permanence stats for connected and unconnected synapses
-      self.printPermanenceStats()
- 
-    return SDRNumbers, self.trainingCyclesCompleted
+    return SDRIs, cyclesCompleted
       
   
   
@@ -143,17 +147,17 @@ class VisionTestBench(object):
     self.connectionsImage = None
 
     # Feed testing vectors into the spatial pooler 
-    SDRNumbers = []
+    SDRIs = []
     activeArray = numpy.zeros(self.sp.getColumnDimensions())
     for j,testingVector in enumerate(testingVectors):
-      self.sp.compute(testingVector, False, activeArray)
-      # Build a list of integers corresponding to each SDR
-      activeList = activeArray.tolist()
+      self.sp.compute(testingVector, True, activeArray)
+      # Build a list of indexes corresponding to each SDR
+      activeList = activeArray.astype('int32').tolist()
       if activeList not in self.SDRs:
         self.SDRs.append(activeList)
-      SDRNumbers.append(self.SDRs.index(activeList))
+      SDRIs.append(self.SDRs.index(activeList))
 
-    return SDRNumbers
+    return SDRIs
       
   
   
@@ -165,28 +169,29 @@ class VisionTestBench(object):
   determine when training has finished.
   ################################################################################
   '''
-  def printPermanenceStats(self):
+  def printTrainingStats(self,trainingCyclesCompleted,SDRIs,previousSDRIs):
     # Print header if this is the first training cycle
-    if self.trainingCyclesCompleted == 0:
+    if trainingCyclesCompleted == 0:
       print "\nTraining begins:\n"
       print "%5s" % "", 
       print "%17s" % "Connected", 
-      print "%19s" % "Unconnected"
+      print "%19s" % "Unconnected",
+      print "%15s" % "SDR bits"
       print "%5s" % "Cycle", 
       print "%10s" % "Percent", 
       print "%8s" % "Mean", 
       print "%10s" % "Percent", 
-      print "%8s" % "Mean"
-      print ""
+      print "%8s" % "Mean",
+      print "%15s" % "ppm changing"
+      print
+    # Calculate permanence stats
     pctConnected = 0
     pctUnconnected = 0
-    permsMean = 0
     connectedMean = 0
     unconnectedMean = 0
     for i in range(self.columnHeight):
       perms = self.sp._permanences.getRow(i)
       numPerms = perms.size
-      permsMean += perms.mean()/self.columnHeight
       connectedPerms = perms >= self.sp._synPermConnected
       numConnected = connectedPerms.sum()
       pctConnected += 100.0/self.columnHeight*numConnected/numPerms
@@ -197,12 +202,27 @@ class VisionTestBench(object):
       pctUnconnected += 100.0/self.columnHeight*numUnconnected/numPerms
       sumUnconnected = (perms*unconnectedPerms).sum()
       unconnectedMean += sumUnconnected/(numUnconnected*self.columnHeight)
-    print "%5s" % self.trainingCyclesCompleted,
+    print "%5s" % trainingCyclesCompleted,
     print "%10s" % ("%.4f" % pctConnected),
     print "%8s" % ("%.3f" % connectedMean),
     print "%10s" % ("%.4f" % pctUnconnected),
-    print "%8s" % ("%.3f" % unconnectedMean)
-    return pctConnected
+    print "%8s" % ("%.3f" % unconnectedMean),
+    if len(previousSDRIs) == 0:
+      ppmChangedBits = 1e6
+      print
+    else:
+      # Calculate SDR bit change stat
+      totalBits = 0.0
+      changedBits = 0.0
+      for i in range(len(SDRIs)):
+        SDR = numpy.array(self.getSDR(SDRIs[i]))
+        pSDR = numpy.array(self.getSDR(previousSDRIs[i]))
+        totalBits += SDR.size 
+        changedBits += (SDR^pSDR).sum()
+      ppmChangedBits = 1e6*changedBits/totalBits
+      print "%15s" % ("%.6f" % ppmChangedBits)
+
+    return ppmChangedBits 
 
 
 
@@ -211,9 +231,9 @@ class VisionTestBench(object):
   This routine prints the MD5 hash of the output SDRs.
   ################################################################################
   '''
-  def printOutputHash(self):
+  def printOutputHash(self,trainingCyclesCompleted):
     # Print header if this is the first training cycle
-    if self.trainingCyclesCompleted == 0:
+    if trainingCyclesCompleted == 0:
       print "\nTraining begins:\n"
       print "%5s" % "Cycle", 
       print "%34s" % "Connected MD5", "%34s" % "Permanence MD5"
@@ -229,7 +249,7 @@ class VisionTestBench(object):
       [permsMD5.update(word) for word in perms]
       connectedPerms = connectedPerms.astype('string')
       [connsMD5.update(word) for word in connectedPerms]
-    print "%5s" % self.trainingCyclesCompleted,
+    print "%5s" % trainingCyclesCompleted,
     print "%34s" % connsMD5.hexdigest(), "%34s" % permsMD5.hexdigest()
 
 
@@ -307,6 +327,27 @@ class VisionTestBench(object):
     if self.connectionsImage == None:
       self.calcPermsAndConns()
     self.connectionsImage.save(filename,'JPEG')
+        
+  
+  # take an SDR index and return the corresponding SDR
+  def getSDR(self, SDRI):
+    assert(SDRI < len(self.SDRs))
+    return self.SDRs[SDRI]
+        
+  
+  # take an SDR index and print the corresponding SDR
+  def printSDR(self, SDRI):
+    assert(SDRI < len(self.SDRs))
+    bitLength = len(self.SDRs[SDRI])
+    lineLength = int(numpy.sqrt(bitLength))
+    for i in range(bitLength):
+      if i != 0 and i % lineLength == 0:
+        print
+      if self.SDRs[SDRI][i] == 1:
+        print "1",
+      else:
+        print "_",
+    print
         
   
   def _convertToImage(self, listData, mode = '1'):

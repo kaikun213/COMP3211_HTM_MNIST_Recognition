@@ -2,17 +2,18 @@
 '''
 This script trains the spatial pooler (SP) on a set of images that are 
 listed in the XML file specified by trainingDataset.  The SP is trained 
-for the number of training cycles given by trainingCycles and then its
+for a maximum number of training cycles given by maxTrainingCycles and then its
 classification abilities are tested on the images listed in the XML file
 specified by testingDataset.
 '''
 
-trainingDataset = 'Datasets/OCR/characters/hex.xml'
-maxTrainingCycles = 10
-testingDataset = 'Datasets/OCR/characters/hex.xml'
+trainingDataset = 'Datasets/OCR/characters/all.xml'
+maxTrainingCycles = 30
+testingDataset = 'Datasets/OCR/characters/all.xml'
 print "Training data set: ",trainingDataset
 print "Testing data set: ",testingDataset
 
+import numpy as np
 import dataset_readers as data
 import image_encoders as encoder
 from parameters import Parameters
@@ -28,14 +29,14 @@ trainingVectors = encoder.imagesToVectors(trainingImages)
 
 # Specify parameter values to search 
 parameters = Parameters()
-#parameters.define("numCols",[256])
-parameters.define("numCols",[256,512,1024,2048])
-parameters.define("synPermConn",[0.5])
-#parameters.define("synPermConn",[0.1,0.3,0.5,0.7,0.9])
-parameters.define("synPermIncFrac",[1.0])
-#parameters.define("synPermIncFrac",[1.0,0.5,0.1])
-parameters.define("synPermDecFrac",[1.0])
-#parameters.define("synPermDecFrac",[1.0,0.5,0.1])
+parameters.define("numCols",[256])
+#parameters.define("numCols",[256,512,1024,2048])
+#parameters.define("synPermConn",[0.5])
+parameters.define("synPermConn",[0.9,0.7,0.5,0.3,0.1])
+#parameters.define("synPermDecFrac",[1.0])
+parameters.define("synPermDecFrac",[1.0,0.5,0.1])
+#parameters.define("synPermIncFrac",[1.0])
+parameters.define("synPermIncFrac",[1.0,0.5,0.1])
 
 
 # Run the model until all combinations have been tried
@@ -60,10 +61,10 @@ while len(results) < parameters.combinations:
       potentialRadius = 10000, # Ensures 100% potential pool
       potentialPct = 1, # Neurons can connect to 100% of input
       globalInhibition = True,
-      #localAreaDensity = -1, # Using numActiveColumnsPerInhArea 
-      localAreaDensity = 0.02, # one percent of columns active at a time
-      numActiveColumnsPerInhArea = -1, # Using percentage instead
-      #numActiveColumnsPerInhArea = 1, # Only one feature active at a time
+      localAreaDensity = -1, # Using numActiveColumnsPerInhArea 
+      #localAreaDensity = 0.02, # one percent of columns active at a time
+      #numActiveColumnsPerInhArea = -1, # Using percentage instead
+      numActiveColumnsPerInhArea = 1,
       # All input activity can contribute to feature output
       stimulusThreshold = 0,
       synPermInactiveDec = synPermDec,
@@ -78,46 +79,55 @@ while len(results) < parameters.combinations:
     tb = VisionTestBench(sp)
     
     # Train the spatial pooler on trainingVectors.
-    SDRs, numCycles = tb.train(trainingVectors, trainingTags, maxTrainingCycles)
+    trainSDRIs, numCycles = tb.train(trainingVectors, trainingTags, maxTrainingCycles)
 
     # Save the permanences and connections after training.
     #tb.savePermsAndConns('perms_and_conns.jpg')
+    #tb.showPermsAndConns()
     
     # Get testing images and convert them to vectors.
     testingImages, testingTags = data.getImagesAndTags(testingDataset)
     testingVectors = encoder.imagesToVectors(testingImages)
     
     # Test the spatial pooler on testingVectors.
-    testSDRs = tb.test(testingVectors, testingTags)
-    if testSDRs != SDRs:
+    testSDRIs = tb.test(testingVectors, testingTags)
+
+    if testSDRIs != trainSDRIs:
       print "Yo! SDRs don't match!"
-      #for i in range(len(testSDRs)):
-        #print "%5s %5s" % (SDRs[i], testSDRs[i])
+      #for i in range(len(testSDRIs)):
+        #if testSDRIs[i] != trainSDRIs[i]:
+          #print "%6s %6s %6s" % (i, trainSDRIs[i], testSDRIs[i])
+          #tb.printSDR(trainSDRIs[i])
+          #print
+          #tb.printSDR(testSDRIs[i])
+          #junk = raw_input()
     
     # Classifier Hack, uses the testing image tags along with the SDRs from the 
     # last training cycle to interpret the SDRs from testing.
     testResults = []
-    [testResults.append('') for i in range(len(testSDRs))]
-    for i,testSDR in enumerate(testSDRs):
-      for j,SDR in enumerate(SDRs):
-        if testSDR == SDR:
+    [testResults.append('') for i in range(len(testSDRIs))]
+    for i,testSDRI in enumerate(testSDRIs):
+      for j,trainSDRI in enumerate(trainSDRIs):
+        #testSDR = np.array(tb.getSDR(testSDRI))
+        #trainSDR = np.array(tb.getSDR(trainSDRI))
+        #if (testSDR*trainSDR).sum() > 0:
+        if testSDRI == trainSDRI:
           if len(testResults[i]) == 0:
             testResults[i] += trainingTags[j]
           elif trainingTags[j] not in testResults[i]:
             testResults[i] += "," + trainingTags[j]
     
     
-    # Show the test results
-    #print "\nTest Results:\n"
-    #print "%5s" % "Input", "Output"
-    #for i in range(len(testingTags)):
-      #print "%-5s" % testingTags[i], testResults[i]
-    #print 
-    
     accuracy = 0.0
+    recognitionMistake = False
     for i in range(len(testResults)):
       if testingTags[i] == testResults[i]:
         accuracy += 100.0/len(testResults)
+      else:
+        if not recognitionMistake:
+          recognitionMistake = True
+          print "%5s" % "Input", "Output"
+        print "%-5s" % testingTags[i], testResults[i]
     
     combinations.append(parameters.getAllValues()[:])  # pass list by value
     results.append([accuracy, numCycles])
@@ -134,7 +144,19 @@ while len(results) < parameters.combinations:
   parameters.generateNextCombination()
     
     
+print "The maximum number of training cycles is set to:", maxTrainingCycles
+print
+print "Summary of Results"
+print
+headerList = parameters.getAllNames()
+headerList.append("% Accuracy")
+headerList.append("Training Cycles")
+headerString = ", ".join(headerList)
+print headerString 
 for i in range(len(combinations)):
-  print combinations[i], "%.1f" % results[i][0],"% ", results[i][1],"cycles"
+  valueString = str(combinations[i])[1:-1]
+  valueString += ", %.2f" % results[i][0]
+  valueString += ", %d" % results[i][1]
+  print valueString 
     
     
