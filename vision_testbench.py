@@ -79,7 +79,7 @@ class VisionTestBench(object):
   SDR collisions.
   ##############################################################################
   '''
-  def train(self, trainingVectors, trainingTags, maxCycles):
+  def train(self, trainingVectors, trainingTags, maxCycles, usePPM=False):
     # Get rid of permanence and connection images from previous training
     self.permanencesImage = None
     self.connectionsImage = None
@@ -112,24 +112,24 @@ class VisionTestBench(object):
       # print updated stats
       ppm = self.printTrainingStats(cyclesCompleted,SDRIs,previousSDRIs)
 
-      # check for > 1 ppm of SDR bits changing
-      if ppm > 1:
-        trained = False
-        previousSDRIs = SDRIs
-
-      # check for SDR collisions
-      #for i in range(len(self.SDRs)):
-      #  if SDRIs.count(i) > 1:
-      #    tag = trainingTags[SDRIs.index(i)]
-      #    for j in range(SDRIs.index(i),len(SDRIs)):
-      #      if SDRIs[j] == i:
-      #        if trainingTags[j] != tag:
-      #          trained = False
-  
-      # check for SDR stability
-      #if SDRIs != previousSDRIs:
-      #  trained = False
-      #  previousSDRIs = SDRIs
+      if usePPM:
+        # check for > 1 ppm of SDR bits changing
+        if ppm > 1:
+          trained = False
+          previousSDRIs = SDRIs
+      else:
+        # check for SDR collisions
+        for i in range(len(self.SDRs)):
+          if SDRIs.count(i) > 1:
+            tag = trainingTags[SDRIs.index(i)]
+            for j in range(SDRIs.index(i),len(SDRIs)):
+              if SDRIs[j] == i:
+                if trainingTags[j] != tag:
+                  trained = False
+        # check for SDR stability
+        if SDRIs != previousSDRIs:
+          trained = False
+          previousSDRIs = SDRIs
 
     return SDRIs, cyclesCompleted
       

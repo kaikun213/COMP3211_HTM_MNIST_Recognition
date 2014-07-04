@@ -79,7 +79,8 @@ while len(results) < parameters.combinations:
     tb = VisionTestBench(sp)
     
     # Train the spatial pooler on trainingVectors.
-    trainSDRIs, numCycles = tb.train(trainingVectors, trainingTags, maxTrainingCycles)
+    trainSDRIs, numCycles = tb.train(trainingVectors, trainingTags, 
+      maxTrainingCycles, usePPM=True)
 
     # Save the permanences and connections after training.
     #tb.savePermsAndConns('perms_and_conns.jpg')
