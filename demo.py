@@ -7,9 +7,9 @@ classification abilities are tested on the images listed in the XML file
 specified by testingDataset.
 '''
 
-trainingDataset = 'Datasets/OCR/characters/hex.xml'
+trainingDataset = 'DataSets/OCR/characters/hex.xml'
 maxTrainingCycles = 10
-testingDataset = 'Datasets/OCR/characters/hex.xml'
+testingDataset = 'DataSets/OCR/characters/hex.xml'
 print "Training data set: ",trainingDataset
 print "Testing data set: ",testingDataset
 
