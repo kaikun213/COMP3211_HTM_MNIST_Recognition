@@ -7,9 +7,9 @@ classification abilities are tested on the images listed in the XML file
 specified by testingDataset.
 '''
 
-trainingDataset = 'Datasets/OCR/characters/all.xml'
+trainingDataset = 'DataSets/OCR/characters/all.xml'
 maxTrainingCycles = 30
-testingDataset = 'Datasets/OCR/characters/all.xml'
+testingDataset = 'DataSets/OCR/characters/all.xml'
 print "Training data set: ",trainingDataset
 print "Testing data set: ",testingDataset
 
@@ -29,14 +29,24 @@ trainingVectors = encoder.imagesToVectors(trainingImages)
 
 # Specify parameter values to search 
 parameters = Parameters()
-parameters.define("numCols",[256])
+parameters.define("dataSet",[ 
+  '1.xml','2.xml', '3.xml', '4.xml', '5.xml', '6.xml', '7.xml', '8.xml',
+  '9.xml', '10.xml', '11.xml', '12.xml', '13.xml', '14.xml', '15.xml',
+  '16.xml', '17.xml', '18.xml', '19.xml', '20.xml', '21.xml', '22.xml', 
+  '23.xml', '24.xml', '25.xml', '26.xml', '27.xml', '28.xml', '29.xml', 
+  '30.xml', '31.xml', '32.xml', '33.xml', '34.xml', '35.xml', '36.xml', 
+  '37.xml', '38.xml', '39.xml', '40.xml', '41.xml', '42.xml', '43.xml', 
+  '44.xml', '45.xml', '46.xml', '47.xml', '48.xml', '49.xml', '50.xml', 
+  '51.xml', '52.xml', '53.xml', '54.xml', '55.xml', '56.xml', '57.xml', 
+  '58.xml', '59.xml', '60.xml', '61.xml', '62.xml'])
+parameters.define("numCols",[2048])
 #parameters.define("numCols",[256,512,1024,2048])
-#parameters.define("synPermConn",[0.5])
-parameters.define("synPermConn",[0.9,0.7,0.5,0.3,0.1])
-#parameters.define("synPermDecFrac",[1.0])
-parameters.define("synPermDecFrac",[1.0,0.5,0.1])
-#parameters.define("synPermIncFrac",[1.0])
-parameters.define("synPermIncFrac",[1.0,0.5,0.1])
+parameters.define("synPermConn",[0.3])
+#parameters.define("synPermConn",[0.9,0.7,0.5,0.3,0.1])
+parameters.define("synPermDecFrac",[1.0])
+#parameters.define("synPermDecFrac",[1.0,0.5,0.1])
+parameters.define("synPermIncFrac",[1.0])
+#parameters.define("synPermIncFrac",[1.0,0.5,0.1])
 
 
 # Run the model until all combinations have been tried
@@ -44,6 +54,12 @@ combinations = []  # list for storing parameter combinations
 results = []  # list for storing image recognition accuracy results 
 while len(results) < parameters.combinations:
   
+  dataSet = parameters.getValue("dataSet")
+  trainingDataset = 'DataSets/OCR/characters/' + dataSet
+  trainingImages, trainingTags = data.getImagesAndTags(trainingDataset)
+  trainingVectors = encoder.imagesToVectors(trainingImages)
+  testingDataset = 'DataSets/OCR/characters/' + dataSet
+
   # Pick a random combination of parameter values
   #parameters.generateRandomCombination()
   numCols = parameters.getValue("numCols")
@@ -64,7 +80,7 @@ while len(results) < parameters.combinations:
       localAreaDensity = -1, # Using numActiveColumnsPerInhArea 
       #localAreaDensity = 0.02, # one percent of columns active at a time
       #numActiveColumnsPerInhArea = -1, # Using percentage instead
-      numActiveColumnsPerInhArea = 1,
+      numActiveColumnsPerInhArea = 128,
       # All input activity can contribute to feature output
       stimulusThreshold = 0,
       synPermInactiveDec = synPermDec,
@@ -80,7 +96,7 @@ while len(results) < parameters.combinations:
     
     # Train the spatial pooler on trainingVectors.
     trainSDRIs, numCycles = tb.train(trainingVectors, trainingTags, 
-      maxTrainingCycles, usePPM=True)
+      maxTrainingCycles, usePPM=False)
 
     # Save the permanences and connections after training.
     #tb.savePermsAndConns('perms_and_conns.jpg')
