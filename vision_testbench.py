@@ -1,11 +1,9 @@
 import numpy
 import math
-import pygame
 import time
 import hashlib
 
 from PIL import Image
-from pygame.color import THECOLORS
 from nupic.research.spatial_pooler import SpatialPooler
 from xml.dom import minidom
 
