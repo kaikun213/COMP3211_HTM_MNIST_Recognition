@@ -2,9 +2,7 @@ import numpy
 
 from PIL import Image
 
-DEBUG = 0
 
-  
 '''
 ################################################################################
 These routines convert images to bit vectors that can be used as input to
@@ -21,7 +19,7 @@ def imageToVector(image):
   # then convert from 0 255 space to binary with a threshold.
   # Finally cast the values into a type CPP likes
   vector = (numpy.array(list(image.getdata())) < 100).astype('uint32')
-  
+
   return vector
 
 
