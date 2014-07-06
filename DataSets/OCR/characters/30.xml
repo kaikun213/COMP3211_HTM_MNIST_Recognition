@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imagelist>
+  <image file="normal/0.jpg" tag="0" />
+  <image file="normal/1.jpg" tag="1" />
+  <image file="normal/2.jpg" tag="2" />
+  <image file="normal/3.jpg" tag="3" />
+  <image file="normal/4.jpg" tag="4" />
+  <image file="normal/5.jpg" tag="5" />
+  <image file="normal/6.jpg" tag="6" />
+  <image file="normal/7.jpg" tag="7" />
+  <image file="normal/8.jpg" tag="8" />
+  <image file="normal/9.jpg" tag="9" />
+  <image file="normal/uppercase_A.jpg" tag="A" />
+  <image file="normal/uppercase_B.jpg" tag="B" />
+  <image file="normal/uppercase_C.jpg" tag="C" />
+  <image file="normal/uppercase_D.jpg" tag="D" />
+  <image file="normal/uppercase_E.jpg" tag="E" />
+  <image file="normal/uppercase_F.jpg" tag="F" />
+  <image file="normal/uppercase_G.jpg" tag="G" />
+  <image file="normal/uppercase_H.jpg" tag="H" />
+  <image file="normal/uppercase_I.jpg" tag="I" />
+  <image file="normal/uppercase_J.jpg" tag="J" />
+  <image file="normal/uppercase_K.jpg" tag="K" />
+  <image file="normal/uppercase_L.jpg" tag="L" />
+  <image file="normal/uppercase_M.jpg" tag="M" />
+  <image file="normal/uppercase_N.jpg" tag="N" />
+  <image file="normal/uppercase_O.jpg" tag="O" />
+  <image file="normal/uppercase_P.jpg" tag="P" />
+  <image file="normal/uppercase_Q.jpg" tag="Q" />
+  <image file="normal/uppercase_R.jpg" tag="R" />
+  <image file="normal/uppercase_S.jpg" tag="S" />
+  <image file="normal/uppercase_T.jpg" tag="T" />
+</imagelist>
+
