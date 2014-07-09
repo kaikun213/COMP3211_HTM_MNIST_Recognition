@@ -73,7 +73,7 @@ class VisionTestBench(object):
   SDR collisions.
   ##############################################################################
   '''
-  def train(self, trainingVectors, trainingTags, maxCycles, usePPM=False):
+  def train(self, trainingVectors, trainingTags, maxCycles, usePPM=False, useMax=False):
     # Get rid of permanence and connection images from previous training
     self.permanencesImage = None
     self.connectionsImage = None
@@ -94,7 +94,8 @@ class VisionTestBench(object):
 
       # Feed training vectors into the spatial pooler
       SDRIs = []
-      activeArray = numpy.zeros(self.sp.getColumnDimensions())
+      #activeArray = numpy.zeros(self.sp.getColumnDimensions())
+      activeArray = numpy.zeros(self.sp.getNumColumns())
       for j,trainingVector in enumerate(trainingVectors):
         self.sp.compute(trainingVector, True, activeArray)
         # Build a list of integers corresponding to each SDR
@@ -106,7 +107,10 @@ class VisionTestBench(object):
       # print updated stats
       ppm = self.printTrainingStats(cyclesCompleted,SDRIs,previousSDRIs)
 
-      if usePPM:
+      if useMax:
+        # run max number of training cycles
+        trained = False
+      elif usePPM:
         # check for > 1 ppm of SDR bits changing
         if ppm > 1:
           trained = False
@@ -142,7 +146,8 @@ class VisionTestBench(object):
 
     # Feed testing vectors into the spatial pooler
     SDRIs = []
-    activeArray = numpy.zeros(self.sp.getColumnDimensions())
+    #activeArray = numpy.zeros(self.sp.getColumnDimensions())
+    activeArray = numpy.zeros(self.sp.getNumColumns())
     for j, testVector in enumerate(testVectors):
       self.sp.compute(testVector, True, activeArray)
       # Build a list of indexes corresponding to each SDR
@@ -183,7 +188,8 @@ class VisionTestBench(object):
     pctUnconnected = 0
     connectedMean = 0
     unconnectedMean = 0
-    perms = numpy.zeros(self.sp.getInputDimensions())
+    #perms = numpy.zeros(self.sp.getInputDimensions())
+    perms = numpy.zeros(self.sp.getNumInputs())
     for i in range(self.columnHeight):
       self.sp.getPermanence(i, perms)
       numPerms = perms.size
@@ -260,10 +266,11 @@ class VisionTestBench(object):
     size = (self.inputWidth*self.columnWidth,self.inputHeight*self.columnHeight)
     self.permanencesImage = Image.new('RGB', size)
     self.connectionsImage = Image.new('RGB', size)
-    perms = numpy.zeros(self.sp.getInputDimensions())
+    #perms = numpy.zeros(self.sp.getInputDimensions())
+    perms = numpy.zeros(self.sp.getNumInputs())
     for j in range(self.columnWidth):
       for i in range(self.columnHeight):
-        self.sp.getPermanence(i, perms)
+        self.sp.getPermanence(i*self.columnWidth + j, perms)
         # Convert perms to RGB (effective grayscale) values
         allPerms = [(v, v, v) for v in ((1 - perms) * 255).astype('int')]
 

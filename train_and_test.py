@@ -6,9 +6,9 @@ classification abilities are tested on the images listed in the XML file
 specified by testingDataset.
 '''
 
-trainingDataset = 'DataSets/OCR/characters/all.xml'
-maxTrainingCycles = 1
-testingDataset = 'DataSets/OCR/characters/all.xml'
+trainingDataset = 'DataSets/OCR/characters/hex.xml'
+maxTrainingCycles = 100
+testingDataset = 'DataSets/OCR/characters/hex.xml'
 print "Training data set: ", trainingDataset
 print "Testing data set: ", testingDataset
 
@@ -28,24 +28,24 @@ trainingVectors = encoder.imagesToVectors(trainingImages)
 
 # Specify parameter values to search
 parameters = Parameters()
-parameters.define("dataSet", ['20.xml'])
-#parameters.define("dataSet",[
-  #'1.xml','2.xml', '3.xml', '4.xml', '5.xml', '6.xml', '7.xml', '8.xml',
-  #'9.xml', '10.xml', '11.xml', '12.xml', '13.xml', '14.xml', '15.xml',
-  #'16.xml', '17.xml', '18.xml', '19.xml', '20.xml', '21.xml', '22.xml',
-  #'23.xml', '24.xml', '25.xml', '26.xml', '27.xml', '28.xml', '29.xml',
-  #'30.xml', '31.xml', '32.xml', '33.xml', '34.xml', '35.xml', '36.xml',
-  #'37.xml', '38.xml', '39.xml', '40.xml', '41.xml', '42.xml', '43.xml',
-  #'44.xml', '45.xml', '46.xml', '47.xml', '48.xml', '49.xml', '50.xml',
-  #'51.xml', '52.xml', '53.xml', '54.xml', '55.xml', '56.xml', '57.xml',
-  #'58.xml', '59.xml', '60.xml', '61.xml', '62.xml'])
-parameters.define("numCols", [16])
+#parameters.define("dataSet", ['4.xml'])
+parameters.define("dataSet",[
+  '1.xml','2.xml', '3.xml', '4.xml', '5.xml', '6.xml', '7.xml', '8.xml',
+  '9.xml', '10.xml', '11.xml', '12.xml', '13.xml', '14.xml', '15.xml',
+  '16.xml', '17.xml', '18.xml', '19.xml', '20.xml', '21.xml', '22.xml',
+  '23.xml', '24.xml', '25.xml', '26.xml', '27.xml', '28.xml', '29.xml',
+  '30.xml', '31.xml', '32.xml', '33.xml', '34.xml', '35.xml', '36.xml',
+  '37.xml', '38.xml', '39.xml', '40.xml', '41.xml', '42.xml', '43.xml',
+  '44.xml', '45.xml', '46.xml', '47.xml', '48.xml', '49.xml', '50.xml',
+  '51.xml', '52.xml', '53.xml', '54.xml', '55.xml', '56.xml', '57.xml',
+  '58.xml', '59.xml', '60.xml', '61.xml', '62.xml'])
+#parameters.define("numCols", [(32, 32)])
 #parameters.define("numCols", [256,512,1024,2048])
-parameters.define("synPermConn", [0.3])
+#parameters.define("synPermConn", [0.3])
 #parameters.define("synPermConn", [0.9, 0.7, 0.5, 0.3, 0.1])
-parameters.define("synPermDecFrac", [1.0])
+#parameters.define("synPermDecFrac", [1.0])
 #parameters.define("synPermDecFrac", [1.0, 0.5, 0.1])
-parameters.define("synPermIncFrac", [1.0])
+#parameters.define("synPermIncFrac", [1.0])
 #parameters.define("synPermIncFrac", [1.0, 0.5, 0.1])
 
 
@@ -62,20 +62,20 @@ while len(results) < parameters.combinations:
 
   # Pick a random combination of parameter values
   #parameters.generateRandomCombination()
-  numCols = parameters.getValue("numCols")
-  synPermConn = parameters.getValue("synPermConn")
-  synPermDec = synPermConn*parameters.getValue("synPermDecFrac")
-  synPermInc = synPermConn*parameters.getValue("synPermIncFrac")
+  #numCols = parameters.getValue("numCols")
+  #synPermConn = parameters.getValue("synPermConn")
+  #synPermDec = synPermConn*parameters.getValue("synPermDecFrac")
+  #synPermInc = synPermConn*parameters.getValue("synPermIncFrac")
 
   # Run it if it hasn't been tried yet
   if parameters.getAllValues() not in combinations:
     print "Parameter Combination: ", parameters.getAllValues()
     # Instantiate our spatial pooler
     sp = SpatialPooler(
-      inputDimensions=32**2, # Size of image patch
-      columnDimensions = numCols, # Number of potential features
+      inputDimensions= (32, 32), # Size of image patch
+      columnDimensions = (32, 32),
       potentialRadius = 10000, # Ensures 100% potential pool
-      potentialPct = 1, # Neurons can connect to 100% of input
+      potentialPct = 0.8, # Neurons can connect to 100% of input
       globalInhibition = True,
       localAreaDensity = -1, # Using numActiveColumnsPerInhArea
       #localAreaDensity = 0.02, # one percent of columns active at a time
@@ -83,10 +83,10 @@ while len(results) < parameters.combinations:
       numActiveColumnsPerInhArea = 64,
       # All input activity can contribute to feature output
       stimulusThreshold = 0,
-      synPermInactiveDec = synPermDec,
-      synPermActiveInc = synPermInc,
-      synPermConnected = synPermConn, # Connected threshold
-      maxBoost = 3,
+      synPermInactiveDec = 0.001,
+      synPermActiveInc = 0.001,
+      synPermConnected = 0.3,
+      maxBoost = 1.0,
       seed = 1956, # The seed that Grok uses
       spVerbosity = 1)
 
@@ -96,10 +96,10 @@ while len(results) < parameters.combinations:
 
     # Train the spatial pooler on trainingVectors.
     trainSDRIs, numCycles = tb.train(trainingVectors, trainingTags,
-      maxTrainingCycles, usePPM=False)
+      maxTrainingCycles, useMax=True)
 
     # Save the permanences and connections after training.
-    tb.savePermsAndConns('perms_and_conns.jpg')
+    #tb.savePermsAndConns('perms_and_conns.jpg')
     #tb.showPermsAndConns()
 
     # Get testing images and convert them to vectors.
