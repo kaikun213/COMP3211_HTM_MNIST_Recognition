@@ -73,28 +73,27 @@ class VisionTestBench(object):
   SDR collisions.
   ##############################################################################
   '''
-  def train(self, trainingVectors, trainingTags, maxCycles, usePPM=False, useMax=False):
+  def train(self, trainingVectors, trainingTags, classifier, maxCycles=10,
+    minAccuracy=100.0):
     # Get rid of permanence and connection images from previous training
     self.permanencesImage = None
     self.connectionsImage = None
 
     # print starting stats
     cyclesCompleted = 0
-    SDRIs = []
-    previousSDRIs = []
-    self.printTrainingStats(cyclesCompleted,SDRIs,previousSDRIs)
+    accuracy = 0
+    self.printTrainingStats(cyclesCompleted, accuracy)
 
-    # keep training until there are no SDR collisions or maxCycles is reached
-    trained = False
-    while not trained and cyclesCompleted < maxCycles:
-      trained = True
-
+    # keep training until minAccuracy or maxCycles is reached
+    while (minAccuracy - accuracy) > 1.0/len(trainingTags) and \
+      cyclesCompleted < maxCycles:
       # increment cycle number
       cyclesCompleted += 1
 
-      # Feed training vectors into the spatial pooler
+      # Feed each training vector into the spatial pooler and then teach the
+      # classifier to associate the tag and the SDR
       SDRIs = []
-      #activeArray = numpy.zeros(self.sp.getColumnDimensions())
+      classifier.clear()
       activeArray = numpy.zeros(self.sp.getNumColumns())
       for j,trainingVector in enumerate(trainingVectors):
         self.sp.compute(trainingVector, True, activeArray)
@@ -102,35 +101,28 @@ class VisionTestBench(object):
         activeList = activeArray.astype('int32').tolist()
         if activeList not in self.SDRs:
           self.SDRs.append(activeList)
-        SDRIs.append(self.SDRs.index(activeList))
+        SDRI = self.SDRs.index(activeList)
+        SDRIs.append(SDRI)
+        # tell classifier to associate SDR and training Tag
+        category = trainingTags.index(trainingTags[j])
+        #print "Learn:", SDRI, category
+        classifier.learn(activeArray, category)
+
+      # Check the accuracy of the SP, classifier combination
+      accuracy = 0.0
+      for j in range(len(SDRIs)):
+        SDRI = SDRIs[j]
+        activeArray = numpy.array(self.SDRs[SDRI])
+        category = trainingTags.index(trainingTags[j])
+        inferred_category = classifier.infer(activeArray)[0]
+        #print "Infer:", SDRI, category, inferred_category
+        if inferred_category == category:
+          accuracy += 100.0/len(trainingTags)
 
       # print updated stats
-      ppm = self.printTrainingStats(cyclesCompleted,SDRIs,previousSDRIs)
+      self.printTrainingStats(cyclesCompleted, accuracy)
 
-      if useMax:
-        # run max number of training cycles
-        trained = False
-      elif usePPM:
-        # check for > 1 ppm of SDR bits changing
-        if ppm > 1:
-          trained = False
-          previousSDRIs = SDRIs
-      else:
-        # check for SDR collisions
-        for i in range(len(self.SDRs)):
-          if SDRIs.count(i) > 1:
-            tag = trainingTags[SDRIs.index(i)]
-            for j in range(SDRIs.index(i),len(SDRIs)):
-              if SDRIs[j] == i:
-                if trainingTags[j] != tag:
-                  trained = False
-        # check for SDR stability
-        if SDRIs != previousSDRIs:
-          trained = False
-          previousSDRIs = SDRIs
-
-    return SDRIs, cyclesCompleted
-
+    return cyclesCompleted
 
 
   '''
@@ -139,14 +131,15 @@ class VisionTestBench(object):
   testing images.
   ################################################################################
   '''
-  def test(self, testVectors, testingTags):
+  def test(self, testVectors, testingTags, classifier, verbose=0):
+    print "\nTesting:\n"
+
     # Get rid of old permanence and connection images
     self.permanencesImage = None
     self.connectionsImage = None
 
-    # Feed testing vectors into the spatial pooler
+    # Feed testing vectors into the spatial pooler and build a list of SDRs.
     SDRIs = []
-    #activeArray = numpy.zeros(self.sp.getColumnDimensions())
     activeArray = numpy.zeros(self.sp.getNumColumns())
     for j, testVector in enumerate(testVectors):
       self.sp.compute(testVector, True, activeArray)
@@ -155,8 +148,34 @@ class VisionTestBench(object):
       if activeList not in self.SDRs:
         self.SDRs.append(activeList)
       SDRIs.append(self.SDRs.index(activeList))
+      # tell classifier to associate SDR and testing Tag
+      category = testingTags.index(testingTags[j])
+      #print "Learn:", SDRI, category
+      classifier.learn(activeArray, category)
 
-    return SDRIs
+    # Check the accuracy of the SP, classifier combination
+    accuracy = 0.0
+    recognitionMistake = False
+    if verbose:
+      print "%5s" % "Input", "Output"
+    for j in range(len(SDRIs)):
+      activeArray = numpy.array(self.SDRs[SDRIs[j]])
+      category = testingTags.index(testingTags[j])
+      inferred_category = classifier.infer(activeArray)[0]
+      if inferred_category == category:
+        accuracy += 100.0/len(testingTags)
+        if verbose:
+          print "%-5s" % testingTags[j], testingTags[inferred_category]
+      else:
+        if not recognitionMistake:
+          recognitionMistake = True
+          print "Recognition mistakes:"
+          print "%5s" % "Input", "Output"
+        print "%-5s" % testingTags[j], testingTags[inferred_category]
+
+    print "Accuracy: %.1f" % accuracy, "%"
+
+    return accuracy
 
 
 
@@ -168,20 +187,20 @@ class VisionTestBench(object):
   determine when training has finished.
   ################################################################################
   '''
-  def printTrainingStats(self,trainingCyclesCompleted,SDRIs,previousSDRIs):
+  def printTrainingStats(self, trainingCyclesCompleted, accuracy):
     # Print header if this is the first training cycle
     if trainingCyclesCompleted == 0:
-      print "\nTraining begins:\n"
+      print "\nTraining:\n"
       print "%5s" % "",
-      print "%17s" % "Connected",
+      print "%16s" % "Connected",
       print "%19s" % "Unconnected",
-      print "%15s" % "SDR bits"
+      print "%16s" % "Recognition"
       print "%5s" % "Cycle",
       print "%10s" % "Percent",
       print "%8s" % "Mean",
       print "%10s" % "Percent",
       print "%8s" % "Mean",
-      print "%15s" % "ppm changing"
+      print "%13s" % "Accuracy"
       print
     # Calculate permanence stats
     pctConnected = 0
@@ -190,40 +209,27 @@ class VisionTestBench(object):
     unconnectedMean = 0
     #perms = numpy.zeros(self.sp.getInputDimensions())
     perms = numpy.zeros(self.sp.getNumInputs())
-    for i in range(self.columnHeight):
+    numCols = self.sp.getNumColumns()
+    for i in range(numCols):
       self.sp.getPermanence(i, perms)
       numPerms = perms.size
       connectedPerms = perms >= self.sp.getSynPermConnected()
       numConnected = connectedPerms.sum()
-      pctConnected += 100.0/self.columnHeight*numConnected/numPerms
+      pctConnected += 100.0/numCols*numConnected/numPerms
       sumConnected = (perms*connectedPerms).sum()
-      connectedMean += sumConnected/(numConnected*self.columnHeight)
+      connectedMean += sumConnected/(numConnected*numCols)
       unconnectedPerms = perms < self.sp.getSynPermConnected()
       numUnconnected = unconnectedPerms.sum()
-      pctUnconnected += 100.0/self.columnHeight*numUnconnected/numPerms
+      pctUnconnected += 100.0/numCols*numUnconnected/numPerms
       sumUnconnected = (perms*unconnectedPerms).sum()
-      unconnectedMean += sumUnconnected/(numUnconnected*self.columnHeight)
+      unconnectedMean += sumUnconnected/(numUnconnected*numCols)
     print "%5s" % trainingCyclesCompleted,
     print "%10s" % ("%.4f" % pctConnected),
     print "%8s" % ("%.3f" % connectedMean),
     print "%10s" % ("%.4f" % pctUnconnected),
     print "%8s" % ("%.3f" % unconnectedMean),
-    if len(previousSDRIs) == 0:
-      ppmChangedBits = 1e6
-      print
-    else:
-      # Calculate SDR bit change stat
-      totalBits = 0.0
-      changedBits = 0.0
-      for i in range(len(SDRIs)):
-        SDR = numpy.array(self.getSDR(SDRIs[i]))
-        pSDR = numpy.array(self.getSDR(previousSDRIs[i]))
-        totalBits += SDR.size
-        changedBits += (SDR^pSDR).sum()
-      ppmChangedBits = 1e6*changedBits/totalBits
-      print "%15s" % ("%.6f" % ppmChangedBits)
+    print "%13s" % ("%.5f" % accuracy)
 
-    return ppmChangedBits
 
 
 

@@ -7,7 +7,8 @@ specified by testingDataset.
 '''
 
 trainingDataset = 'DataSets/OCR/characters/hex.xml'
-maxTrainingCycles = 100
+minAccuracy = 200.0
+maxTrainingCycles = 5
 testingDataset = 'DataSets/OCR/characters/hex.xml'
 print "Training data set: ", trainingDataset
 print "Testing data set: ", testingDataset
@@ -19,6 +20,8 @@ from parameters import Parameters
 from nupic.research.spatial_pooler import SpatialPooler
 #from nupic.encoders import ScalarEncoder
 from vision_testbench import VisionTestBench
+from classifiers import exactMatch
+from classifiers import KNNClassifier
 
 
 # Get training images and convert them to vectors.
@@ -28,17 +31,17 @@ trainingVectors = encoder.imagesToVectors(trainingImages)
 
 # Specify parameter values to search
 parameters = Parameters()
-#parameters.define("dataSet", ['4.xml'])
-parameters.define("dataSet",[
-  '1.xml','2.xml', '3.xml', '4.xml', '5.xml', '6.xml', '7.xml', '8.xml',
-  '9.xml', '10.xml', '11.xml', '12.xml', '13.xml', '14.xml', '15.xml',
-  '16.xml', '17.xml', '18.xml', '19.xml', '20.xml', '21.xml', '22.xml',
-  '23.xml', '24.xml', '25.xml', '26.xml', '27.xml', '28.xml', '29.xml',
-  '30.xml', '31.xml', '32.xml', '33.xml', '34.xml', '35.xml', '36.xml',
-  '37.xml', '38.xml', '39.xml', '40.xml', '41.xml', '42.xml', '43.xml',
-  '44.xml', '45.xml', '46.xml', '47.xml', '48.xml', '49.xml', '50.xml',
-  '51.xml', '52.xml', '53.xml', '54.xml', '55.xml', '56.xml', '57.xml',
-  '58.xml', '59.xml', '60.xml', '61.xml', '62.xml'])
+parameters.define("dataSet",['62.xml'])
+#parameters.define("dataSet",[
+#  '1.xml','2.xml', '3.xml', '4.xml', '5.xml', '6.xml', '7.xml', '8.xml',
+#  '9.xml', '10.xml', '11.xml', '12.xml', '13.xml', '14.xml', '15.xml',
+#  '16.xml', '17.xml', '18.xml', '19.xml', '20.xml', '21.xml', '22.xml',
+#  '23.xml', '24.xml', '25.xml', '26.xml', '27.xml', '28.xml', '29.xml',
+#  '30.xml', '31.xml', '32.xml', '33.xml', '34.xml', '35.xml', '36.xml',
+#  '37.xml', '38.xml', '39.xml', '40.xml', '41.xml', '42.xml', '43.xml',
+#  '44.xml', '45.xml', '46.xml', '47.xml', '48.xml', '49.xml', '50.xml',
+#  '51.xml', '52.xml', '53.xml', '54.xml', '55.xml', '56.xml', '57.xml',
+#  '58.xml', '59.xml', '60.xml', '61.xml', '62.xml'])
 #parameters.define("numCols", [(32, 32)])
 #parameters.define("numCols", [256,512,1024,2048])
 #parameters.define("synPermConn", [0.3])
@@ -69,13 +72,14 @@ while len(results) < parameters.combinations:
 
   # Run it if it hasn't been tried yet
   if parameters.getAllValues() not in combinations:
-    print "Parameter Combination: ", parameters.getAllValues()
+    print "\nParameter Combination: ", parameters.getAllValues()
+    print
     # Instantiate our spatial pooler
     sp = SpatialPooler(
       inputDimensions= (32, 32), # Size of image patch
       columnDimensions = (32, 32),
       potentialRadius = 10000, # Ensures 100% potential pool
-      potentialPct = 0.8, # Neurons can connect to 100% of input
+      potentialPct = 0.8,
       globalInhibition = True,
       localAreaDensity = -1, # Using numActiveColumnsPerInhArea
       #localAreaDensity = 0.02, # one percent of columns active at a time
@@ -83,8 +87,8 @@ while len(results) < parameters.combinations:
       numActiveColumnsPerInhArea = 64,
       # All input activity can contribute to feature output
       stimulusThreshold = 0,
-      synPermInactiveDec = 0.001,
-      synPermActiveInc = 0.001,
+      synPermInactiveDec = 0.1,
+      synPermActiveInc = 0.1,
       synPermConnected = 0.3,
       maxBoost = 1.0,
       seed = 1956, # The seed that Grok uses
@@ -94,67 +98,37 @@ while len(results) < parameters.combinations:
     # Instantiate the spatial pooler test bench.
     tb = VisionTestBench(sp)
 
+    # Instantiate the classifier
+    #clf = exactMatch()
+    clf = KNNClassifier()
+
     # Train the spatial pooler on trainingVectors.
-    trainSDRIs, numCycles = tb.train(trainingVectors, trainingTags,
-      maxTrainingCycles, useMax=True)
+    print "\nParameter Combination: ", parameters.getAllValues()
+    numCycles = tb.train(trainingVectors, trainingTags, clf, maxTrainingCycles,
+      minAccuracy)
 
     # Save the permanences and connections after training.
     #tb.savePermsAndConns('perms_and_conns.jpg')
-    #tb.showPermsAndConns()
+    tb.showPermanences()
 
     # Get testing images and convert them to vectors.
     testingImages, testingTags = data.getImagesAndTags(testingDataset)
     testingVectors = encoder.imagesToVectors(testingImages)
 
+    # Reverse the order of the vectors and tags for testing
+    testingTags = [testingTag for testingTag in reversed(testingTags)]
+    testingVectors = [testingVector for testingVector in reversed(testingVectors)]
+
     # Test the spatial pooler on testingVectors.
-    testSDRIs = tb.test(testingVectors, testingTags)
+    print "\nParameter Combination: ", parameters.getAllValues()
+    accuracy = tb.test(testingVectors, testingTags, clf)
 
-    if testSDRIs != trainSDRIs:
-      print "Yo! SDRs don't match!"
-      #for i in range(len(testSDRIs)):
-        #if testSDRIs[i] != trainSDRIs[i]:
-          #print "%6s %6s %6s" % (i, trainSDRIs[i], testSDRIs[i])
-          #tb.printSDR(trainSDRIs[i])
-          #print
-          #tb.printSDR(testSDRIs[i])
-          #junk = raw_input()
-
-    # Classifier Hack, uses the testing image tags along with the SDRs from the
-    # last training cycle to interpret the SDRs from testing.
-    testResults = []
-    [testResults.append('') for i in range(len(testSDRIs))]
-    for i, testSDRI in enumerate(testSDRIs):
-      for j, trainSDRI in enumerate(trainSDRIs):
-        #testSDR = np.array(tb.getSDR(testSDRI))
-        #trainSDR = np.array(tb.getSDR(trainSDRI))
-        #if (testSDR*trainSDR).sum() > 0:
-        if testSDRI == trainSDRI:
-          if len(testResults[i]) == 0:
-            testResults[i] += trainingTags[j]
-          elif trainingTags[j] not in testResults[i]:
-            testResults[i] += "," + trainingTags[j]
-
-
-    accuracy = 0.0
-    recognitionMistake = False
-    for i in range(len(testResults)):
-      if testingTags[i] == testResults[i]:
-        accuracy += 100.0/len(testResults)
-      else:
-        if not recognitionMistake:
-          recognitionMistake = True
-          print "%5s" % "Input", "Output"
-        print "%-5s" % testingTags[i], testResults[i]
-
+    # Add results to the list
     combinations.append(parameters.getAllValues()[:])  # pass list by value
     results.append([accuracy, numCycles])
 
     print
-    print "Parameter Combination: ", parameters.getAllValues()
-    print "Accuracy: %.1f" % accuracy, "%"
-    print "Number of training cycles: ", numCycles
-    print
-    print "Combinations completed: ",
+    print "Parameter combinations completed: ",
     print len(combinations), "/", parameters.combinations
     print
 
@@ -162,9 +136,9 @@ while len(results) < parameters.combinations:
   parameters.generateNextCombination()
 
 
-print "The maximum number of training cycles is set to:", maxTrainingCycles
-print
 print "Summary of Results"
+print
+print "The maximum number of training cycles is set to:", maxTrainingCycles
 print
 headerList = parameters.getAllNames()
 headerList.append("% Accuracy")
