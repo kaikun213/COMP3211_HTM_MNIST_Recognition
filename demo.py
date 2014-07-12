@@ -10,8 +10,6 @@ specified by testingDataset.
 trainingDataset = 'DataSets/OCR/characters/hex.xml'
 maxTrainingCycles = 20
 testingDataset = 'DataSets/OCR/characters/hex.xml'
-print "Training data set: ",trainingDataset
-print "Testing data set: ",testingDataset
 
 import dataset_readers as data
 import image_encoders as encoder

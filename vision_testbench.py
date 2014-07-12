@@ -105,7 +105,6 @@ class VisionTestBench(object):
         SDRIs.append(SDRI)
         # tell classifier to associate SDR and training Tag
         category = trainingTags.index(trainingTags[j])
-        #print "Learn:", SDRI, category
         classifier.learn(activeArray, category)
 
       # Check the accuracy of the SP, classifier combination
@@ -115,13 +114,13 @@ class VisionTestBench(object):
         activeArray = numpy.array(self.SDRs[SDRI])
         category = trainingTags.index(trainingTags[j])
         inferred_category = classifier.infer(activeArray)[0]
-        #print "Infer:", SDRI, category, inferred_category
         if inferred_category == category:
           accuracy += 100.0/len(trainingTags)
 
       # print updated stats
       self.printTrainingStats(cyclesCompleted, accuracy)
 
+    print
     return cyclesCompleted
 
 
@@ -131,8 +130,8 @@ class VisionTestBench(object):
   testing images.
   ################################################################################
   '''
-  def test(self, testVectors, testingTags, classifier, verbose=0):
-    print "\nTesting:\n"
+  def test(self, testVectors, testingTags, classifier, verbose=0, learn=False):
+    print "Testing:"
 
     # Get rid of old permanence and connection images
     self.permanencesImage = None
@@ -142,16 +141,16 @@ class VisionTestBench(object):
     SDRIs = []
     activeArray = numpy.zeros(self.sp.getNumColumns())
     for j, testVector in enumerate(testVectors):
-      self.sp.compute(testVector, True, activeArray)
+      self.sp.compute(testVector, learn, activeArray)
       # Build a list of indexes corresponding to each SDR
       activeList = activeArray.astype('int32').tolist()
       if activeList not in self.SDRs:
         self.SDRs.append(activeList)
       SDRIs.append(self.SDRs.index(activeList))
-      # tell classifier to associate SDR and testing Tag
-      category = testingTags.index(testingTags[j])
-      #print "Learn:", SDRI, category
-      classifier.learn(activeArray, category)
+      if learn:
+        # tell classifier to associate SDR and testing Tag
+        category = testingTags.index(testingTags[j])
+        classifier.learn(activeArray, category)
 
     # Check the accuracy of the SP, classifier combination
     accuracy = 0.0
@@ -173,7 +172,9 @@ class VisionTestBench(object):
           print "%5s" % "Input", "Output"
         print "%-5s" % testingTags[j], testingTags[inferred_category]
 
+    print
     print "Accuracy: %.1f" % accuracy, "%"
+    print
 
     return accuracy
 
