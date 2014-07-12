@@ -116,10 +116,10 @@ while parameters.getNumResults() < parameters.numCombinations:
 
   # Reverse the order of the vectors and tags for testing
   #print testingTags
-  testingTags = [testingTag for testingTag in reversed(testingTags)]
+  #testingTags = [testingTag for testingTag in reversed(testingTags)]
   #print testingTags
   #print testingVectors[0].sum()
-  testingVectors = [testingVector for testingVector in reversed(testingVectors)]
+  #testingVectors = [testingVector for testingVector in reversed(testingVectors)]
   #print testingVectors[-1].sum()
 
   # Test the spatial pooler on testingVectors.
