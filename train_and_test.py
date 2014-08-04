@@ -19,12 +19,13 @@ maxTrainingCycles - maximum number of training cycles to perform
 trainingDataset = 'DataSets/OCR/characters/all.xml'
 testingDataset = 'DataSets/OCR/characters/all.xml'
 minAccuracy = 200.0
-maxTrainingCycles = 7
+maxTrainingCycles = 2
 
 import dataset_readers as data
 import image_encoders as encoder
 from parameters import Parameters
 from nupic.research.spatial_pooler import SpatialPooler
+#from nupic.bindings.algorithms import SpatialPooler
 from vision_testbench import VisionTestBench
 from classifiers import exactMatch
 from classifiers import KNNClassifier

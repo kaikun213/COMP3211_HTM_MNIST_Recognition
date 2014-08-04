@@ -96,8 +96,8 @@ class VisionTestBench(object):
       classifier.clear()
       activeArray = numpy.zeros(self.sp.getNumColumns())
       for j,trainingVector in enumerate(trainingVectors):
-        self.sp.compute(trainingVector, True, activeArray)
-        # Build a list of integers corresponding to each SDR
+        self.sp.compute(trainingVector, False, activeArray)
+        # Build a list of indexes corresponding to each SDR
         activeList = activeArray.astype('int32').tolist()
         if activeList not in self.SDRs:
           self.SDRs.append(activeList)
@@ -120,6 +120,11 @@ class VisionTestBench(object):
       # print updated stats
       self.printTrainingStats(cyclesCompleted, accuracy)
 
+    print "List of SDR indexes from last round of training"
+    print SDRIs
+    print "Number of unique SDRs seen during training:", len(self.SDRs)
+    print "SDR at index 0"
+    print self.SDRs[0]
     print
     return cyclesCompleted
 
