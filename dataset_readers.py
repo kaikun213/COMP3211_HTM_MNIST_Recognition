@@ -21,6 +21,7 @@ tags which indicate what is in the image (i.e. "ground truth").
 ################################################################################
 '''
 def getImagesAndTags(filename):
+  print
   print "Reading data set: ", filename
   print
   xmldoc = minidom.parse(filename)
