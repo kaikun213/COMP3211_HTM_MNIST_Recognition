@@ -28,8 +28,8 @@ class Parameters(object):
     # list of allowed parameter values
     self._allowedValues = []
 
-    # list of past and present parameter values
-    self._values = []
+    # list of past and present parameter value indexes
+    self._valueIndexes = []
 
     # list of past and present results that correspond to each set of parameter
     # values
@@ -65,15 +65,16 @@ class Parameters(object):
     '''
     assert name in self._names
     i = self._names.index(name)
-    assert len(self._values[-1]) > i
-    return self._values[-1][i]
+    assert len(self._valueIndexes[-1]) > i
+    return self._allowedValues[i][self._valueIndexes[-1][i]]
 
 
   def getAllValues(self):
     '''
     This method returns the current values of all defined parameters.
     '''
-    return self._values[-1]
+    return [self._allowedValues[i][j] for i,j in 
+      enumerate(self._valueIndexes[-1])]
 
 
   def appendResults(self,item):
@@ -107,7 +108,8 @@ class Parameters(object):
     headerString = ", ".join(headerList)
     print headerString
     for i, result in enumerate(self._results):
-      valueString = str(self._values[i])[1:-1]
+      valueString = str([self._allowedValues[j][k] for j,k in 
+        enumerate(self._valueIndexes[i])])[1:-1]
       for j,formatString in enumerate(formatStrings):
         valueString += formatString % result[j]
       print valueString
@@ -131,29 +133,28 @@ class Parameters(object):
 
   def nextCombination(self):
     '''
-    This method finds the next combination of parameters values using the
+    This method finds the next combination of parameter values using the
     allowed value lists for each parameter.
     '''
-    if len(self._values) == 0:
-      # list of values is empty so this is the first combination, 
+    if len(self._valueIndexes) == 0:
+      # list of value indexes is empty so this is the first combination, 
       # each parameter gets the first value in its list of allowed values
-      self._values.append([self._allowedValues[i][0]
-        for i in range(len(self._names))])
+      self._valueIndexes.append([0 for i in range(len(self._names))])
     else:
-      self._values.append(self._values[-1])
+      newValueIndexes = self._valueIndexes[-1][:]
       i = 0
       while i < len(self._names):
         # if current value is not the last in the list
-        if self._values[-1][i] != self._allowedValues[i][-1]:
+        if self._valueIndexes[-1][i] != len(self._allowedValues[i]) - 1:
           # change parameter to next value in allowed value list and return
-          index = self._allowedValues[i].index(self._values[-1][i])
-          self._values[-1][i] = self._allowedValues[i][index + 1]
-          i = len(self._names)
+          newValueIndexes[i] += 1
+          break
         else:
           # change parameter to first value in allowed value list
-          self._values[-1][i] = self._allowedValues[i][0]
+          newValueIndexes[i] = 0
           # move next parameter to next value in its allowed value list
           i = i + 1
+      self._valueIndexes.append(newValueIndexes)
 
     print "Parameter Combination: ", self.getAllValues()
     print
