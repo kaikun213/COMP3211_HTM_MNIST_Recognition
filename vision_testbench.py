@@ -29,13 +29,14 @@ class VisionTestBench(object):
 
     self.SDRs = []
 
+    self.tags = []
+
     # These images are produced together so these properties are used to allow
     # them to be saved separately without having to generate the images twice.
     self.permanencesImage = None
     self.connectionsImage = None
 
     # Limit inputs and columns to 1D and 2D layouts for now
-    # Note: only 1D seems to work with python SP
     inputDimensions = sp.getInputDimensions()
     try:
       assert len(inputDimensions) < 3
@@ -66,11 +67,14 @@ class VisionTestBench(object):
   ##############################################################################
   This routine trains the spatial pooler using the bit vectors produced from the
   training images by using these vectors as input to the SP.  It continues
-  training until there are no SDR collisions between input vectors that have
-  different tags (ground truth) and the output SDRs are stable for 2 cycles.
-  It records each output SDR as the index of that SDR in a list of all SDRs
-  seen during training.  These indexes are stored in a list and used to look for
-  SDR collisions.
+  training until either the minimum specified accuracy is met or the maximum
+  number of training cycles is reached.  It records each output SDR as the index
+  of that SDR in a list of all SDRs seen during training.  This list of indexes
+  is used to generate the SDRs for evaluating recognition accuracy after each 
+  training cycle.  It also creates a list of all tags (ground truth) seen during
+  training.  This list is used to establish the integer categories for the 
+  classifier so they can be used again during testing to establish the correct
+  categories even if the order of the input vectors is changed.
   ##############################################################################
   '''
   def train(self, trainingVectors, trainingTags, classifier, maxCycles=10,
@@ -96,7 +100,7 @@ class VisionTestBench(object):
       classifier.clear()
       activeArray = numpy.zeros(self.sp.getNumColumns())
       for j,trainingVector in enumerate(trainingVectors):
-        self.sp.compute(trainingVector, False, activeArray)
+        self.sp.compute(trainingVector, True, activeArray)
         # Build a list of indexes corresponding to each SDR
         activeList = activeArray.astype('int32').tolist()
         if activeList not in self.SDRs:
@@ -104,7 +108,12 @@ class VisionTestBench(object):
         SDRI = self.SDRs.index(activeList)
         SDRIs.append(SDRI)
         # tell classifier to associate SDR and training Tag
-        category = trainingTags.index(trainingTags[j])
+        # if there are repeat tags give the index of the first occurrence
+        if trainingTags[j] in self.tags:
+          category = self.tags.index(trainingTags[j])
+        else:
+          self.tags.append(trainingTags[j])
+          category = len(self.tags) - 1
         classifier.learn(activeArray, category)
 
       # Check the accuracy of the SP, classifier combination
@@ -112,7 +121,8 @@ class VisionTestBench(object):
       for j in range(len(SDRIs)):
         SDRI = SDRIs[j]
         activeArray = numpy.array(self.SDRs[SDRI])
-        category = trainingTags.index(trainingTags[j])
+        # if there are repeat tags give the index of the first occurrence
+        category = self.tags.index(trainingTags[j])
         inferred_category = classifier.infer(activeArray)[0]
         if inferred_category == category:
           accuracy += 100.0/len(trainingTags)
@@ -120,11 +130,6 @@ class VisionTestBench(object):
       # print updated stats
       self.printTrainingStats(cyclesCompleted, accuracy)
 
-    print "List of SDR indexes from last round of training"
-    print SDRIs
-    print "Number of unique SDRs seen during training:", len(self.SDRs)
-    print "SDR at index 0"
-    print self.SDRs[0]
     print
     return cyclesCompleted
 
@@ -135,8 +140,8 @@ class VisionTestBench(object):
   testing images.
   ################################################################################
   '''
-  def test(self, testVectors, testingTags, classifier, verbose=0, learn=False):
-    print "Testing:"
+  def test(self, testVectors, testingTags, classifier, verbose=0, learn=True):
+    print "\nTesting:\n"
 
     # Get rid of old permanence and connection images
     self.permanencesImage = None
@@ -154,7 +159,7 @@ class VisionTestBench(object):
       SDRIs.append(self.SDRs.index(activeList))
       if learn:
         # tell classifier to associate SDR and testing Tag
-        category = testingTags.index(testingTags[j])
+        category = self.tags.index(testingTags[j])
         classifier.learn(activeArray, category)
 
     # Check the accuracy of the SP, classifier combination
@@ -164,7 +169,7 @@ class VisionTestBench(object):
       print "%5s" % "Input", "Output"
     for j in range(len(SDRIs)):
       activeArray = numpy.array(self.SDRs[SDRIs[j]])
-      category = testingTags.index(testingTags[j])
+      category = self.tags.index(testingTags[j])
       inferred_category = classifier.infer(activeArray)[0]
       if inferred_category == category:
         accuracy += 100.0/len(testingTags)
