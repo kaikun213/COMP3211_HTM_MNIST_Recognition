@@ -34,7 +34,11 @@ def getImagesAndTags(filename):
   for image in imageList:
     tags.append(image.attributes['tag'].value)
     filename = image.attributes['file'].value
-    images.append(Image.open(directoryPath + filename))
+    fp = open(directoryPath + filename, 'rb')
+    im = Image.open(fp)
+    im.load()
+    images.append(im)
+    fp.close()
     #imagePatches[-1].show()
   return images, tags
 
