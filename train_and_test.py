@@ -15,8 +15,8 @@ maxTrainingCycles - maximum number of training cycles to perform
 
 '''
 
-trainingDataset = 'DataSets/OCR/characters/all.xml'
-testingDataset = 'DataSets/OCR/characters/all.xml'
+trainingDataset = 'DataSets/OCR/characters/cmr_all.xml'
+testingDataset = 'DataSets/OCR/characters/cmr_all.xml'
 minAccuracy = 100.0  # force max training cycles
 maxTrainingCycles = 5
 

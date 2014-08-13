@@ -24,10 +24,10 @@ maxTrainingCycles - maximum number of training cycles to perform
 
 '''
 
-trainingDataset = 'DataSets/OCR/characters/hex.xml'
+trainingDataset = 'DataSets/OCR/characters/cmr_hex.xml'
 minAccuracy = 100.0
 maxTrainingCycles = 5
-testingDataset = 'DataSets/OCR/characters/hex.xml'
+testingDataset = 'DataSets/OCR/characters/cmr_hex.xml'
 
 import dataset_readers as data
 import image_encoders as encoder

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  19 JUN 2014 14:49
+This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013) (format=xelatex 2013.5.30)  10 AUG 2014 10:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -6,131 +6,2936 @@ entering extended mode
 (./characters.tex
 LaTeX2e <2011/06/27>
 Babel <3.9f> and hyphenation patterns for 78 languages loaded.
-
-! LaTeX Error: Missing \begin{document}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.8 0
-     \hfill
-? q
-OK, entering \batchmode...
-Missing character: There is no 0 in font nullfont!
-Missing character: There is no 1 in font nullfont!
-Missing character: There is no 2 in font nullfont!
-Missing character: There is no 3 in font nullfont!
-Missing character: There is no 4 in font nullfont!
-Missing character: There is no 5 in font nullfont!
-Missing character: There is no 6 in font nullfont!
-Missing character: There is no 7 in font nullfont!
-Missing character: There is no 8 in font nullfont!
-Missing character: There is no 9 in font nullfont!
-
-Overfull \hbox (20.0pt too wide) in paragraph at lines 8--18
-[]
- []
-
-
-! LaTeX Error: Missing \begin{document}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.21 A
-      \hfill
-You're in trouble here.  Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-Missing character: There is no A in font nullfont!
-Missing character: There is no B in font nullfont!
-Missing character: There is no C in font nullfont!
-Missing character: There is no D in font nullfont!
-Missing character: There is no E in font nullfont!
-Missing character: There is no F in font nullfont!
-Missing character: There is no G in font nullfont!
-Missing character: There is no H in font nullfont!
-Missing character: There is no I in font nullfont!
-Missing character: There is no J in font nullfont!
-Missing character: There is no K in font nullfont!
-Missing character: There is no L in font nullfont!
-Missing character: There is no M in font nullfont!
-Missing character: There is no N in font nullfont!
-Missing character: There is no O in font nullfont!
-Missing character: There is no P in font nullfont!
-Missing character: There is no Q in font nullfont!
-Missing character: There is no R in font nullfont!
-Missing character: There is no S in font nullfont!
-Missing character: There is no T in font nullfont!
-Missing character: There is no U in font nullfont!
-Missing character: There is no V in font nullfont!
-Missing character: There is no W in font nullfont!
-Missing character: There is no X in font nullfont!
-Missing character: There is no Y in font nullfont!
-Missing character: There is no Z in font nullfont!
-
-Overfull \hbox (20.0pt too wide) in paragraph at lines 21--47
-[]
- []
-
-
-! LaTeX Error: Missing \begin{document}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.50 a
-      \hfill
-You're in trouble here.  Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-Missing character: There is no a in font nullfont!
-Missing character: There is no b in font nullfont!
-Missing character: There is no c in font nullfont!
-Missing character: There is no d in font nullfont!
-Missing character: There is no e in font nullfont!
-Missing character: There is no f in font nullfont!
-Missing character: There is no g in font nullfont!
-Missing character: There is no h in font nullfont!
-Missing character: There is no i in font nullfont!
-Missing character: There is no j in font nullfont!
-Missing character: There is no k in font nullfont!
-Missing character: There is no l in font nullfont!
-Missing character: There is no m in font nullfont!
-Missing character: There is no n in font nullfont!
-Missing character: There is no o in font nullfont!
-Missing character: There is no p in font nullfont!
-Missing character: There is no q in font nullfont!
-Missing character: There is no r in font nullfont!
-Missing character: There is no s in font nullfont!
-Missing character: There is no t in font nullfont!
-Missing character: There is no u in font nullfont!
-Missing character: There is no v in font nullfont!
-Missing character: There is no w in font nullfont!
-Missing character: There is no x in font nullfont!
-Missing character: There is no y in font nullfont!
-Missing character: There is no z in font nullfont!
-
-Overfull \hbox (20.0pt too wide) in paragraph at lines 50--76
-[]
- []
-
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 )
-! Emergency stop.
-<*> characters.tex
-                  
-*** (job aborted, no legal \end found)
+\c@part=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
 
- 
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is not detected.
+)
+(/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/local/texlive/2013/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count88
+\Gm@cntv=\count89
+\c@Gm@tempcnt=\count90
+\Gm@bindingoffset=\dimen103
+\Gm@wd@mp=\dimen104
+\Gm@odd@mp=\dimen105
+\Gm@even@mp=\dimen106
+\Gm@layoutwidth=\dimen107
+\Gm@layoutheight=\dimen108
+\Gm@layouthoffset=\dimen109
+\Gm@layoutvoffset=\dimen110
+\Gm@dimlist=\toks15
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/setspace/setspace.sty
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/fontspec/fontspec.sty
+Package: fontspec 2013/05/20 v2.3c Font selection for XeLaTeX and LuaLaTeX
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/expl3.sty
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3names.sty
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3bootstrap.sty
+Package: l3bootstrap 2013/01/08 v4420 L3 Experimental bootstrap code
+)
+Package: l3names 2012/12/07 v4346 L3 Namespace for primitives
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/etex-pkg/etex.sty
+Package: etex 1998/03/26 v2.0 eTeX basic definition package (PEB)
+\et@xins=\count91
+)
+Package: expl3 2013/03/14 v4469 L3 Experimental code bundle wrapper
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3basics.sty
+Package: l3basics 2013/01/10 v4428 L3 Basic definitions
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3expan.sty
+Package: l3expan 2013/02/03 v4458 L3 Argument expansion
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3tl.sty
+Package: l3tl 2013/01/08 v4415 L3 Token lists
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3seq.sty
+Package: l3seq 2013/01/12 v4434 L3 Sequences and stacks
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3int.sty
+Package: l3int 2013/01/13 v4444 L3 Integers
+\c_max_int=\count92
+\l_tmpa_int=\count93
+\l_tmpb_int=\count94
+\g_tmpa_int=\count95
+\g_tmpb_int=\count96
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3quark.sty
+Package: l3quark 2012/11/04 v4268 L3 Quarks
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3prg.sty
+Package: l3prg 2013/02/13 v4459 L3 Control structures
+\g__prg_map_int=\count97
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3clist.sty
+Package: l3clist 2013/01/08 v4414 L3 Comma separated lists
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3token.sty
+Package: l3token 2013/01/10 v4428 L3 Experimental token manipulation
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3prop.sty
+Package: l3prop 2013/01/09 v4423 L3 Property lists
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3msg.sty
+Package: l3msg 2013/01/08 v4412 L3 Messages
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3file.sty
+Package: l3file 2013/01/14 v4446 L3 File and I/O operations
+\l_iow_line_count_int=\count98
+\l__iow_target_count_int=\count99
+\l__iow_current_line_int=\count100
+\l__iow_current_word_int=\count101
+\l__iow_current_indentation_int=\count102
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3skip.sty
+Package: l3skip 2013/01/13 v4444 L3 Dimensions and skips
+\c_zero_dim=\dimen111
+\c_max_dim=\dimen112
+\l_tmpa_dim=\dimen113
+\l_tmpb_dim=\dimen114
+\g_tmpa_dim=\dimen115
+\g_tmpb_dim=\dimen116
+\c_zero_skip=\skip43
+\c_max_skip=\skip44
+\l_tmpa_skip=\skip45
+\l_tmpb_skip=\skip46
+\g_tmpa_skip=\skip47
+\g_tmpb_skip=\skip48
+\c_zero_muskip=\muskip10
+\c_max_muskip=\muskip11
+\l_tmpa_muskip=\muskip12
+\l_tmpb_muskip=\muskip13
+\g_tmpa_muskip=\muskip14
+\g_tmpb_muskip=\muskip15
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3keys.sty
+Package: l3keys 2013/02/24 v4461 L3 Experimental key-value interfaces
+\g__keyval_level_int=\count103
+\l_keys_choice_int=\count104
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3fp.sty
+Package: l3fp 2013/01/19 v4449 L3 Floating points
+\c__fp_leading_shift_int=\count105
+\c__fp_middle_shift_int=\count106
+\c__fp_trailing_shift_int=\count107
+\c__fp_big_leading_shift_int=\count108
+\c__fp_big_middle_shift_int=\count109
+\c__fp_big_trailing_shift_int=\count110
+\c__fp_Bigg_leading_shift_int=\count111
+\c__fp_Bigg_middle_shift_int=\count112
+\c__fp_Bigg_trailing_shift_int=\count113
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3box.sty
+Package: l3box 2013/01/08 v4411 L3 Experimental boxes
+\c_empty_box=\box26
+\l_tmpa_box=\box27
+\l_tmpb_box=\box28
+\g_tmpa_box=\box29
+\g_tmpb_box=\box30
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3coffins.sty
+Package: l3coffins 2012/09/09 v4212 L3 Coffin code layer
+\l__coffin_internal_box=\box31
+\l__coffin_internal_dim=\dimen117
+\l__coffin_offset_x_dim=\dimen118
+\l__coffin_offset_y_dim=\dimen119
+\l__coffin_x_dim=\dimen120
+\l__coffin_y_dim=\dimen121
+\l__coffin_x_prime_dim=\dimen122
+\l__coffin_y_prime_dim=\dimen123
+\c_empty_coffin=\box32
+\l__coffin_aligned_coffin=\box33
+\l__coffin_aligned_internal_coffin=\box34
+\l_tmpa_coffin=\box35
+\l_tmpb_coffin=\box36
+\l__coffin_display_coffin=\box37
+\l__coffin_display_coord_coffin=\box38
+\l__coffin_display_pole_coffin=\box39
+\l__coffin_display_offset_dim=\dimen124
+\l__coffin_display_x_dim=\dimen125
+\l__coffin_display_y_dim=\dimen126
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3color.sty
+Package: l3color 2012/08/29 v4156 L3 Experimental color support
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3luatex.sty
+Package: l3luatex 2012/08/03 v4049 L3 Experimental LuaTeX-specific functions
+\g__cctab_allocate_int=\count114
+\g__cctab_stack_int=\count115
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3kernel/l3candidates.sty
+Package: l3candidates 2013/03/14 v4468 L3 Experimental additions to l3kernel
+\l__box_top_dim=\dimen127
+\l__box_bottom_dim=\dimen128
+\l__box_left_dim=\dimen129
+\l__box_right_dim=\dimen130
+\l__box_top_new_dim=\dimen131
+\l__box_bottom_new_dim=\dimen132
+\l__box_left_new_dim=\dimen133
+\l__box_right_new_dim=\dimen134
+\l__box_internal_box=\box40
+\l__coffin_bounding_shift_dim=\dimen135
+\l__coffin_left_corner_dim=\dimen136
+\l__coffin_right_corner_dim=\dimen137
+\l__coffin_bottom_corner_dim=\dimen138
+\l__coffin_top_corner_dim=\dimen139
+\l__coffin_scaled_total_height_dim=\dimen140
+\l__coffin_scaled_width_dim=\dimen141
+))
+(/usr/local/texlive/2013/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2013/03/12 v4467 L3 Experimental document command parser
+\l__xparse_current_arg_int=\count116
+\l__xparse_m_args_int=\count117
+\l__xparse_mandatory_args_int=\count118
+\l__xparse_processor_int=\count119
+\l__xparse_v_nesting_int=\count120
+)
+\l_fontspec_script_int=\count121
+\l_fontspec_language_int=\count122
+\l_fontspec_strnum_int=\count123
+\l_fontspec_tmpa_dim=\dimen142
+\l_fontspec_tmpb_dim=\dimen143
+\l_fontspec_tmpc_dim=\dimen144
+Variant \tl_gset:cV already defined; not changing it on line 69
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/fontspec/fontspec-patches.sty
+Package: fontspec-patches 2013/05/20 v2.3c Font selection for XeLaTeX and LuaLa
+TeX
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/fixltx2e.sty
+Package: fixltx2e 2006/09/13 v1.1m fixes to LaTeX
+LaTeX Info: Redefining \em on input line 420.
+)
+LaTeX Info: Redefining \em on input line 22.
+LaTeX Info: Redefining \emph on input line 30.
+LaTeX Info: Redefining \- on input line 33.
+
+*************************************************
+* LaTeX warning: "xparse/redefine-command"
+* 
+* Redefining document command \oldstylenums with arg. spec. 'm' on line 128.
+*************************************************
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \liningnums with arg. spec. 'm' on line 132.
+.................................................
+) (/usr/local/texlive/2013/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+Package: fontspec-xetex 2013/05/20 v2.3c Font selection for XeLaTeX and LuaLaTe
+X
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/euenc/eu1enc.def
+File: eu1enc.def 2010/05/27 v0.1h Experimental Unicode font encodings
+)
+LaTeX Font Info:    Try loading font information for EU1+lmr on input line 100.
+
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/euenc/eu1lmr.fd
+File: eu1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+))
+(/usr/local/texlive/2013/texmf-dist/tex/xelatex/xunicode/xunicode.sty
+File: xunicode.sty 2011/09/09 v0.981 provides access to latin accents and many 
+other characters in Unicode lower plane
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/tipa/t3enc.def
+File: t3enc.def 2001/12/31 T3 encoding
+LaTeX Font Info:    Try loading font information for EU1+lmss on input line 357
+.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/euenc/eu1lmss.fd
+File: eu1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
+))
+\tipaTiiicode=\count124
+\tipasavetokens=\toks16
+\tipachecktokens=\toks17
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: xetex.def on input line 91.
+
+(/usr/local/texlive/2013/texmf-dist/tex/xelatex/xetex-def/xetex.def
+File: xetex.def 2013/04/29 v0.96 LaTeX color/graphics driver for XeTeX (RRM/JK)
+
+))
+\Gin@req@height=\dimen145
+\Gin@req@width=\dimen146
+))
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \fontspec with arg. spec. 'O{}m' on line 41.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmainfont with arg. spec. 'O{}m' on line 46.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setsansfont with arg. spec. 'O{}m' on line 51.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmonofont with arg. spec. 'O{}m' on line 56.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmathrm with arg. spec. 'O{}m' on line 65.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setboldmathrm with arg. spec. 'O{}m' on line 69.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmathsf with arg. spec. 'O{}m' on line 73.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmathtt with arg. spec. 'O{}m' on line 77.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontfamily with arg. spec. 'mO{}m' on line 96.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontface with arg. spec. 'mO{}m' on line 100.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \defaultfontfeatures with arg. spec. 'om' on line
+. 108.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \addfontfeatures with arg. spec. 'm' on line 144.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontfeature with arg. spec. 'mm' on line 156.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newAATfeature with arg. spec. 'mmmm' on line 164.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newICUfeature with arg. spec. 'mmm' on line 172.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \aliasfontfeature with arg. spec. 'mm' on line
+. 201.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \aliasfontfeatureoption with arg. spec. 'mmm' on
+. line 203.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontscript with arg. spec. 'mm' on line 208.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontlanguage with arg. spec. 'mm' on line 235.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \DeclareFontsExtensions with arg. spec. 'm' on
+. line 256.
+.................................................
+Variant \prop_gput:cnV already defined; not changing it on line 582
+Variant \prop_gput:cnx already defined; not changing it on line 583
+\l_fontspec_tmp_int=\count125
+LaTeX Info: Redefining \itshape on input line 2087.
+LaTeX Info: Redefining \slshape on input line 2092.
+LaTeX Info: Redefining \scshape on input line 2097.
+LaTeX Info: Redefining \upshape on input line 2102.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+
+LaTeX Warning: Unused global option(s):
+    [border=10pt].
+
+(./characters.aux)
+\openout1 = `characters.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 9.
+LaTeX Font Info:    Try loading font information for T3+cmr on input line 9.
+ (/usr/local/texlive/2013/texmf-dist/tex/latex/tipa/t3cmr.fd
+File: t3cmr.fd 2001/12/31 TIPA font definitions
+)
+LaTeX Font Info:    ... okay on input line 9.
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+*geometry* verbose mode - [ preamble ] result:
+* driver: xetex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=469.75502pt
+* \textheight=650.43001pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+.................................................
+. fontspec info: "setup-math"
+. 
+. Adjusting the maths setup (use [no-math] to avoid this).
+.................................................
+\symlegacymaths=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `legacymaths' in version `bold'
+(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 9.
+LaTeX Font Info:    Redeclaring math accent \acute on input line 9.
+LaTeX Font Info:    Redeclaring math accent \grave on input line 9.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 9.
+LaTeX Font Info:    Redeclaring math accent \tilde on input line 9.
+LaTeX Font Info:    Redeclaring math accent \bar on input line 9.
+LaTeX Font Info:    Redeclaring math accent \breve on input line 9.
+LaTeX Font Info:    Redeclaring math accent \check on input line 9.
+LaTeX Font Info:    Redeclaring math accent \hat on input line 9.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 9.
+LaTeX Font Info:    Redeclaring math accent \mathring on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \colon on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 9.
+LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 9.
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 9.
+LaTeX Font Info:    Encoding `OT1' has changed to `EU1' for symbol font
+(Font)              `operators' in the math version `normal' on input line 9.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> EU1/lmr/m/n on input line 9.
+LaTeX Font Info:    Encoding `OT1' has changed to `EU1' for symbol font
+(Font)              `operators' in the math version `bold' on input line 9.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> EU1/lmr/m/n on input line 9.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/m/n on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/m/n on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> EU1/lmr/m/it on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> EU1/lmr/bx/n on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> EU1/lmss/m/n on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> EU1/lmtt/m/n on input line 9.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/bx/n on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/bx/n on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> EU1/lmr/bx/it on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> EU1/lmss/bx/n on input line 9.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> EU1/lmtt/bx/n on input line 9.
+\g__file_internal_ior=\read1
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font AmericanTypewriter.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_AmericanTypewriter.ttc_int=\count126
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AmericanTypewriter.ttc(0)' created for font
+. 'AmericanTypewriter.ttc' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/AmericanTypewriter.ttc]/ICU:"
+.................................................
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Andale Mono.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Andale Mono.ttf_int=\count127
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AndaleMono.ttf(0)' created for font 'Andale Mono.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Andale Mono.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Apple Chancery.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Apple Chancery.ttf_int=\count128
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleChancery.ttf(0)' created for font 'Apple Chancery.ttf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Apple Chancery.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Apple LiGothic Medium.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Apple LiGothic Medium.ttf_int=\count129
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleLiGothicMedium.ttf(0)' created for font 'Apple LiGothic
+. Medium.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Apple LiGothic Medium.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Apple LiSung Light.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Apple LiSung Light.ttf_int=\count130
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleLiSungLight.ttf(0)' created for font 'Apple LiSung
+. Light.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Apple LiSung Light.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font AppleGothic.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_AppleGothic.ttf_int=\count131
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleGothic.ttf(0)' created for font 'AppleGothic.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/AppleGothic.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font AppleMyungjo.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_AppleMyungjo.ttf_int=\count132
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleMyungjo.ttf(0)' created for font 'AppleMyungjo.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/AppleMyungjo.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_AppleSDGothicNeo-ExtraBold.otf_int=\count133
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleSDGothicNeo-ExtraBold.otf(0)' created for font
+. 'AppleSDGothicNeo-ExtraBold.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/AppleSDGothicNeo-ExtraBold.otf]/ICU:script=latn;language=
+DFLT;"
+.................................................
+ (./alphanumchars.tex [1
+
+])
+\g_fontspec_family_AppleSDGothicNeo-Heavy.otf_int=\count134
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleSDGothicNeo-Heavy.otf(0)' created for font
+. 'AppleSDGothicNeo-Heavy.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/AppleSDGothicNeo-Heavy.otf]/ICU:script=latn;language=DFLT
+;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_AppleSDGothicNeo-Light.otf_int=\count135
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleSDGothicNeo-Light.otf(0)' created for font
+. 'AppleSDGothicNeo-Light.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/AppleSDGothicNeo-Light.otf]/ICU:script=latn;language=DFLT
+;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_AppleSDGothicNeo-Medium.otf_int=\count136
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleSDGothicNeo-Medium.otf(0)' created for font
+. 'AppleSDGothicNeo-Medium.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/AppleSDGothicNeo-Medium.otf]/ICU:script=latn;language=DFL
+T;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_AppleSDGothicNeo-SemiBold.otf_int=\count137
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleSDGothicNeo-SemiBold.otf(0)' created for font
+. 'AppleSDGothicNeo-SemiBold.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/AppleSDGothicNeo-SemiBold.otf]/ICU:script=latn;language=D
+FLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_AppleSDGothicNeo-Thin.otf_int=\count138
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleSDGothicNeo-Thin.otf(0)' created for font
+. 'AppleSDGothicNeo-Thin.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/AppleSDGothicNeo-Thin.otf]/ICU:script=latn;language=DFLT;
+"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_AppleSDGothicNeo-UltraLight.otf_int=\count139
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'AppleSDGothicNeo-UltraLight.otf(0)' created for font
+. 'AppleSDGothicNeo-UltraLight.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/AppleSDGothicNeo-UltraLight.otf]/ICU:script=latn;language
+=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Arial Black.ttf_int=\count140
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialBlack.ttf(0)' created for font 'Arial Black.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Black.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex [2])
+\g_fontspec_family_Arial Bold Italic.ttf_int=\count141
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialBoldItalic.ttf(0)' created for font 'Arial Bold
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Bold Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Arial Bold.ttf_int=\count142
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialBold.ttf(0)' created for font 'Arial Bold.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Arial Italic.ttf_int=\count143
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialItalic.ttf(0)' created for font 'Arial Italic.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Arial Narrow Bold Italic.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Arial Narrow Bold Italic.ttf_int=\count144
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialNarrowBoldItalic.ttf(0)' created for font 'Arial Narrow
+. Bold Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Narrow Bold Italic.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Arial Narrow Bold.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Arial Narrow Bold.ttf_int=\count145
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialNarrowBold.ttf(0)' created for font 'Arial Narrow
+. Bold.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Narrow Bold.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Arial Narrow Italic.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Arial Narrow Italic.ttf_int=\count146
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialNarrowItalic.ttf(0)' created for font 'Arial Narrow
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Narrow Italic.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Arial Narrow.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Arial Narrow.ttf_int=\count147
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialNarrow.ttf(0)' created for font 'Arial Narrow.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Narrow.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Arial Rounded Bold.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Arial Rounded Bold.ttf_int=\count148
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialRoundedBold.ttf(0)' created for font 'Arial Rounded
+. Bold.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Rounded Bold.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex [3])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Arial Unicode.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Arial Unicode.ttf_int=\count149
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ArialUnicode.ttf(0)' created for font 'Arial Unicode.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial Unicode.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Arial.ttf_int=\count150
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Arial.ttf(0)' created for font 'Arial.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Arial.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Athelas.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Athelas.ttc_int=\count151
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Athelas.ttc(0)' created for font 'Athelas.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Athelas.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Ayuthaya.ttf_int=\count152
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Ayuthaya.ttf(0)' created for font 'Ayuthaya.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Ayuthaya.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Bangla MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Bangla MN.ttc_int=\count153
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'BanglaMN.ttc(0)' created for font 'Bangla MN.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Bangla MN.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Bangla Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Bangla Sangam MN.ttc_int=\count154
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'BanglaSangamMN.ttc(0)' created for font 'Bangla Sangam MN.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Bangla Sangam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Baoli.ttc_int=\count155
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Baoli.ttc(0)' created for font 'Baoli.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Baoli.ttc]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex [4])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Baskerville.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Baskerville.ttc_int=\count156
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Baskerville.ttc(0)' created for font 'Baskerville.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Baskerville.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font BiauKai.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_BiauKai.ttf_int=\count157
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'BiauKai.ttf(0)' created for font 'BiauKai.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/BiauKai.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font BigCaslon.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_BigCaslon.ttf_int=\count158
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'BigCaslon.ttf(0)' created for font 'BigCaslon.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/BigCaslon.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Brush Script.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Brush Script.ttf_int=\count159
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'BrushScript.ttf(0)' created for font 'Brush Script.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Brush Script.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Chalkboard.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Chalkboard.ttc_int=\count160
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Chalkboard.ttc(0)' created for font 'Chalkboard.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Chalkboard.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font ChalkboardSE.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_ChalkboardSE.ttc_int=\count161
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ChalkboardSE.ttc(0)' created for font 'ChalkboardSE.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/ChalkboardSE.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Chalkduster.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Chalkduster.ttf_int=\count162
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Chalkduster.ttf(0)' created for font 'Chalkduster.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Chalkduster.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex [5])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font CharcoalCY.dfont does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_CharcoalCY.dfont_int=\count163
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'CharcoalCY.dfont(0)' created for font 'CharcoalCY.dfont' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/CharcoalCY.dfont]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Charter.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Charter.ttc_int=\count164
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Charter.ttc(0)' created for font 'Charter.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Charter.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Cochin.ttc_int=\count165
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Cochin.ttc(0)' created for font 'Cochin.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Cochin.ttc]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Comic Sans MS Bold.ttf_int=\count166
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ComicSansMSBold.ttf(0)' created for font 'Comic Sans MS
+. Bold.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Comic Sans MS Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Comic Sans MS.ttf_int=\count167
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'ComicSansMS.ttf(0)' created for font 'Comic Sans MS.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Comic Sans MS.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Copperplate.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Copperplate.ttc_int=\count168
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Copperplate.ttc(0)' created for font 'Copperplate.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Copperplate.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Courier New Bold Italic.ttf_int=\count169
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'CourierNewBoldItalic.ttf(0)' created for font 'Courier New Bold
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Courier New Bold
+. Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Courier New Bold.ttf_int=\count170
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'CourierNewBold.ttf(0)' created for font 'Courier New Bold.ttf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Courier New Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex [6])
+\g_fontspec_family_Courier New Italic.ttf_int=\count171
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'CourierNewItalic.ttf(0)' created for font 'Courier New
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Courier New Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Courier New.ttf_int=\count172
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'CourierNew.ttf(0)' created for font 'Courier New.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Courier New.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font DIN Alternate Bold.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_DIN Alternate Bold.ttf_int=\count173
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'DINAlternateBold.ttf(0)' created for font 'DIN Alternate
+. Bold.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/DIN Alternate Bold.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font DIN Condensed Bold.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_DIN Condensed Bold.ttf_int=\count174
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'DINCondensedBold.ttf(0)' created for font 'DIN Condensed
+. Bold.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/DIN Condensed Bold.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Devanagari Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Devanagari Sangam MN.ttc_int=\count175
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'DevanagariSangamMN.ttc(0)' created for font 'Devanagari Sangam
+. MN.ttc' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Devanagari Sangam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Didot.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Didot.ttc_int=\count176
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Didot.ttc(0)' created for font 'Didot.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Didot.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font EuphemiaCAS.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_EuphemiaCAS.ttc_int=\count177
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'EuphemiaCAS.ttc(0)' created for font 'EuphemiaCAS.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/EuphemiaCAS.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex [7])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Futura.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Futura.ttc_int=\count178
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Futura.ttc(0)' created for font 'Futura.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Futura.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font GenevaCY.dfont does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_GenevaCY.dfont_int=\count179
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GenevaCY.dfont(0)' created for font 'GenevaCY.dfont' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/GenevaCY.dfont]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Georgia Bold Italic.ttf_int=\count180
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GeorgiaBoldItalic.ttf(0)' created for font 'Georgia Bold
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Georgia Bold Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Georgia Bold.ttf_int=\count181
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GeorgiaBold.ttf(0)' created for font 'Georgia Bold.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Georgia Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Georgia Italic.ttf_int=\count182
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GeorgiaItalic.ttf(0)' created for font 'Georgia Italic.ttf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Georgia Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Georgia.ttf_int=\count183
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Georgia.ttf(0)' created for font 'Georgia.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Georgia.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font GillSans.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_GillSans.ttc_int=\count184
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GillSans.ttc(0)' created for font 'GillSans.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/GillSans.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex [8])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Gujarati Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Gujarati Sangam MN.ttc_int=\count185
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GujaratiSangamMN.ttc(0)' created for font 'Gujarati Sangam
+. MN.ttc' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Gujarati Sangam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Gungseouche.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Gungseouche.ttf_int=\count186
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Gungseouche.ttf(0)' created for font 'Gungseouche.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Gungseouche.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Gurmukhi MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Gurmukhi MN.ttc_int=\count187
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GurmukhiMN.ttc(0)' created for font 'Gurmukhi MN.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Gurmukhi MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Gurmukhi Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Gurmukhi Sangam MN.ttc_int=\count188
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'GurmukhiSangamMN.ttc(0)' created for font 'Gurmukhi Sangam
+. MN.ttc' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Gurmukhi Sangam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font HeadlineA.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_HeadlineA.ttf_int=\count189
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'HeadlineA.ttf(0)' created for font 'HeadlineA.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/HeadlineA.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Hei.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Hei.ttf_int=\count190
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Hei.ttf(0)' created for font 'Hei.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Hei.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font HelveticaCY.dfont does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_HelveticaCY.dfont_int=\count191
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'HelveticaCY.dfont(0)' created for font 'HelveticaCY.dfont' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/HelveticaCY.dfont]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Herculanum.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Herculanum.ttf_int=\count192
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Herculanum.ttf(0)' created for font 'Herculanum.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Herculanum.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex [9])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Hoefler Text.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Hoefler Text.ttc_int=\count193
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'HoeflerText.ttc(0)' created for font 'Hoefler Text.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Hoefler Text.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Impact.ttf_int=\count194
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Impact.ttf(0)' created for font 'Impact.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Impact.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font InaiMathi.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_InaiMathi.ttf_int=\count195
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'InaiMathi.ttf(0)' created for font 'InaiMathi.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/InaiMathi.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Iowan Old Style.ttc_int=\count196
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'IowanOldStyle.ttc(0)' created for font 'Iowan Old Style.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Iowan Old Style.ttc]/ICU:script=latn;language=DFLT;"
+. 
+. * 'small caps' with NFSS spec.:
+. <->"[/Library/Fonts/Iowan Old
+. Style.ttc]/ICU:script=latn;language=DFLT;+smcp;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Kai.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Kai.ttf_int=\count197
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Kai.ttf(0)' created for font 'Kai.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Kai.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Kaiti.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Kaiti.ttc_int=\count198
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Kaiti.ttc(0)' created for font 'Kaiti.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Kaiti.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Kannada MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Kannada MN.ttc_int=\count199
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'KannadaMN.ttc(0)' created for font 'Kannada MN.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Kannada MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex [10])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Kannada Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Kannada Sangam MN.ttc_int=\count200
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'KannadaSangamMN.ttc(0)' created for font 'Kannada Sangam
+. MN.ttc' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Kannada Sangam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Kefa.ttc_int=\count201
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Kefa.ttc(0)' created for font 'Kefa.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Kefa.ttc]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Khmer MN.ttc does not contain any OpenType `Script' information.
+.................................................
+Normal \count register pool exhausted, switching to extended pool.
+\g_fontspec_family_Khmer MN.ttc_int=\count277
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'KhmerMN.ttc(0)' created for font 'Khmer MN.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Khmer MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Khmer Sangam MN.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Khmer Sangam MN.ttf_int=\count278
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'KhmerSangamMN.ttf(0)' created for font 'Khmer Sangam MN.ttf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Khmer Sangam MN.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Krungthep.ttf_int=\count279
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Krungthep.ttf(0)' created for font 'Krungthep.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Krungthep.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Lantinghei.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Lantinghei.ttc_int=\count280
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Lantinghei.ttc(0)' created for font 'Lantinghei.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Lantinghei.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Lao MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Lao MN.ttc_int=\count281
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'LaoMN.ttc(0)' created for font 'Lao MN.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Lao MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex [11])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Lao Sangam MN.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Lao Sangam MN.ttf_int=\count282
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'LaoSangamMN.ttf(0)' created for font 'Lao Sangam MN.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Lao Sangam MN.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Libian.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Libian.ttc_int=\count283
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Libian.ttc(0)' created for font 'Libian.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Libian.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Malayalam MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Malayalam MN.ttc_int=\count284
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'MalayalamMN.ttc(0)' created for font 'Malayalam MN.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Malayalam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Malayalam Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Malayalam Sangam MN.ttc_int=\count285
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'MalayalamSangamMN.ttc(0)' created for font 'Malayalam Sangam
+. MN.ttc' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Malayalam Sangam MN.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Marion.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Marion.ttc_int=\count286
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Marion.ttc(0)' created for font 'Marion.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Marion.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Microsoft Sans Serif.ttf_int=\count287
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'MicrosoftSansSerif.ttf(0)' created for font 'Microsoft Sans
+. Serif.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Microsoft Sans
+. Serif.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Myanmar MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Myanmar MN.ttc_int=\count288
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'MyanmarMN.ttc(0)' created for font 'Myanmar MN.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Myanmar MN.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Myanmar Sangam MN.ttf does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Myanmar Sangam MN.ttf_int=\count289
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'MyanmarSangamMN.ttf(0)' created for font 'Myanmar Sangam
+. MN.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Myanmar Sangam MN.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex [12])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font NanumGothic.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_NanumGothic.ttc_int=\count290
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'NanumGothic.ttc(0)' created for font 'NanumGothic.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/NanumGothic.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font NanumMyeongjo.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_NanumMyeongjo.ttc_int=\count291
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'NanumMyeongjo.ttc(0)' created for font 'NanumMyeongjo.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/NanumMyeongjo.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_NanumScript.ttc_int=\count292
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'NanumScript.ttc(0)' created for font 'NanumScript.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/NanumScript.ttc]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Oriya MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Oriya MN.ttc_int=\count293
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'OriyaMN.ttc(0)' created for font 'Oriya MN.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Oriya MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Oriya Sangam MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Oriya Sangam MN.ttc_int=\count294
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'OriyaSangamMN.ttc(0)' created for font 'Oriya Sangam MN.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Oriya Sangam MN.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Osaka.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Osaka.ttf_int=\count295
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Osaka.ttf(0)' created for font 'Osaka.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Osaka.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font OsakaMono.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_OsakaMono.ttf_int=\count296
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'OsakaMono.ttf(0)' created for font 'OsakaMono.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/OsakaMono.ttf]/ICU:"
+.................................................
+ (./alphanumchars.tex [13])
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font PCmyoungjo.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_PCmyoungjo.ttf_int=\count297
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'PCmyoungjo.ttf(0)' created for font 'PCmyoungjo.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/PCmyoungjo.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_PTMono.ttc_int=\count298
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'PTMono.ttc(0)' created for font 'PTMono.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/PTMono.ttc]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_PTSans.ttc_int=\count299
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'PTSans.ttc(0)' created for font 'PTSans.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/PTSans.ttc]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font PTSerif.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_PTSerif.ttc_int=\count300
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'PTSerif.ttc(0)' created for font 'PTSerif.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/PTSerif.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font PTSerifCaption.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_PTSerifCaption.ttc_int=\count301
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'PTSerifCaption.ttc(0)' created for font 'PTSerifCaption.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/PTSerifCaption.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Papyrus.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Papyrus.ttc_int=\count302
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Papyrus.ttc(0)' created for font 'Papyrus.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Papyrus.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Pilgiche.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Pilgiche.ttf_int=\count303
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Pilgiche.ttf(0)' created for font 'Pilgiche.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Pilgiche.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex [14])
+\g_fontspec_family_PlantagenetCherokee.ttf_int=\count304
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'PlantagenetCherokee.ttf(0)' created for font
+. 'PlantagenetCherokee.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. 
+. <->"[/Library/Fonts/PlantagenetCherokee.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_STIXGeneral.otf_int=\count305
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'STIXGeneral.otf(0)' created for font 'STIXGeneral.otf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/STIXGeneral.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_STIXGeneralBol.otf_int=\count306
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'STIXGeneralBol.otf(0)' created for font 'STIXGeneralBol.otf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/STIXGeneralBol.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_STIXGeneralBolIta.otf_int=\count307
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'STIXGeneralBolIta.otf(0)' created for font
+. 'STIXGeneralBolIta.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/STIXGeneralBolIta.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_STIXGeneralItalic.otf_int=\count308
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'STIXGeneralItalic.otf(0)' created for font
+. 'STIXGeneralItalic.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/STIXGeneralItalic.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Sathu.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Sathu.ttf_int=\count309
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Sathu.ttf(0)' created for font 'Sathu.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Sathu.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Savoye LET.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Savoye LET.ttc_int=\count310
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'SavoyeLET.ttc(0)' created for font 'Savoye LET.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Savoye LET.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Seravek.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Seravek.ttc_int=\count311
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Seravek.ttc(0)' created for font 'Seravek.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Seravek.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex [15])
+\g_fontspec_family_Silom.ttf_int=\count312
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Silom.ttf(0)' created for font 'Silom.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Silom.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Sinhala MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Sinhala MN.ttc_int=\count313
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'SinhalaMN.ttc(0)' created for font 'Sinhala MN.ttc' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Sinhala MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Sinhala Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Sinhala Sangam MN.ttc_int=\count314
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'SinhalaSangamMN.ttc(0)' created for font 'Sinhala Sangam
+. MN.ttc' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Sinhala Sangam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Skia.ttf does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Skia.ttf_int=\count315
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Skia.ttf(0)' created for font 'Skia.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Skia.ttf]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font SnellRoundhand.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_SnellRoundhand.ttc_int=\count316
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'SnellRoundhand.ttc(0)' created for font 'SnellRoundhand.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/SnellRoundhand.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Songti.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Songti.ttc_int=\count317
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Songti.ttc(0)' created for font 'Songti.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Songti.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font SuperClarendon.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_SuperClarendon.ttc_int=\count318
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'SuperClarendon.ttc(0)' created for font 'SuperClarendon.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/SuperClarendon.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex [16])
+\g_fontspec_family_Tahoma Bold.ttf_int=\count319
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TahomaBold.ttf(0)' created for font 'Tahoma Bold.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Tahoma Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Tahoma.ttf_int=\count320
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Tahoma.ttf(0)' created for font 'Tahoma.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Tahoma.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Tamil MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Tamil MN.ttc_int=\count321
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TamilMN.ttc(0)' created for font 'Tamil MN.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Tamil MN.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Tamil Sangam MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Tamil Sangam MN.ttc_int=\count322
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TamilSangamMN.ttc(0)' created for font 'Tamil Sangam MN.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Tamil Sangam MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Telugu MN.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Telugu MN.ttc_int=\count323
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TeluguMN.ttc(0)' created for font 'Telugu MN.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Telugu MN.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Telugu Sangam MN.ttc does not contain any OpenType `Script'
+. information.
+.................................................
+\g_fontspec_family_Telugu Sangam MN.ttc_int=\count324
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TeluguSangamMN.ttc(0)' created for font 'Telugu Sangam MN.ttc'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Telugu Sangam MN.ttc]/ICU:"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Times New Roman Bold Italic.ttf_int=\count325
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TimesNewRomanBoldItalic.ttf(0)' created for font 'Times New
+. Roman Bold Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Times New Roman Bold
+. Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex [17])
+\g_fontspec_family_Times New Roman Bold.ttf_int=\count326
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TimesNewRomanBold.ttf(0)' created for font 'Times New Roman
+. Bold.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Times New Roman
+. Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Times New Roman Italic.ttf_int=\count327
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TimesNewRomanItalic.ttf(0)' created for font 'Times New Roman
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Times New Roman
+. Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Times New Roman.ttf_int=\count328
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TimesNewRoman.ttf(0)' created for font 'Times New Roman.ttf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Times New Roman.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Trebuchet MS Bold Italic.ttf_int=\count329
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TrebuchetMSBoldItalic.ttf(0)' created for font 'Trebuchet MS
+. Bold Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Trebuchet MS Bold
+. Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Trebuchet MS Bold.ttf_int=\count330
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TrebuchetMSBold.ttf(0)' created for font 'Trebuchet MS
+. Bold.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Trebuchet MS Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Trebuchet MS Italic.ttf_int=\count331
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TrebuchetMSItalic.ttf(0)' created for font 'Trebuchet MS
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Trebuchet MS Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Trebuchet MS.ttf_int=\count332
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'TrebuchetMS.ttf(0)' created for font 'Trebuchet MS.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Trebuchet MS.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Verdana Bold Italic.ttf_int=\count333
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'VerdanaBoldItalic.ttf(0)' created for font 'Verdana Bold
+. Italic.ttf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Verdana Bold Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex [18])
+\g_fontspec_family_Verdana Bold.ttf_int=\count334
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'VerdanaBold.ttf(0)' created for font 'Verdana Bold.ttf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Verdana Bold.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Verdana Italic.ttf_int=\count335
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'VerdanaItalic.ttf(0)' created for font 'Verdana Italic.ttf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Verdana Italic.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Verdana.ttf_int=\count336
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Verdana.ttf(0)' created for font 'Verdana.ttf' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Verdana.ttf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_WeibeiSC-Bold.otf_int=\count337
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'WeibeiSC-Bold.otf(0)' created for font 'WeibeiSC-Bold.otf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/WeibeiSC-Bold.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_WeibeiTC-Bold.otf_int=\count338
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'WeibeiTC-Bold.otf(0)' created for font 'WeibeiTC-Bold.otf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/WeibeiTC-Bold.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Xingkai.ttc_int=\count339
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Xingkai.ttc(0)' created for font 'Xingkai.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Xingkai.ttc]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Yu Gothic Bold.otf_int=\count340
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'YuGothicBold.otf(0)' created for font 'Yu Gothic Bold.otf' with
+. options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Yu Gothic Bold.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex [19])
+\g_fontspec_family_Yu Gothic Medium.otf_int=\count341
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'YuGothicMedium.otf(0)' created for font 'Yu Gothic Medium.otf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Yu Gothic Medium.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+\g_fontspec_family_Yu Mincho Demibold.otf_int=\count342
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'YuMinchoDemibold.otf(0)' created for font 'Yu Mincho
+. Demibold.otf' with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Yu Mincho Demibold.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+
+(./alphanumchars.tex)
+\g_fontspec_family_Yu Mincho Medium.otf_int=\count343
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'YuMinchoMedium.otf(0)' created for font 'Yu Mincho Medium.otf'
+. with options [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Yu Mincho Medium.otf]/ICU:script=latn;language=DFLT;"
+.................................................
+ (./alphanumchars.tex)
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font Yuanti.ttc does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_Yuanti.ttc_int=\count344
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'Yuanti.ttc(0)' created for font 'Yuanti.ttc' with options
+. [Path=/Library/Fonts/].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"[/Library/Fonts/Yuanti.ttc]/ICU:"
+.................................................
+ (./alphanumchars.tex) [20]
+(./characters.aux) ) 
 Here is how much of TeX's memory you used:
- 5 strings out of 493315
- 138 string characters out of 6137904
- 52158 words of memory out of 5000000
- 3557 multiletter control sequences out of 15000+600000
- 3640 words of font info for 14 fonts, out of 8000000 for 9000
- 957 hyphenation exceptions out of 8191
- 5i,0n,4p,74b,14s stack positions out of 5000i,500n,10000p,200000b,80000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 17374 strings out of 493938
+ 419873 string characters out of 6148857
+ 352315 words of memory out of 5000000
+ 19730 multiletter control sequences out of 15000+600000
+ 5984 words of font info for 307 fonts, out of 8000000 for 9000
+ 1144 hyphenation exceptions out of 8191
+ 46i,4n,43p,562b,169s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+Output written on characters.pdf (20 pages).

@@ -7,9 +7,9 @@ classification abilities are tested on the images listed in the XML file
 specified by testingDataset.
 '''
 
-trainingDataset = 'DataSets/OCR/characters/hex.xml'
+trainingDataset = 'DataSets/OCR/characters/cmr_hex.xml'
 maxTrainingCycles = 20
-testingDataset = 'DataSets/OCR/characters/hex.xml'
+testingDataset = 'DataSets/OCR/characters/cmr_hex.xml'
 
 import dataset_readers as data
 import image_encoders as encoder

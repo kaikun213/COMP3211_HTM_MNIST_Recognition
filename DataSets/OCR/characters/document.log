@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  19 JUN 2014 15:05
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  12 AUG 2014 11:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -111,13 +111,13 @@ LaTeX Font Info:    ... okay on input line 8.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(./characters.tex) (./characters.tex) (./characters.tex) [1
+(./alphanumchars.tex) (./alphanumchars.tex) (./alphanumchars.tex) [1
 
 {/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./docu
 ment.aux) ) 
 Here is how much of TeX's memory you used:
  771 strings out of 493315
- 10768 string characters out of 6137904
+ 10789 string characters out of 6137904
  67737 words of memory out of 5000000
  4277 multiletter control sequences out of 15000+600000
  4294 words of font info for 16 fonts, out of 8000000 for 9000
