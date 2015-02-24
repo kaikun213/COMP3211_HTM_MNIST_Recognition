@@ -22,3 +22,5 @@ sp_capacity.py
 * pip
 * python 2.7
 * `pip install nupic numpy Pillow`
+
+`export PYTHONPATH=$PYTHONPATH:$PWD`

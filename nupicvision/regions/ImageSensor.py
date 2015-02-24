@@ -1838,7 +1838,7 @@ class ImageSensor(PyRegion):
       # If name is of the form 'ModuleName.ClassName' (useful to try multiple
       # versions of the same filter): names = ['ModuleName', 'ClassName']
       # By default, ImageSensor searches for filters in
-      # nupic.regions.ImageSensorFilters. If the import fails, it tries the
+      # nupicvision.regions.ImageSensorFilters. If the import fails, it tries the
       # import unmodified - so you may use filters that are located anywhere
       # that Python knows about.
       if not '.' in filters[i][0]:
@@ -1849,7 +1849,7 @@ class ImageSensor(PyRegion):
         className = components[-1]
       try:
         # Search in ImageSensorFilters first
-        filterModule = __import__('nupic.regions.ImageSensorFilters.%s'
+        filterModule = __import__('nupicvision.regions.ImageSensorFilters.%s'
           % moduleName, {}, {}, className)
       except:
         try:
@@ -1886,7 +1886,7 @@ class ImageSensor(PyRegion):
     # If name is of the form 'ModuleName.ClassName' (useful to try multiple
     # versions of the same explorer): names = ['ModuleName', 'ClassName']
     # By default, ImageSensor searches for explorers in
-    # nupic.regions.ImageSensorExplorers. If the import fails, it tries the
+    # nupicvision.regions.ImageSensorExplorers. If the import fails, it tries the
     # import unmodified - so you may use explorers that are located anywhere
     # that Python knows about.
     if not '.' in explorer[0]:
@@ -1897,7 +1897,7 @@ class ImageSensor(PyRegion):
       className = components[-1]
     try:
       # Search in ImageSensorExplorers first
-      explorerModule = __import__('nupic.regions.ImageSensorExplorers.%s'
+      explorerModule = __import__('nupicvision.regions.ImageSensorExplorers.%s'
         % moduleName, {}, {}, className)
     except ImportError:
       try:
