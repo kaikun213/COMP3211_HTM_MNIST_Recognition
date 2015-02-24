@@ -41,7 +41,7 @@ from nupic.bindings.math import GetNTAReal
 
 RealNumpyDType = GetNTAReal()
 
-from nupic.image import (serializeImage,
+from nupicvision.image import (serializeImage,
                          deserializeImage,
                          imageExtensions)
 
@@ -753,7 +753,7 @@ class ImageSensor(PyRegion):
       calculating it.
 
     To serialize an image before passing it to this command, do the following:
-    from nupic.image import serializeImage
+    from nupicvision.image import serializeImage
     s = serializeImage(image)
     """
     if clearImageList:
@@ -2463,7 +2463,7 @@ class ImageSensor(PyRegion):
         outputImageWithAlpha=dict(
           description="""Serialized version of the current output image(s) with the alpha channel.
             If depth > 1, multiple serialized images will be returned in a list. To deserialize:
-            from nupic.image import deserializeImage
+            from nupicvision.image import deserializeImage
             outputImage = deserializeImage(sensor.getParameter('outputImageWithAlpha'))""",
           dataType='Byte',
           count=0,
@@ -2473,7 +2473,7 @@ class ImageSensor(PyRegion):
         originalImage=dict(
           description="""Serialized version of the original, unfiltered version of the
             current image. To deserialize:
-            from nupic.image import deserializeImage
+            from nupicvision.image import deserializeImage
             originalImage = deserializeImage(sensor.getParameter('originalImage'))""",
           dataType='Byte',
           count=0,
@@ -2484,7 +2484,7 @@ class ImageSensor(PyRegion):
           description="""Serialized version of the current 'location image', which shows the
             position of the sensor overlaid on the filtered image (optionally, the
             original image). To deserialize:
-            from nupic.image import deserializeImage
+            from nupicvision.image import deserializeImage
             locationImage = deserializeImage(sensor.getParameter('locationImage'))""",
           dataType='Byte',
           count=0,
@@ -2573,7 +2573,7 @@ class ImageSensor(PyRegion):
         outputImage=dict(
           description="""Serialized version of the current output image(s). If depth > 1,
             multiple serialized images will be returned in a list. To deserialize:
-            from nupic.image import deserializeImage
+            from nupicvision.image import deserializeImage
             outputImage = deserializeImage(sensor.getParameter('outputImage'))""",
           dataType='Byte',
           count=0,
@@ -3017,23 +3017,23 @@ class ImageSensor(PyRegion):
   #      NodeSpecItem(name="outputImage", type="PyObject", access="g",
   #        description="""Serialized version of the current output image(s). If depth > 1,
   #        multiple serialized images will be returned in a list. To deserialize:
-  #        from nupic.image import deserializeImage
+  #        from nupicvision.image import deserializeImage
   #        outputImage = deserializeImage(sensor.getParameter('outputImage'))"""),
   #      NodeSpecItem(name="outputImageWithAlpha", type="PyObject", access="g",
   #        description="""Serialized version of the current output image(s) with the alpha channel.
   #        If depth > 1, multiple serialized images will be returned in a list. To deserialize:
-  #        from nupic.image import deserializeImage
+  #        from nupicvision.image import deserializeImage
   #        outputImage = deserializeImage(sensor.getParameter('outputImageWithAlpha'))"""),
   #      NodeSpecItem(name="originalImage", type="string", access="g",
   #        description="""Serialized version of the original, unfiltered version of the
   #        current image. To deserialize:
-  #        from nupic.image import deserializeImage
+  #        from nupicvision.image import deserializeImage
   #        originalImage = deserializeImage(sensor.getParameter('originalImage'))"""),
   #      NodeSpecItem(name="locationImage", type="string", access="g",
   #        description="""Serialized version of the current 'location image', which shows the
   #        position of the sensor overlaid on the filtered image (optionally, the
   #        original image). To deserialize:
-  #        from nupic.image import deserializeImage
+  #        from nupicvision.image import deserializeImage
   #        locationImage = deserializeImage(sensor.getParameter('locationImage'))"""),
   #      NodeSpecItem(name="minimalBoundingBox", type="bool", constraints="bool", access="cgs",
   #        description="""Whether the bounding box found by looking at the

@@ -27,7 +27,7 @@ from PIL import (Image,
                  ImageChops)
 
 from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter
-from nupic.image import (createMask, isSimpleBBox)
+from nupicvision.image import (createMask, isSimpleBBox)
 
 
 class FillBackground(BaseFilter):

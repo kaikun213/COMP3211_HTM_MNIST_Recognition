@@ -26,7 +26,7 @@
 import os
 import random
 
-from nupic.image import (createMask, isSimpleBBox)
+from nupicvision.image import (createMask, isSimpleBBox)
 from nupic.frameworks.vision2 import VisionUtils
 from PIL import (Image,
                  ImageChops)
