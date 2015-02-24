@@ -44,7 +44,7 @@ class ImageSensorTest(unittest.TestCase):
     pysensor = sensor.getSelf()
 
     # Verify set parameters
-    self.assertEqual(type(pysensor), ImageSensor)
+    self.assertTrue(isinstance(pysensor, ImageSensor))
     self.assertEqual(pysensor.height, 50)
     self.assertEqual(pysensor.width, 100)
 
