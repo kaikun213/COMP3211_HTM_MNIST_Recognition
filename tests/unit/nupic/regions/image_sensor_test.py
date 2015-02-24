@@ -27,7 +27,7 @@ import os
 from PIL import Image, ImageDraw
 
 from nupic.engine import Network
-from nupic.regions.ImageSensor import ImageSensor
+from nupicvision.regions.ImageSensor import ImageSensor
 
 
 
