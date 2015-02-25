@@ -25,9 +25,10 @@ import tempfile
 import os
 
 from PIL import Image, ImageDraw
+import numpy
 
 from nupic.engine import Network
-from nupic.regions.ImageSensor import ImageSensor
+from nupicvision.regions.ImageSensor import ImageSensor
 
 
 
@@ -44,7 +45,7 @@ class ImageSensorTest(unittest.TestCase):
     pysensor = sensor.getSelf()
 
     # Verify set parameters
-    self.assertEqual(type(pysensor), ImageSensor)
+    self.assertTrue(isinstance(pysensor, ImageSensor))
     self.assertEqual(pysensor.height, 50)
     self.assertEqual(pysensor.width, 100)
 
@@ -124,6 +125,41 @@ class ImageSensorTest(unittest.TestCase):
     os.unlink(os.path.join(tmpDir,'1','im1.png'))
     os.removedirs(os.path.join(tmpDir,'0'))
     os.removedirs(os.path.join(tmpDir,'1'))
+
+
+  def testRunPCANode(self):
+    from nupic.engine import *
+
+    rgen = numpy.random.RandomState(37)
+
+    inputSize = 8
+
+    net = Network()
+    sensor = net.addRegion('sensor', 'py.ImageSensor' ,
+          '{ width: %d, height: %d }' % (inputSize, inputSize))
+
+    params = """{bottomUpCount: %d,
+              SVDSampleCount: 5,
+              SVDDimCount: 2}""" % inputSize
+
+    pca = net.addRegion('pca', 'py.PCANode', params)
+
+    #nodeAbove = CreateNode("py.ImageSensor", phase=0, categoryOut=1, dataOut=3,
+    #                       width=3, height=1)
+    #net.addElement('nodeAbove', nodeAbove)
+
+    linkParams = '{ mapping: in, rfSize: [%d, %d] }' % (inputSize, inputSize)
+    net.link('sensor', 'pca', 'UniformLink', linkParams, 'dataOut', 'bottomUpIn')
+
+    net.initialize()
+
+    for i in range(10):
+      pca.getSelf()._testInputs = numpy.random.random([inputSize])
+      net.run(1)
+      #print s.sendRequest('nodeOPrint pca_node')
+
+
+
 
 if __name__ == "__main__":
   unittest.main()
