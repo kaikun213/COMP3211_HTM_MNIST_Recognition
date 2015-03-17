@@ -1,18 +1,40 @@
-import numpy
-import hashlib
+# ----------------------------------------------------------------------
+# Numenta Platform for Intelligent Computing (NuPIC)
+# Copyright (C) 2015, Numenta, Inc.  Unless you have purchased from
+# Numenta, Inc. a separate commercial license for this software code, the
+# following terms and conditions apply:
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see http://www.gnu.org/licenses.
+#
+# http://numenta.org/licenses/
+# ----------------------------------------------------------------------
 
 from PIL import Image
 
 DEBUG = 0
 
+
+
 class VisionTestBench(object):
-  '''
+  """
   This class provides methods for characterizing nupic's image recognition
   capabilities.  The goal is to put most of the details in here so the top
   level can be as clear and concise as possible.
-  '''
+  """
+
+
   def __init__(self, sp):
-    '''
+    """
     The test bench has just a few things to keep track off:
 
     - A list of the output SDRs that is shared between the training and testing
@@ -24,7 +46,7 @@ class VisionTestBench(object):
     - Images of permanences and connected synapses so these images do not have
       to be generated more than necessary
 
-    '''
+    """
     self.sp = sp
 
     self.SDRs = []
@@ -62,22 +84,20 @@ class VisionTestBench(object):
       self.columnWidth = 1
 
 
-
-  '''
-  ##############################################################################
-  This routine trains the spatial pooler using the bit vectors produced from the
-  training images by using these vectors as input to the SP.  It continues
-  training until either the minimum specified accuracy is met or the maximum
-  number of training cycles is reached.  It records each output SDR as the index
-  of that SDR in a list of all SDRs seen during training.  This list of indexes
-  is used to generate the SDRs for evaluating recognition accuracy after each 
-  training cycle.  It also creates a list of all tags (ground truth) seen during
-  training.  This list is used to establish the integer categories for the 
-  classifier so they can be used again during testing to establish the correct
-  categories even if the order of the input vectors is changed.
-  ##############################################################################
-  '''
   def train(self, trainingVectors, trainingTags, classifier, maxCycles=10,
+    """
+    This routine trains the spatial pooler using the bit vectors produced from
+    the training images by using these vectors as input to the SP.  It continues
+    training until either the minimum specified accuracy is met or the maximum
+    number of training cycles is reached.  It records each output SDR as the
+    index of that SDR in a list of all SDRs seen during training.  This list of
+    indexes is used to generate the SDRs for evaluating recognition accuracy
+    after each training cycle.  It also creates a list of all tags (ground
+    truth) seen during training.  This list is used to establish the integer
+    categories for the classifier so they can be used again during testing to
+    establish the correct categories even if the order of the input vectors is
+    changed.
+    """
     minAccuracy=100.0):
     # Get rid of permanence and connection images from previous training
     self.permanencesImage = None
@@ -134,13 +154,11 @@ class VisionTestBench(object):
     return cyclesCompleted
 
 
-  '''
-  ################################################################################
-  This routine tests the spatial pooler on the bit vectors produced from the
-  testing images.
-  ################################################################################
-  '''
   def test(self, testVectors, testingTags, classifier, verbose=0, learn=True):
+    """
+    This routine tests the spatial pooler on the bit vectors produced from the
+    testing images.
+    """
     print "\nTesting:\n"
 
     # Get rid of old permanence and connection images
@@ -189,16 +207,13 @@ class VisionTestBench(object):
     return accuracy
 
 
-
-  '''
-  ################################################################################
-  This routine prints the mean values of the connected and unconnected synapse
-  permanences along with the percentage of synapses in each.
-  It also returns the percentage of connected synapses so it can be used to
-  determine when training has finished.
-  ################################################################################
-  '''
   def printTrainingStats(self, trainingCyclesCompleted, accuracy):
+    """
+    This routine prints the mean values of the connected and unconnected synapse
+    permanences along with the percentage of synapses in each.
+    It also returns the percentage of connected synapses so it can be used to
+    determine when training has finished.
+    """
     # Print header if this is the first training cycle
     if trainingCyclesCompleted == 0:
       print "\nTraining:\n"
@@ -244,12 +259,8 @@ class VisionTestBench(object):
 
 
 
-  '''
-  ################################################################################
-  This routine prints the MD5 hash of the output SDRs.
-  ################################################################################
-  '''
   def printOutputHash(self,trainingCyclesCompleted):
+    """This routine prints the MD5 hash of the output SDRs."""
     # Print header if this is the first training cycle
     if trainingCyclesCompleted == 0:
       print "\nTraining begins:\n"
@@ -273,13 +284,11 @@ class VisionTestBench(object):
 
 
 
-  '''
-  ################################################################################
-  These routines generates images of the permanences and connections of each
-  column so they can be viewed and saved.
-  ################################################################################
-  '''
   def calcPermsAndConns(self):
+    """
+    These routines generates images of the permanences and connections of each
+    column so they can be viewed and saved.
+    """
     size = (self.inputWidth*self.columnWidth,self.inputHeight*self.columnHeight)
     self.permanencesImage = Image.new('RGB', size)
     self.connectionsImage = Image.new('RGB', size)
@@ -372,9 +381,9 @@ class VisionTestBench(object):
 
 
   def _convertToImage(self, listData, mode = '1'):
-    '''
+    """
     Takes in a list and returns a new square image
-    '''
+    """
 
     # Assume we're getting a square image patch
     side = int(len(listData) ** 0.5)
@@ -384,6 +393,3 @@ class VisionTestBench(object):
     im.putdata(listData)
 
     return im
-
-
-
