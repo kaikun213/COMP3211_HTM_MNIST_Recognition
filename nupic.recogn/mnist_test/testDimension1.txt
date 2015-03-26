@@ -1,0 +1,3 @@
+Set Spatial Pooler Node Dimension = 16
+Set Spatial Pooler Node Dimension = 17
+Set Spatial Pooler Node Dimension = 18
