@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------
 # Numenta Platform for Intelligent Computing (NuPIC)
-# Copyright (C) 2013, Numenta, Inc.  Unless you have an agreement
+# Copyright (C) 2015, Numenta, Inc.  Unless you have an agreement
 # with Numenta, Inc., for a separate license for this software code, the
 # following terms and conditions apply:
 #
@@ -23,27 +23,31 @@
 This file defines ImageSensor, an extensible sensor for images.
 """
 
+from base64 import b64encode, b64decode
+import copy
+import cPickle as pickle
+import inspect
 import os
 import re
 import shutil
-import inspect
-import cPickle as pickle
-import copy
-from base64 import b64encode, b64decode
 from unicodedata import normalize
+import yaml
 
-from nupic.regions.PyRegion import PyRegion
 import numpy
 from PIL import (Image,
                  ImageChops,
                  ImageDraw)
+
 from nupic.bindings.math import GetNTAReal
-
-RealNumpyDType = GetNTAReal()
-
-from nupicvision.image import (serializeImage,
+from nupic.image import (serializeImage,
                          deserializeImage,
                          imageExtensions)
+from nupic.regions.PyRegion import PyRegion
+
+
+_REAL_NUMPY_DTYPE = GetNTAReal()
+
+
 
 def containsConvolutionPostFilter(postFilters):
   """Determine if the post filters contain a convolution filter"""
@@ -121,7 +125,7 @@ class ImageSensor(PyRegion):
 
   def _init(self, width=1, height=1, depth=1, mode='gray',
       blankWithReset=False, background=255, invertOutput=False,
-      filters=[], postFilters=[], explorer="Flash",
+      filters=None, postFilters=None, explorer="[\"Flash\"]",
       categoryOutputFile="", logText=False, logOutputImages=False,
       logOriginalImages=False, logFilteredImages=False,
       logLocationImages=False, logLocationOnOriginalImage=False,
@@ -129,7 +133,7 @@ class ImageSensor(PyRegion):
       automaskingTolerance=0, automaskingPadding=0, memoryLimit=100,
       minimalBoundingBox=False, dataOut=None, categoryOut=None,
       partitionOut=None, resetOut=None, bboxOut=None, alphaOut=None,
-      useAux=False, auxDataOut=None, auxDataWidth=None, **keywds):
+      auxDataWidth=None, **keywds):
     """
     width -- Width of the sensor's output to the network (pixels).
     height -- Height of the sensor's output to the network (pixels).
@@ -144,14 +148,13 @@ class ImageSensor(PyRegion):
       image, and also for finding the bounding box in the absence of a mask.
     invertOutput -- Inverts the output of the node (e.g. white pixels
       become black).
-    filters -- List of filters to apply to each image. Each element in
-      the list should be either a string (just the filter name) or a list
-      containing both the filter name and a dictionary specifying its
+    filters -- JSON serialized list of filters to apply to each image. Each
+      element in the list should be either a string (just the filter name) or a
+      list containing both the filter name and a dictionary specifying its
       arguments.
-    explorer -- Explorer (used to move the sensor through the input
-      space). Specify as a string (just the explorer name) or a list
-      containing both the explorer name and a dictionary specifying its
-      arguments.
+    explorer -- JSON serialized list containing either a single string
+      (the name of the explorer) or a list containing both the explorer name
+      and a dictionary specifying its arguments.
     categoryOutputFile -- Name of file to which to write category number
       on each compute (useful for analyzing network accuracy after inference).
     logText -- Toggle for verbose logging to imagesensor_log.txt.
@@ -170,6 +173,7 @@ class ImageSensor(PyRegion):
       image).
     logBoundingBox -- Toggle for writing a log containing the bounding
       box information for each output image.
+    logDir --
     automaskingTolerance -- Affects the process by which bounding box masks
       are automatically generated from images based on similarity to the
       specified 'background' pixel value.  The bounding box will enclose all
@@ -194,7 +198,6 @@ class ImageSensor(PyRegion):
     categoryOut -- The output element count of the 'categoryOut' output (NuPIC 1 only).
     resetOut -- The output element count of the 'resetOut' output (NuPIC 1 only).
     bboxOut -- The output element count of the 'bboxOut' output (NuPIC 1 only).
-    alphaOut -- The output element count of the 'alphaOut' output (NuPIC 1 only)
     auxDataWidth -- The output element count of the 'auxData' output (NuPIC2 only).
     """
     PyRegion.__init__(self, **keywds)
@@ -207,7 +210,9 @@ class ImageSensor(PyRegion):
       elif dataOut == (depth * height * width):
         pass
       else:
-        if not containsConvolutionPostFilter(postFilters):
+        if not containsConvolutionPostFilter(yaml.load(postFilters)
+                                             if postFilters
+                                             else []):
           raise RuntimeError("The 'dataOut' output element count must be equal"
                              " to depth * height * width.")
 
@@ -224,7 +229,6 @@ class ImageSensor(PyRegion):
       raise RuntimeError("The 'alphaOut' output element count must be equal "
                          "to width * height")
 
-    self.useAux = useAux
     self.width = width
     self.height = height
     self.depth = depth
@@ -306,12 +310,15 @@ class ImageSensor(PyRegion):
     self._categoryOutputFile = None  # To write the category on each iteration
     self._iteration = 0  # Internal iteration counter
     self.explorer = None
-    self._setFilters(filters)
-    self._setPostFilters(postFilters)
-    self._setExplorer(explorer)
+    self._setFilters(yaml.load(filters) if filters else [])
+    self._setPostFilters(yaml.load(postFilters) if postFilters else [])
+    self._setExplorer(yaml.load(explorer))
     self._holdForOffset = 0
 
-    self._cubeOutputs = not containsConvolutionPostFilter(postFilters)
+    self._cubeOutputs = (
+      not containsConvolutionPostFilter(yaml.load(postFilters)
+                                        if postFilters
+                                        else []))
     self._auxDataWidth = auxDataWidth
 
   def __init__(self, *args, **kw):
@@ -753,7 +760,7 @@ class ImageSensor(PyRegion):
       calculating it.
 
     To serialize an image before passing it to this command, do the following:
-    from nupicvision.image import serializeImage
+    from nupicvision.ImageSensor import serializeImage
     s = serializeImage(image)
     """
     if clearImageList:
@@ -1922,6 +1929,7 @@ class ImageSensor(PyRegion):
       enabledWidth=self.enabledWidth, enabledHeight=self.enabledHeight,
       blankWithReset=self.blankWithReset)
 
+
   def _meetMemoryLimit(self):
     """
     Unload images as necessary to stay within the memory limit.
@@ -1949,6 +1957,7 @@ class ImageSensor(PyRegion):
       else:
         break
 
+
   def _updatePrevPosition(self):
     """
     Deep copy position to self.prevPosition.
@@ -1961,6 +1970,7 @@ class ImageSensor(PyRegion):
       'offset': copy.copy(position['offset']),
       'reset': position['reset']
     }
+
 
   def compute(self, inputs=None, outputs=None):
     """
@@ -2049,7 +2059,7 @@ class ImageSensor(PyRegion):
 
     if outputs:
       # Convert the output images to a numpy vector
-      croppedArrays = [numpy.asarray(image.split()[0], RealNumpyDType)
+      croppedArrays = [numpy.asarray(image.split()[0], _REAL_NUMPY_DTYPE)
         for image in outputImages]
       # Pad the images to fit the full output size if necessary generating
       # a stack of images, each of them self.width X self.height
@@ -2057,7 +2067,7 @@ class ImageSensor(PyRegion):
             (self.depth > 1 or
             croppedArrays[0].shape != (self.height, self.width))
       if pad:
-        fullArrays = [numpy.zeros((self.height, self.width), RealNumpyDType)
+        fullArrays = [numpy.zeros((self.height, self.width), _REAL_NUMPY_DTYPE)
           for i in xrange(self.depth)]
         for i in xrange(self.depth):
           fullArrays[i][:croppedArrays[i].shape[0],:croppedArrays[i].shape[1]] \
@@ -2080,7 +2090,7 @@ class ImageSensor(PyRegion):
 
       # categoryOut - category index
       outputs['categoryOut'][:] = \
-        numpy.array([float(category)], RealNumpyDType)
+        numpy.array([float(category)], _REAL_NUMPY_DTYPE)
 
       # auxDataOut - auxiliary data
       auxDataOut = imageInfo['auxData']
@@ -2090,14 +2100,14 @@ class ImageSensor(PyRegion):
       # resetOut - reset flag
       if 'resetOut' in outputs:
         outputs['resetOut'][:] = \
-          numpy.array([float(self.prevPosition['reset'])],RealNumpyDType)
+          numpy.array([float(self.prevPosition['reset'])],_REAL_NUMPY_DTYPE)
 
       # bboxOut - bounding box
       if 'bboxOut' in outputs and len(outputs['bboxOut']) == 4:
         bbox = outputImages[0].split()[1].getbbox()
         if bbox is None:
           bbox = (0, 0, 0, 0)
-        outputs['bboxOut'][:] = numpy.array(bbox, RealNumpyDType)
+        outputs['bboxOut'][:] = numpy.array(bbox, _REAL_NUMPY_DTYPE)
         # Optionally log the bounding box information
         if self.logBoundingBox:
           self._logBoundingBox(bbox)
@@ -2105,7 +2115,7 @@ class ImageSensor(PyRegion):
       # alphaOut - alpha channel
       if 'alphaOut' in outputs and len(outputs['alphaOut']) > 1:
         alphaOut = \
-          numpy.asarray(outputImages[0].split()[1], RealNumpyDType).flatten()
+          numpy.asarray(outputImages[0].split()[1], _REAL_NUMPY_DTYPE).flatten()
         if not imageInfo['erode']:
           # Change the 0th element of the output to signal that the alpha
           # channel should be dilated, not eroded
@@ -2118,22 +2128,23 @@ class ImageSensor(PyRegion):
         if partition is None:
           partition = 0
         outputs['partitionOut'][:] = \
-          numpy.array([float(partition)], RealNumpyDType)
+          numpy.array([float(partition)], _REAL_NUMPY_DTYPE)
+
 
   def getParameter(self, parameterName, index=-1):
     """Get the value of an ImageSensor parameter."""
 
     if parameterName == 'filters':
       # Remove filter objects
-      return [filter[:2] for filter in self.filters]
+      return yaml.dump([filter[:2] for filter in self.filters])
 
     elif parameterName == 'postFilters':
       # Remove filter objects
-      return [filter[:2] for filter in self.postFilters]
+      return yaml.dump([filter[:2] for filter in self.postFilters])
 
     elif parameterName == 'explorer':
       # Remove explorer object
-      return self.explorer[:2]
+      return yaml.dump(self.explorer[:2])
 
     elif parameterName == 'numImages':
       return len(self._imageList)
@@ -2148,20 +2159,21 @@ class ImageSensor(PyRegion):
       return self.width * self.height * self.depth
 
     elif parameterName == 'position':
-      return self.explorer[2].position
+      return yaml.dump(self.explorer[2].position)
 
     elif parameterName == 'imageInfo':
-      return [self._getImageInfo(i) for i in xrange(len(self._imageList))]
+      return yaml.dump([self._getImageInfo(i)
+                         for i in xrange(len(self._imageList))])
 
     elif parameterName == 'prevImageInfo':
       if self.prevPosition and self._imageList:
-        return self._getImageInfo(self.prevPosition['image'])
+        return yaml.dump(self._getImageInfo(self.prevPosition['image']))
       else:
         return None
 
     elif parameterName == 'nextImageInfo':
       if self.explorer[2].position and self._imageList:
-        return self._getImageInfo()
+        return yaml.dump(self._getImageInfo())
       else:
         return None
 
@@ -2225,17 +2237,18 @@ class ImageSensor(PyRegion):
     else:
       return PyRegion.getParameter(self, parameterName, index)
 
+
   def setParameter(self, parameterName, index, parameterValue):
     """Set the value of an ImageSensor parameter."""
 
     if parameterName == 'filters':
-      self._setFilters(parameterValue)
+      self._setFilters(yaml.load(parameterValue))
 
     elif parameterName == 'postFilters':
-      self._setPostFilters(parameterValue)
+      self._setPostFilters(yaml.load(parameterValue))
 
     elif parameterName == 'explorer':
-      self._setExplorer(parameterValue)
+      self._setExplorer(yaml.load(parameterValue))
 
     elif parameterName == 'enabledWidth':
       self.enabledWidth = parameterValue
@@ -2244,7 +2257,6 @@ class ImageSensor(PyRegion):
     elif parameterName == 'enabledHeight':
       self.enabledHeight = parameterValue
       self.explorer[2].update(enabledHeight=parameterValue)
-
 
     elif parameterName == 'width':
       self.width = parameterValue
@@ -2298,12 +2310,9 @@ class ImageSensor(PyRegion):
                 % parameterName)
       setattr(self, parameterName, parameterValue)
 
+
   def __getstate__(self):
     """Get serializable state."""
-
-    # Serialize images stored in categoryInfo
-    serializedCategoryInfo = [(name, b64encode(imageStr)) for name, imageStr
-                              in self.getParameter('categoryInfo')]
 
     # Get the object-less filters and explorer
     resetFilters = self.getParameter('filters')
@@ -2319,14 +2328,15 @@ class ImageSensor(PyRegion):
       state[name] = getattr(self, name)
 
     # Add attributes that have been manipulated
-    state.update({'serializedCategoryInfo': serializedCategoryInfo,
+    state.update({'serializedCategoryInfo': self.getParameter('categoryInfo'),
       'resetExplorer': resetExplorer, 'resetFilters': resetFilters,
       'resetPostFilters': resetPostFilters})
 
     # Save a version number
-    state['version'] = 1.7
+    state['version'] = 999.0
 
     return state
+
 
   def __setstate__(self, state):
     """Set state from serialized state."""
@@ -2348,11 +2358,6 @@ class ImageSensor(PyRegion):
     for name in state:
       setattr(self, name, state[name])
 
-    # Deserialize images stored in categoryInfo (not base64-encoded)
-    if version >= 1.64:
-      # Undo base64 encoding
-      serializedCategoryInfo = [(name, b64decode(imageStr)) for name, imageStr
-                                in serializedCategoryInfo]
     self.setParameter('categoryInfo', -1, serializedCategoryInfo)
 
     # Set variables that weren't saved
@@ -2379,10 +2384,11 @@ class ImageSensor(PyRegion):
 
     # Set up the filters and explorer
     self.explorer = None
-    self._setFilters(resetFilters)
-    self._setPostFilters(resetPostFilters)
-    self._setExplorer(resetExplorer)
-    self._cubeOutputs = not containsConvolutionPostFilter(resetPostFilters)
+    self.setParameter('filters', -1, resetFilters)
+    self.setParameter('postFilters', -1, resetPostFilters)
+    self.setParameter('explorer', -1, resetExplorer)
+    self._cubeOutputs = (
+      not containsConvolutionPostFilter(yaml.load(resetPostFilters)))
 
     # Backward compatibility
     if version < 1.63:
@@ -2400,6 +2406,7 @@ class ImageSensor(PyRegion):
       # Set to True, the old behavior, though it is set to False by default
       # in new networks
       self.minimalBoundingBox = True
+
 
   @classmethod
   def getSpec(cls):
@@ -2517,9 +2524,10 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         filters=dict(
-          description="""List of filters to apply to each image. Each element in the
-            list should be either a string (just the filter name) or a list containing
-            both the filter name and a dictionary specifying its arguments.""",
+          description="""JSON serialized list of filters to apply to each
+            image. Each element in the list should be either a string (just
+            the filter name) or a list containing both the filter name and a
+            dictionary specifying its arguments.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2532,16 +2540,6 @@ class ImageSensor(PyRegion):
           count=1,
           constraints='bool',
           accessMode='ReadWrite'
-        ),
-        prevPosition=dict(
-          description="""The position of the sensor from the *previous* compute, as a
-            dictionary. Because "outputImage" and "locationImage" match the output of the
-            previous compute (not the upcoming one), they do not correlate with the
-            "position" parameter; use this parameter instead.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
         ),
         minimalBoundingBox=dict(
           description="""Whether the bounding box found by looking at the
@@ -2618,8 +2616,8 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         nextImageInfo=dict(
-          description="""Dictionary of information for the image which will be used for the next
-            compute.""",
+          description="""JSON serialized dictionary of information for the
+            image which will be used for the next compute.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2649,8 +2647,11 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         explorer=dict(
-          description="""Explorer (used to move the sensor through the input space).
-            Specify as a string (just the explorer name) or a list containing both the
+          description="""A JSON serialized list containing the name of an
+            explorer (used to move the sensor through the input space) and
+            (optionally) a dictionary of arguments for the explorer. To use the
+            default args for an explorer, specify only a string in the list
+            (just the explorer name) or for advanced configuration specify the
             explorer name and a dictionary specifying its arguments.""",
           dataType='Byte',
           count=0,
@@ -2658,8 +2659,8 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         imageInfo=dict(
-          description="""A list with a dictionary of information for each image that has
-            been loaded.""",
+          description="""A JSON serialized list with a dictionary of
+            information for each image that has been loaded.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2719,15 +2720,16 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         position=dict(
-          description="""The position of the sensor that will be used for the *next* compute,
-            as a dictionary.""",
+          description="""JSON serialized dictionary containing the position of
+            the sensor that will be used for the *next* compute.""",
           dataType='Byte',
           count=0,
           constraints='',
           accessMode='Read'
         ),
         auxData=dict(
-          description="""List of Auxiliary Data for every image in the image list""",
+          description="""JSON serialized list of Auxiliary Data for every image
+            in the image list""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2743,9 +2745,10 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         categoryInfo=dict(
-          description="""A list with a tuple for each category that the sensor has learned. The
-            tuple contains the category name (i.e. 'dog') and a serialized version of
-            an example image for the category. To deserialize:
+          description="""JSON serialized list with a tuple for each category
+            that the sensor has learned. The tuple contains the category name
+            (i.e. 'dog') and a serialized version of an example image for the
+            category. To deserialize the image:
             from nupicvision.regions.ImageSensor import deserializeCategoryInfo
             categoryInfo = deserializeCategoryInfo(sensor.getParameter('categoryInfo'))""",
           dataType='Byte',
@@ -2754,7 +2757,8 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         prevImageInfo=dict(
-          description="""Dictionary of information for the image used during the previous compute.""",
+          description="""JSON serialized dictionary of information for the
+            image used during the previous compute.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2814,10 +2818,11 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         postFilters=dict(
-          description="""List of filters to apply to each image just before the image
-            is sent to the network. Each element in the list should either be a string
-            (just the filter name) or a list containing both the filter name and a
-            dictionary specifying its arguments.""",
+          description="""JSON serialized list of filters to apply to each image
+            just before the image is sent to the network. Each element in the list
+            should either be a string (just the filter name) or a list
+            containing both the filter name and a dictionary specifying its
+            arguments.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2841,222 +2846,11 @@ class ImageSensor(PyRegion):
 
     return ns
 
-  #def getSpec(self):
-  #  """Return the NodeSpec for this PyNode."""
-  #
-  #  parent = PyNode.getSpec(self)
-  #  out = NodeSpec(
-  #    description=ImageSensor.__doc__,
-  #    singleNodeOnly=False,
-  #    inputs = [],
-  #    outputs = [
-  #      NodeSpecItem(name="dataOut", type=RealTypeName, elementCount=0,
-  #        isDefaultOutput2=True,
-  #        description="""Pixels of the image."""),
-  #      NodeSpecItem(name="categoryOut", type=RealTypeName, regionLevel2=True,
-  #        description="""Index of the current image's category."""),
-  #      NodeSpecItem(name="resetOut", type=RealTypeName, regionLevel2=True,
-  #        description="""Boolean reset output."""),
-  #      NodeSpecItem(name="bboxOut", type=RealTypeName, regionLevel2=True,
-  #        elementCount=4,
-  #        description="""Bounding box output (4-tuple)."""),
-  #      NodeSpecItem(name="alphaOut", type=RealTypeName,
-  #        elementCount=0,
-  #        description="""Alpha channel output."""),
-  #      NodeSpecItem(name="partitionOut", type=RealTypeName, regionLevel2=True,
-  #        description="""Index of the leave-one-out partition associated with the current image."""),
-  #      NodeSpecItem(name="auxDataOut", type=RealTypeName, elementCount=0,
-  #        regionLevel2=True,
-  #        description="""Auxiliary data sent directly to the classifier.""")
-  #    ],
-  #    parameters = [
-  #      NodeSpecItem(name="useAux", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="Use auxiliary input data at the classifier level"),
-  #      NodeSpecItem(name="width", type="uint", access="cg",
-  #        constraints="interval: [1, ...]", value=1,
-  #        description="""Width of the image, in pixels."""),
-  #      NodeSpecItem(name="height", type="uint", access="cg",
-  #        constraints="interval: [1, ...]", value=1,
-  #        description="""Height of the image, in pixels."""),
-  #      NodeSpecItem(name="depth", type="uint",  access="cg",
-  #        constraints="interval: [1, ...]", value=1,
-  #        description="""Number of images to send out simultaneously."""),
-  #      NodeSpecItem(name="mode", type="string", access="cg",
-  #        constraints="enum: gray, bw", value='gray',
-  #        description="""'gray' (8-bit grayscale) or 'bw' (1-bit black and white)."""),
-  #      NodeSpecItem(name="enabledWidth", type="uint", access="gs",
-  #        constraints="interval: [1, ...]",
-  #        description="""Width of the enabled 'window', in pixels."""),
-  #      NodeSpecItem(name="enabledHeight", type="uint", access="gs",
-  #        constraints="interval: [1, ...]",
-  #        description="""Height of the enabled 'window', in pixels."""),
-  #      NodeSpecItem(name="activeOutputCount", type="uint", access="g",
-  #        description="""The number of active elements in the dataOut output."""),
-  #      NodeSpecItem(name="background", type="uint", access="cgs",
-  #        constraints="interval: [0, 255]", value=0,
-  #        description="""Value of "background" pixels. May be used to pad images during sweeping,
-  #        as well as to find the bounds of an object if no mask is available."""),
-  #      NodeSpecItem(name="automaskingTolerance", type="uint", access="cgs",
-  #        constraints="interval: [0, 255]", value=0,
-  #        description="""Controls the process by which bounding box masks
-  #        are automatically generated from images based on similarity to the
-  #        specified 'background' pixel value.  The bounding box will enclose all
-  #        pixels in the image that differ from 'background' by more than
-  #        the value specified in 'automaskingTolerance'.  Default is 0, which
-  #        generates bounding boxes that enclose all pixels that differ at all
-  #        from the background.  In general, increasing the value of
-  #        'automaskingTolerance' will produce tighter (smaller) bounding box masks."""),
-  #      NodeSpecItem(name="automaskingPadding", type="uint", access="cgs",
-  #        constraints="interval: [0, ...]", value=0,
-  #        description="""Affects the process by which bounding box masks
-  #        are automatically generated from images.  After computing the
-  #        bounding box based on image similarity with respect to the background,
-  #        the box will be expanded by 'automaskPadding' pixels in all four
-  #        directions (constrained by the original size of the image.)"""),
-  #      NodeSpecItem(name="invertOutput", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Whether to invert the pixel values before sending an image to the
-  #        network. If invertOutput is enabled, a white object on a black background
-  #        becomes a black object on a white background."""),
-  #      NodeSpecItem(name="filters", type="PyObject", access="cgs",
-  #        value=[],
-  #        description="""List of filters to apply to each image. Each element in the
-  #        list should be either a string (just the filter name) or a list containing
-  #        both the filter name and a dictionary specifying its arguments."""),
-  #      NodeSpecItem(name="postFilters", type="PyObject", access="cgs",
-  #        value=[],
-  #        description="""List of filters to apply to each image just before the image
-  #        is sent to the network. Each element in the list should either be a string
-  #        (just the filter name) or a list containing both the filter name and a
-  #        dictionary specifying its arguments."""),
-  #      NodeSpecItem(name="explorer", type="PyObject", access="cgs",
-  #        value="Flash",
-  #        description="""Explorer (used to move the sensor through the input space).
-  #        Specify as a string (just the explorer name) or a list containing both the
-  #        explorer name and a dictionary specifying its arguments."""),
-  #      NodeSpecItem(name="categoryOutputFile", type="string", access="cgs",
-  #        value="",
-  #        description="""Name of file to which to write category number on each compute."""),
-  #      NodeSpecItem(name="logText", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Toggle for verbose logging to imagesensor_log.txt."""),
-  #      NodeSpecItem(name="logOutputImages", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Toggle for writing each output to disk (as an image)
-  #        on each iteration."""),
-  #      NodeSpecItem(name="logOriginalImages", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Toggle for writing the original, unfiltered version of the current
-  #        image to disk on each iteration."""),
-  #      NodeSpecItem(name="logFilteredImages", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Toggle for writing the intermediate versions of images to disk
-  #        as they pass through the filter chain."""),
-  #      NodeSpecItem(name="logLocationImages", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Toggle for writing an image to disk on each iteration which shows
-  #        the location of the sensor window."""),
-  #      NodeSpecItem(name="logLocationOnOriginalImage", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Whether to overlay the location rectangle on the original image instead
-  #        of the filtered image. Does not work if the two images do not have the
-  #        same size, and may be nonsensical even if they do (for example, if a filter
-  #        moved the object within the image)."""),
-  #      NodeSpecItem(name="logBoundingBox", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""Toggle for logging the bounding box information on each iteration."""),
-  #      NodeSpecItem(name="logDir", type="string", access="cgs",
-  #        value="imagesensor_log",
-  #        description="""Name of the imagesensor log directory, which is created in the session
-  #        bundle if any logging options are enabled. Default is imagesensor_log."""),
-  #      NodeSpecItem(name="memoryLimit", type="int", access="cgs",
-  #        constraints="interval: [-1, ...]", value=100,
-  #        description="""Maximum amount of memory that ImageSensor should use for storing images,
-  #        in megabytes. ImageSensor will unload images and filter outputs to stay beneath
-  #        this ceiling. Set to -1 for no limit."""),
-  #      NodeSpecItem(name="numImages", type="uint", access="g",
-  #        description="""Number of images that the sensor has loaded."""),
-  #      NodeSpecItem(name="numMasks", type="uint", access="g",
-  #        description="""Number of masks that the sensor has loaded."""),
-  #      NodeSpecItem(name="numIterations", type="uint", access="g",
-  #        description="""Number of iterations necessary to fully explore all loaded images. Only
-  #        some explorers support this. Use the getNumIterations command if you wish to
-  #        get the number of iterations for a particular image."""),
-  #      NodeSpecItem(name="maxOutputVectorCount", type="uint", access="g",
-  #        description="""(alias for numIterations) Number of iterations necessary to fully explore
-  #        all loaded images. Only some explorers support this. Use the getNumIterations command
-  #        if you wish to get the number of iterations for a particular image."""),
-  #      NodeSpecItem(name="blankWithReset", type="bool", constraints="bool", access="cgs",
-  #        value=False,
-  #        description="""** DEPRECATED ** Whether to send a blank output every time the explorer
-  #        generates a reset signal (such as when beginning a new sweep). Turning
-  #        on blanks increases the number of iterations."""),
-  #      NodeSpecItem(name="position", type="PyObject", access="g",
-  #        description="""The position of the sensor that will be used for the *next* compute,
-  #        as a dictionary."""),
-  #      NodeSpecItem(name="prevPosition", type="PyObject", access="g",
-  #        description="""The position of the sensor from the *previous* compute, as a
-  #        dictionary. Because "outputImage" and "locationImage" match the output of the
-  #        previous compute (not the upcoming one), they do not correlate with the
-  #        "position" parameter; use this parameter instead."""),
-  #      NodeSpecItem(name="imageInfo", type="PyObject", access="g",
-  #        description="""A list with a dictionary of information for each image that has
-  #        been loaded."""),
-  #      NodeSpecItem(name="prevImageInfo", type="PyObject", access="g",
-  #        description="""Dictionary of information for the image used during the previous compute."""),
-  #      NodeSpecItem(name="nextImageInfo", type="PyObject", access="g",
-  #        description="""Dictionary of information for the image which will be used for the next
-  #        compute."""),
-  #      NodeSpecItem(name="categoryInfo", type="PyObject", access="gs",
-  #        description="""A list with a tuple for each category that the sensor has learned. The
-  #        tuple contains the category name (i.e. 'dog') and a serialized version of
-  #        an example image for the category. To deserialize:
-  #        from nupicvision.regions.ImageSensor import deserializeCategoryInfo
-  #        categoryInfo = deserializeCategoryInfo(sensor.getParameter('categoryInfo'))"""),
-  #      NodeSpecItem(name="outputImage", type="PyObject", access="g",
-  #        description="""Serialized version of the current output image(s). If depth > 1,
-  #        multiple serialized images will be returned in a list. To deserialize:
-  #        from nupicvision.image import deserializeImage
-  #        outputImage = deserializeImage(sensor.getParameter('outputImage'))"""),
-  #      NodeSpecItem(name="outputImageWithAlpha", type="PyObject", access="g",
-  #        description="""Serialized version of the current output image(s) with the alpha channel.
-  #        If depth > 1, multiple serialized images will be returned in a list. To deserialize:
-  #        from nupicvision.image import deserializeImage
-  #        outputImage = deserializeImage(sensor.getParameter('outputImageWithAlpha'))"""),
-  #      NodeSpecItem(name="originalImage", type="string", access="g",
-  #        description="""Serialized version of the original, unfiltered version of the
-  #        current image. To deserialize:
-  #        from nupicvision.image import deserializeImage
-  #        originalImage = deserializeImage(sensor.getParameter('originalImage'))"""),
-  #      NodeSpecItem(name="locationImage", type="string", access="g",
-  #        description="""Serialized version of the current 'location image', which shows the
-  #        position of the sensor overlaid on the filtered image (optionally, the
-  #        original image). To deserialize:
-  #        from nupicvision.image import deserializeImage
-  #        locationImage = deserializeImage(sensor.getParameter('locationImage'))"""),
-  #      NodeSpecItem(name="minimalBoundingBox", type="bool", constraints="bool", access="cgs",
-  #        description="""Whether the bounding box found by looking at the
-  #          image background should be set even if it touches one of the sides of
-  #          the image. Set to False to avoid chopping edges off certain images, or
-  #          True if that is not an issue and you wish to use a sweeping explorer."""),
-  #      NodeSpecItem(name="auxDataWidth", type="int", access="cgs",
-  #        description="""The number of elements in in the auxiliary data vector."""),
-  #      NodeSpecItem(name="auxData", type="PyObject", access="g",
-  #        description="""List of Auxiliary Data for every image in the image list"""),
-  #      NodeSpecItem(name="metadata", type="string", access="g",
-  #        description="""Parameter that contains a dict of metadata for the most
-  #                       recently generated output image."""),
-  #    ]
-  #  )
-  #  return out + parent
 
-  #---------------------------------------------------------------------------------
   def initialize(self, dims, splitterMaps):
     pass
 
 
-  #---------------------------------------------------------------------------------
   def getOutputElementCount(self, name):
     if name == 'auxDataOut':
       return self._auxDataWidth if self._auxDataWidth else 0
@@ -3073,13 +2867,22 @@ class ImageSensor(PyRegion):
   #  # as a problem with pathnames on windows
   #  exec(command.replace("\\", "\\\\"))
 
+
+
 def serializeCategoryInfo(categoryInfo):
-  return [[name, serializeImage(image)] for name, image in categoryInfo]
+  return yaml.dump([[name, b64encode(serializeImage(image))]
+                     for name, image in categoryInfo])
+
+
 
 def deserializeCategoryInfo(sCategoryInfo):
-  if sCategoryInfo is None: return []
-  return [[name, (deserializeImage(sImage) if sImage is not None else None)]
-      for name, sImage in sCategoryInfo]
+  if yaml.load(sCategoryInfo) is None: return []
+  return [[name, (deserializeImage(b64decode(sImage))
+                  if sImage is not None
+                  else None)]
+          for name, sImage in yaml.load(sCategoryInfo)]
+
+
 
 def _serializeImageList(imageList):
   sImageList = []
@@ -3091,6 +2894,8 @@ def _serializeImageList(imageList):
       sImageList[i]['filtered'] = _serializeAllImages(sImageList[i]['filtered'])
   return sImageList
 
+
+
 def _deserializeImageList(sImageList):
   imageList = sImageList
   for i in xrange(len(imageList)):
@@ -3100,11 +2905,15 @@ def _deserializeImageList(sImageList):
       imageList[i]['filtered'] = _deserializeAllImages(imageList[i]['filtered'])
   return imageList
 
+
+
 def _serializeAllImages(old):
   new = {}
   for key in old:
     new[key] = [serializeImage(image) for image in old[key]]
   return new
+
+
 
 def _deserializeAllImages(old):
   new = {}
