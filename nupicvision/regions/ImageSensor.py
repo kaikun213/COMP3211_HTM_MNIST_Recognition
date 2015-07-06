@@ -125,7 +125,7 @@ class ImageSensor(PyRegion):
 
   def _init(self, width=1, height=1, depth=1, mode='gray',
       blankWithReset=False, background=255, invertOutput=False,
-      filters=[], postFilters=[], explorer="Flash",
+      filters=None, postFilters=None, explorer="[\"Flash\"]",
       categoryOutputFile="", logText=False, logOutputImages=False,
       logOriginalImages=False, logFilteredImages=False,
       logLocationImages=False, logLocationOnOriginalImage=False,
@@ -148,14 +148,13 @@ class ImageSensor(PyRegion):
       image, and also for finding the bounding box in the absence of a mask.
     invertOutput -- Inverts the output of the node (e.g. white pixels
       become black).
-    filters -- List of filters to apply to each image. Each element in
-      the list should be either a string (just the filter name) or a list
-      containing both the filter name and a dictionary specifying its
+    filters -- JSON serialized list of filters to apply to each image. Each
+      element in the list should be either a string (just the filter name) or a
+      list containing both the filter name and a dictionary specifying its
       arguments.
-    explorer -- Explorer (used to move the sensor through the input
-      space). Specify as a string (just the explorer name) or a list
-      containing both the explorer name and a dictionary specifying its
-      arguments.
+    explorer -- JSON serialized list containing either a single string
+      (the name of the explorer) or a list containing both the explorer name
+      and a dictionary specifying its arguments.
     categoryOutputFile -- Name of file to which to write category number
       on each compute (useful for analyzing network accuracy after inference).
     logText -- Toggle for verbose logging to imagesensor_log.txt.
@@ -174,6 +173,7 @@ class ImageSensor(PyRegion):
       image).
     logBoundingBox -- Toggle for writing a log containing the bounding
       box information for each output image.
+    logDir --
     automaskingTolerance -- Affects the process by which bounding box masks
       are automatically generated from images based on similarity to the
       specified 'background' pixel value.  The bounding box will enclose all
@@ -210,7 +210,9 @@ class ImageSensor(PyRegion):
       elif dataOut == (depth * height * width):
         pass
       else:
-        if not containsConvolutionPostFilter(postFilters):
+        if not containsConvolutionPostFilter(json.loads(postFilters)
+                                             if postFilters
+                                             else []):
           raise RuntimeError("The 'dataOut' output element count must be equal"
                              " to depth * height * width.")
 
@@ -308,12 +310,15 @@ class ImageSensor(PyRegion):
     self._categoryOutputFile = None  # To write the category on each iteration
     self._iteration = 0  # Internal iteration counter
     self.explorer = None
-    self._setFilters(filters)
-    self._setPostFilters(postFilters)
-    self._setExplorer(explorer)
+    self._setFilters(json.loads(filters) if filters else [])
+    self._setPostFilters(json.loads(postFilters) if postFilters else [])
+    self._setExplorer(json.loads(explorer))
     self._holdForOffset = 0
 
-    self._cubeOutputs = not containsConvolutionPostFilter(postFilters)
+    self._cubeOutputs = (
+      not containsConvolutionPostFilter(json.loads(postFilters)
+                                        if postFilters
+                                        else []))
     self._auxDataWidth = auxDataWidth
 
   def __init__(self, *args, **kw):
@@ -2131,15 +2136,15 @@ class ImageSensor(PyRegion):
 
     if parameterName == 'filters':
       # Remove filter objects
-      return [filter[:2] for filter in self.filters]
+      return json.dumps([filter[:2] for filter in self.filters])
 
     elif parameterName == 'postFilters':
       # Remove filter objects
-      return [filter[:2] for filter in self.postFilters]
+      return json.dumps([filter[:2] for filter in self.postFilters])
 
     elif parameterName == 'explorer':
       # Remove explorer object
-      return self.explorer[:2]
+      return json.dumps(self.explorer[:2])
 
     elif parameterName == 'numImages':
       return len(self._imageList)
@@ -2154,20 +2159,21 @@ class ImageSensor(PyRegion):
       return self.width * self.height * self.depth
 
     elif parameterName == 'position':
-      return self.explorer[2].position
+      return json.dumps(self.explorer[2].position)
 
     elif parameterName == 'imageInfo':
-      return [self._getImageInfo(i) for i in xrange(len(self._imageList))]
+      return json.dumps([self._getImageInfo(i)
+                         for i in xrange(len(self._imageList))])
 
     elif parameterName == 'prevImageInfo':
       if self.prevPosition and self._imageList:
-        return self._getImageInfo(self.prevPosition['image'])
+        return json.dumps(self._getImageInfo(self.prevPosition['image']))
       else:
         return None
 
     elif parameterName == 'nextImageInfo':
       if self.explorer[2].position and self._imageList:
-        return self._getImageInfo()
+        return json.dumps(self._getImageInfo())
       else:
         return None
 
@@ -2231,17 +2237,18 @@ class ImageSensor(PyRegion):
     else:
       return PyRegion.getParameter(self, parameterName, index)
 
+
   def setParameter(self, parameterName, index, parameterValue):
     """Set the value of an ImageSensor parameter."""
 
     if parameterName == 'filters':
-      self._setFilters(parameterValue)
+      self._setFilters(json.loads(parameterValue))
 
     elif parameterName == 'postFilters':
-      self._setPostFilters(parameterValue)
+      self._setPostFilters(json.loads(parameterValue))
 
     elif parameterName == 'explorer':
-      self._setExplorer(parameterValue)
+      self._setExplorer(json.loads(parameterValue))
 
     elif parameterName == 'enabledWidth':
       self.enabledWidth = parameterValue
@@ -2303,12 +2310,9 @@ class ImageSensor(PyRegion):
                 % parameterName)
       setattr(self, parameterName, parameterValue)
 
+
   def __getstate__(self):
     """Get serializable state."""
-
-    # Serialize images stored in categoryInfo
-    serializedCategoryInfo = [(name, b64encode(imageStr)) for name, imageStr
-                              in self.getParameter('categoryInfo')]
 
     # Get the object-less filters and explorer
     resetFilters = self.getParameter('filters')
@@ -2324,14 +2328,15 @@ class ImageSensor(PyRegion):
       state[name] = getattr(self, name)
 
     # Add attributes that have been manipulated
-    state.update({'serializedCategoryInfo': serializedCategoryInfo,
+    state.update({'serializedCategoryInfo': self.getParameter('categoryInfo'),
       'resetExplorer': resetExplorer, 'resetFilters': resetFilters,
       'resetPostFilters': resetPostFilters})
 
     # Save a version number
-    state['version'] = 1.7
+    state['version'] = 999.0
 
     return state
+
 
   def __setstate__(self, state):
     """Set state from serialized state."""
@@ -2353,11 +2358,6 @@ class ImageSensor(PyRegion):
     for name in state:
       setattr(self, name, state[name])
 
-    # Deserialize images stored in categoryInfo (not base64-encoded)
-    if version >= 1.64:
-      # Undo base64 encoding
-      serializedCategoryInfo = [(name, b64decode(imageStr)) for name, imageStr
-                                in serializedCategoryInfo]
     self.setParameter('categoryInfo', -1, serializedCategoryInfo)
 
     # Set variables that weren't saved
@@ -2384,10 +2384,11 @@ class ImageSensor(PyRegion):
 
     # Set up the filters and explorer
     self.explorer = None
-    self._setFilters(resetFilters)
-    self._setPostFilters(resetPostFilters)
-    self._setExplorer(resetExplorer)
-    self._cubeOutputs = not containsConvolutionPostFilter(resetPostFilters)
+    self.setParameter('filters', -1, resetFilters)
+    self.setParameter('postFilters', -1, resetPostFilters)
+    self.setParameter('explorer', -1, resetExplorer)
+    self._cubeOutputs = (
+      not containsConvolutionPostFilter(json.loads(resetPostFilters)))
 
     # Backward compatibility
     if version < 1.63:
@@ -2405,6 +2406,7 @@ class ImageSensor(PyRegion):
       # Set to True, the old behavior, though it is set to False by default
       # in new networks
       self.minimalBoundingBox = True
+
 
   @classmethod
   def getSpec(cls):
@@ -2522,9 +2524,10 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         filters=dict(
-          description="""List of filters to apply to each image. Each element in the
-            list should be either a string (just the filter name) or a list containing
-            both the filter name and a dictionary specifying its arguments.""",
+          description="""JSON serialized list of filters to apply to each
+            image. Each element in the list should be either a string (just
+            the filter name) or a list containing both the filter name and a
+            dictionary specifying its arguments.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2613,8 +2616,8 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         nextImageInfo=dict(
-          description="""Dictionary of information for the image which will be used for the next
-            compute.""",
+          description="""JSON serialized dictionary of information for the
+            image which will be used for the next compute.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2644,8 +2647,11 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         explorer=dict(
-          description="""Explorer (used to move the sensor through the input space).
-            Specify as a string (just the explorer name) or a list containing both the
+          description="""A JSON serialized list containing the name of an
+            explorer (used to move the sensor through the input space) and
+            (optionally) a dictionary of arguments for the explorer. To use the
+            default args for an explorer, specify only a string in the list
+            (just the explorer name) or for advanced configuration specify the
             explorer name and a dictionary specifying its arguments.""",
           dataType='Byte',
           count=0,
@@ -2653,8 +2659,8 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         imageInfo=dict(
-          description="""A list with a dictionary of information for each image that has
-            been loaded.""",
+          description="""A JSON serialized list with a dictionary of
+            information for each image that has been loaded.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2714,15 +2720,16 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         position=dict(
-          description="""The position of the sensor that will be used for the *next* compute,
-            as a dictionary.""",
+          description="""JSON serialized dictionary containing the position of
+            the sensor that will be used for the *next* compute.""",
           dataType='Byte',
           count=0,
           constraints='',
           accessMode='Read'
         ),
         auxData=dict(
-          description="""List of Auxiliary Data for every image in the image list""",
+          description="""JSON serialized list of Auxiliary Data for every image
+            in the image list""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2738,9 +2745,10 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         categoryInfo=dict(
-          description="""A list with a tuple for each category that the sensor has learned. The
-            tuple contains the category name (i.e. 'dog') and a serialized version of
-            an example image for the category. To deserialize:
+          description="""JSON serialized list with a tuple for each category
+            that the sensor has learned. The tuple contains the category name
+            (i.e. 'dog') and a serialized version of an example image for the
+            category. To deserialize the image:
             from nupicvision.regions.ImageSensor import deserializeCategoryInfo
             categoryInfo = deserializeCategoryInfo(sensor.getParameter('categoryInfo'))""",
           dataType='Byte',
@@ -2749,7 +2757,8 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         prevImageInfo=dict(
-          description="""Dictionary of information for the image used during the previous compute.""",
+          description="""JSON serialized dictionary of information for the
+            image used during the previous compute.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2809,10 +2818,11 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         postFilters=dict(
-          description="""List of filters to apply to each image just before the image
-            is sent to the network. Each element in the list should either be a string
-            (just the filter name) or a list containing both the filter name and a
-            dictionary specifying its arguments.""",
+          description="""JSON serialized list of filters to apply to each image
+            just before the image is sent to the network. Each element in the list
+            should either be a string (just the filter name) or a list
+            containing both the filter name and a dictionary specifying its
+            arguments.""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2857,13 +2867,22 @@ class ImageSensor(PyRegion):
   #  # as a problem with pathnames on windows
   #  exec(command.replace("\\", "\\\\"))
 
+
+
 def serializeCategoryInfo(categoryInfo):
-  return [[name, serializeImage(image)] for name, image in categoryInfo]
+  return json.dumps([[name, b64encode(serializeImage(image))]
+                     for name, image in categoryInfo])
+
+
 
 def deserializeCategoryInfo(sCategoryInfo):
-  if sCategoryInfo is None: return []
-  return [[name, (deserializeImage(sImage) if sImage is not None else None)]
-      for name, sImage in sCategoryInfo]
+  if json.loads(sCategoryInfo) is None: return []
+  return [[name, (deserializeImage(b64decode(sImage))
+                  if sImage is not None
+                  else None)]
+          for name, sImage in json.loads(sCategoryInfo)]
+
+
 
 def _serializeImageList(imageList):
   sImageList = []
