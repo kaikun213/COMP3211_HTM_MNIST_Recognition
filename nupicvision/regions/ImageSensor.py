@@ -27,11 +27,11 @@ from base64 import b64encode, b64decode
 import copy
 import cPickle as pickle
 import inspect
-import json
 import os
 import re
 import shutil
 from unicodedata import normalize
+import yaml
 
 import numpy
 from PIL import (Image,
@@ -210,7 +210,7 @@ class ImageSensor(PyRegion):
       elif dataOut == (depth * height * width):
         pass
       else:
-        if not containsConvolutionPostFilter(json.loads(postFilters)
+        if not containsConvolutionPostFilter(yaml.load(postFilters)
                                              if postFilters
                                              else []):
           raise RuntimeError("The 'dataOut' output element count must be equal"
@@ -310,13 +310,13 @@ class ImageSensor(PyRegion):
     self._categoryOutputFile = None  # To write the category on each iteration
     self._iteration = 0  # Internal iteration counter
     self.explorer = None
-    self._setFilters(json.loads(filters) if filters else [])
-    self._setPostFilters(json.loads(postFilters) if postFilters else [])
-    self._setExplorer(json.loads(explorer))
+    self._setFilters(yaml.load(filters) if filters else [])
+    self._setPostFilters(yaml.load(postFilters) if postFilters else [])
+    self._setExplorer(yaml.load(explorer))
     self._holdForOffset = 0
 
     self._cubeOutputs = (
-      not containsConvolutionPostFilter(json.loads(postFilters)
+      not containsConvolutionPostFilter(yaml.load(postFilters)
                                         if postFilters
                                         else []))
     self._auxDataWidth = auxDataWidth
@@ -2136,15 +2136,15 @@ class ImageSensor(PyRegion):
 
     if parameterName == 'filters':
       # Remove filter objects
-      return json.dumps([filter[:2] for filter in self.filters])
+      return yaml.dump([filter[:2] for filter in self.filters])
 
     elif parameterName == 'postFilters':
       # Remove filter objects
-      return json.dumps([filter[:2] for filter in self.postFilters])
+      return yaml.dump([filter[:2] for filter in self.postFilters])
 
     elif parameterName == 'explorer':
       # Remove explorer object
-      return json.dumps(self.explorer[:2])
+      return yaml.dump(self.explorer[:2])
 
     elif parameterName == 'numImages':
       return len(self._imageList)
@@ -2159,21 +2159,21 @@ class ImageSensor(PyRegion):
       return self.width * self.height * self.depth
 
     elif parameterName == 'position':
-      return json.dumps(self.explorer[2].position)
+      return yaml.dump(self.explorer[2].position)
 
     elif parameterName == 'imageInfo':
-      return json.dumps([self._getImageInfo(i)
+      return yaml.dump([self._getImageInfo(i)
                          for i in xrange(len(self._imageList))])
 
     elif parameterName == 'prevImageInfo':
       if self.prevPosition and self._imageList:
-        return json.dumps(self._getImageInfo(self.prevPosition['image']))
+        return yaml.dump(self._getImageInfo(self.prevPosition['image']))
       else:
         return None
 
     elif parameterName == 'nextImageInfo':
       if self.explorer[2].position and self._imageList:
-        return json.dumps(self._getImageInfo())
+        return yaml.dump(self._getImageInfo())
       else:
         return None
 
@@ -2242,13 +2242,13 @@ class ImageSensor(PyRegion):
     """Set the value of an ImageSensor parameter."""
 
     if parameterName == 'filters':
-      self._setFilters(json.loads(parameterValue))
+      self._setFilters(yaml.load(parameterValue))
 
     elif parameterName == 'postFilters':
-      self._setPostFilters(json.loads(parameterValue))
+      self._setPostFilters(yaml.load(parameterValue))
 
     elif parameterName == 'explorer':
-      self._setExplorer(json.loads(parameterValue))
+      self._setExplorer(yaml.load(parameterValue))
 
     elif parameterName == 'enabledWidth':
       self.enabledWidth = parameterValue
@@ -2388,7 +2388,7 @@ class ImageSensor(PyRegion):
     self.setParameter('postFilters', -1, resetPostFilters)
     self.setParameter('explorer', -1, resetExplorer)
     self._cubeOutputs = (
-      not containsConvolutionPostFilter(json.loads(resetPostFilters)))
+      not containsConvolutionPostFilter(yaml.load(resetPostFilters)))
 
     # Backward compatibility
     if version < 1.63:
@@ -2870,17 +2870,17 @@ class ImageSensor(PyRegion):
 
 
 def serializeCategoryInfo(categoryInfo):
-  return json.dumps([[name, b64encode(serializeImage(image))]
+  return yaml.dump([[name, b64encode(serializeImage(image))]
                      for name, image in categoryInfo])
 
 
 
 def deserializeCategoryInfo(sCategoryInfo):
-  if json.loads(sCategoryInfo) is None: return []
+  if yaml.load(sCategoryInfo) is None: return []
   return [[name, (deserializeImage(b64decode(sImage))
                   if sImage is not None
                   else None)]
-          for name, sImage in json.loads(sCategoryInfo)]
+          for name, sImage in yaml.load(sCategoryInfo)]
 
 
 
