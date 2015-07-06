@@ -70,32 +70,32 @@ CPP SP seed                 = 1956
 
 
 DEFAULT_IMAGESENSOR_PARAMS ={
-  'width': 32,
-  'height': 32,
-  'mode': 'bw',
-  'background': 0,
-  'explorer': yaml.dump(["RandomFlash", {"replacement": False}])
+    "width": 32,
+    "height": 32,
+    "mode": "bw",
+    "background": 0,
+    "explorer": yaml.dump(["RandomFlash", {"replacement": False}])
 }
 
 DEFAULT_SP_PARAMS = {
-  'columnCount': 4096,
-  'spatialImp': 'cpp',
-  'inputWidth': 1024,
-  'spVerbosity': 1,
-  'synPermConnected': 0.2,
-  'synPermActiveInc': 0.0,
-  'synPermInactiveDec': 0.0,
-  'seed': 1956,
-  'numActiveColumnsPerInhArea': 240,
-  'globalInhibition': 1,
-  'potentialPct': 0.9,
-  'maxBoost': 1.0
+    "columnCount": 4096,
+    "spatialImp": "cpp",
+    "inputWidth": 1024,
+    "spVerbosity": 1,
+    "synPermConnected": 0.2,
+    "synPermActiveInc": 0.0,
+    "synPermInactiveDec": 0.0,
+    "seed": 1956,
+    "numActiveColumnsPerInhArea": 240,
+    "globalInhibition": 1,
+    "potentialPct": 0.9,
+    "maxBoost": 1.0
 }
 
 DEFAULT_CLASSIFIER_PARAMS = {
-  'distThreshold': 0.000001,
-  'maxCategoryCount': 10,
-  #'distanceMethod': 'rawOverlap',  # Default is Euclidean distance
+    "distThreshold": 0.000001,
+    "maxCategoryCount": 10,
+    #"distanceMethod": "rawOverlap",  # Default is Euclidean distance
 }
 
 
@@ -134,44 +134,44 @@ def createNetwork():
 
 def trainNetwork(net, networkFile="mnist_net.nta"):
   # Some stuff we will need later
-  sensor = net.regions['sensor']
+  sensor = net.regions["sensor"]
   sp = net.regions["SP"]
   pysp = sp.getSelf()
-  classifier = net.regions['classifier']
-  dutyCycles = numpy.zeros(DEFAULT_SP_PARAMS['columnCount'], dtype=GetNTAReal())
+  classifier = net.regions["classifier"]
+  dutyCycles = numpy.zeros(DEFAULT_SP_PARAMS["columnCount"], dtype=GetNTAReal())
 
   print "============= Loading training images ================="
   t1 = time.time()
   sensor.executeCommand(["loadMultipleImages", "mnist/training"])
-  numTrainingImages = sensor.getParameter('numImages')
+  numTrainingImages = sensor.getParameter("numImages")
   start = time.time()
   print "Load time for training images:",start-t1
   print "Number of training images",numTrainingImages
 
   # First train just the SP
   print "============= SP training ================="
-  classifier.setParameter('inferenceMode', 0)
-  classifier.setParameter('learningMode', 0)
-  sp.setParameter('learningMode', 1)
-  sp.setParameter('inferenceMode', 0)
+  classifier.setParameter("inferenceMode", 0)
+  classifier.setParameter("learningMode", 0)
+  sp.setParameter("learningMode", 1)
+  sp.setParameter("inferenceMode", 0)
   nTrainingIterations = numTrainingImages
   for i in range(nTrainingIterations):
     net.run(1)
     dutyCycles += pysp._spatialPoolerOutput
     if i%(nTrainingIterations/100)== 0:
-      print "Iteration",i,"Category:",sensor.getOutputData('categoryOut')
+      print "Iteration",i,"Category:",sensor.getOutputData("categoryOut")
 
   # Now train just the classifier sequentially on all training images
   print "============= Classifier training ================="
-  sensor.setParameter('explorer',yaml.dump(['Flash']))
-  classifier.setParameter('inferenceMode', 0)
-  classifier.setParameter('learningMode', 1)
-  sp.setParameter('learningMode', 0)
-  sp.setParameter('inferenceMode', 1)
+  sensor.setParameter("explorer",yaml.dump(["Flash"]))
+  classifier.setParameter("inferenceMode", 0)
+  classifier.setParameter("learningMode", 1)
+  sp.setParameter("learningMode", 0)
+  sp.setParameter("inferenceMode", 1)
   for i in range(numTrainingImages):
     net.run(1)
     if i%(numTrainingImages/100)== 0:
-      print "Iteration",i,"Category:",sensor.getOutputData('categoryOut')
+      print "Iteration",i,"Category:",sensor.getOutputData("categoryOut")
 
   # Save the trained network
   net.save(networkFile)
@@ -187,8 +187,8 @@ def trainNetwork(net, networkFile="mnist_net.nta"):
             (dutyCycles>tenPct).sum()
   print "Number of columns that won for > 20% patterns",\
             (dutyCycles>2*tenPct).sum()
-  print "Num categories learned",classifier.getParameter('categoryCount')
-  print "Number of patterns stored",classifier.getParameter('patternCount')
+  print "Num categories learned",classifier.getParameter("categoryCount")
+  print "Number of patterns stored",classifier.getParameter("patternCount")
 
   return net
 
@@ -196,29 +196,30 @@ def trainNetwork(net, networkFile="mnist_net.nta"):
 
 def testNetwork(testPath="mnist/testing", savedNetworkFile="mnist_net.nta"):
   net = Network(savedNetworkFile)
-  sensor = net.regions['sensor']
+  sensor = net.regions["sensor"]
   sp = net.regions["SP"]
-  classifier = net.regions['classifier']
+  classifier = net.regions["classifier"]
 
   print "Reading test images"
   sensor.executeCommand(["loadMultipleImages",testPath])
-  numTestImages = sensor.getParameter('numImages')
+  numTestImages = sensor.getParameter("numImages")
   print "Number of test images",numTestImages
 
   start = time.time()
 
   # Various region parameters
-  sensor.setParameter('explorer', yaml.dump(["RandomFlash", {"replacement": False}]))
-  classifier.setParameter('inferenceMode', 1)
-  classifier.setParameter('learningMode', 0)
-  sp.setParameter('inferenceMode', 1)
-  sp.setParameter('learningMode', 0)
+  sensor.setParameter("explorer", yaml.dump(["RandomFlash",
+                                             {"replacement": False}]))
+  classifier.setParameter("inferenceMode", 1)
+  classifier.setParameter("learningMode", 0)
+  sp.setParameter("inferenceMode", 1)
+  sp.setParameter("learningMode", 0)
 
   numCorrect = 0
   for i in range(numTestImages):
     net.run(1)
-    inferredCategory = classifier.getOutputData('categoriesOut').argmax()
-    if sensor.getOutputData('categoryOut') == inferredCategory:
+    inferredCategory = classifier.getOutputData("categoriesOut").argmax()
+    if sensor.getOutputData("categoryOut") == inferredCategory:
       numCorrect += 1
     if i%(numTestImages/100)== 0:
       print "Iteration",i,"numCorrect=",numCorrect
@@ -233,16 +234,16 @@ def testNetwork(testPath="mnist/testing", savedNetworkFile="mnist_net.nta"):
 
 def checkNet(net):
   # DEBUG: Verify we set parameters correctly
-  # This is the 'correct' way to access internal region parameters. It will
+  # This is the "correct" way to access internal region parameters. It will
   # work across all languages
-  sensor = net.regions['sensor']
-  classifier = net.regions['classifier']
+  sensor = net.regions["sensor"]
+  classifier = net.regions["classifier"]
   sp = net.regions["SP"]
-  width = sensor.getParameter('width')
-  height = sensor.getParameter('height')
+  width = sensor.getParameter("width")
+  height = sensor.getParameter("height")
   print "width/height=",width,height
-  print "Classifier distance threshold",classifier.getParameter('distThreshold')
-  print "Log path:",sp.getParameter('logPathInput')
+  print "Classifier distance threshold",classifier.getParameter("distThreshold")
+  print "Log path:",sp.getParameter("logPathInput")
 
   print "min/max phase",net.getMinEnabledPhase(), net.getMaxEnabledPhase()
 
@@ -251,8 +252,8 @@ def checkNet(net):
   pysensor = sensor.getSelf()
   print "Python width/height",pysensor.height, pysensor.width
 
-  print "Explorer:",pysensor.getParameter('explorer')
-  print "Filters:",pysensor.getParameter('filters')
+  print "Explorer:",pysensor.getParameter("explorer")
+  print "Filters:",pysensor.getParameter("filters")
 
 
 
