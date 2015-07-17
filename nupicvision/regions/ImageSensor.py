@@ -2200,8 +2200,8 @@ class ImageSensor(PyRegion):
     elif parameterName == 'originalImage':
       if not self._imageList or self._iteration == 0:
         return
-      return serializeImage(
-        self._getOriginalImage(self.prevPosition['image']).split()[0])
+      return yaml.dump(serializeImage(
+          self._getOriginalImage().split()[0]))
 
     elif parameterName == 'locationImage':
       if not self._imageList or self._iteration == 0 or not self.prevPosition:
@@ -2479,10 +2479,10 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         originalImage=dict(
-          description="""Serialized version of the original, unfiltered version of the
+          description="""YAML serialized version of the original, unfiltered version of the
             current image. To deserialize:
             from nupicvision.image import deserializeImage
-            originalImage = deserializeImage(sensor.getParameter('originalImage'))""",
+            originalImage = deserializeImage(yaml.load((sensor.getParameter('originalImage')))""",
           dataType='Byte',
           count=0,
           constraints='',
