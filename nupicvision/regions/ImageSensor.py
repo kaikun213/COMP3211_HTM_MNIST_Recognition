@@ -148,11 +148,11 @@ class ImageSensor(PyRegion):
       image, and also for finding the bounding box in the absence of a mask.
     invertOutput -- Inverts the output of the node (e.g. white pixels
       become black).
-    filters -- JSON serialized list of filters to apply to each image. Each
+    filters -- YAML serialized list of filters to apply to each image. Each
       element in the list should be either a string (just the filter name) or a
       list containing both the filter name and a dictionary specifying its
       arguments.
-    explorer -- JSON serialized list containing either a single string
+    explorer -- YAML serialized list containing either a single string
       (the name of the explorer) or a list containing both the explorer name
       and a dictionary specifying its arguments.
     categoryOutputFile -- Name of file to which to write category number
@@ -2184,23 +2184,24 @@ class ImageSensor(PyRegion):
       if self._iteration == 0:
         return
       if self.depth == 1:
-        return serializeImage(self.outputImage.split()[0])
+        return yaml.dump(serializeImage(self.outputImage.split()[0]))
       else:
-        return [serializeImage(image.split()[0]) for image in self.outputImage]
+        return yaml.dump([serializeImage(image.split()[0])
+                          for image in self.outputImage])
 
     elif parameterName == 'outputImageWithAlpha':
       if self._iteration == 0:
         return
       if self.depth == 1:
-        return serializeImage(self.outputImage)
+        return yaml.dump(serializeImage(self.outputImage))
       else:
-        return [serializeImage(image) for image in self.outputImage]
+        return yaml.dump([serializeImage(image) for image in self.outputImage])
 
     elif parameterName == 'originalImage':
       if not self._imageList or self._iteration == 0:
         return
-      return serializeImage(
-        self._getOriginalImage(self.prevPosition['image']).split()[0])
+      return yaml.dump(serializeImage(
+          self._getOriginalImage().split()[0]))
 
     elif parameterName == 'locationImage':
       if not self._imageList or self._iteration == 0 or not self.prevPosition:
@@ -2468,31 +2469,31 @@ class ImageSensor(PyRegion):
       ),
       parameters = dict(
         outputImageWithAlpha=dict(
-          description="""Serialized version of the current output image(s) with the alpha channel.
+          description="""YAML serialized version of the current output image(s) with the alpha channel.
             If depth > 1, multiple serialized images will be returned in a list. To deserialize:
             from nupicvision.image import deserializeImage
-            outputImage = deserializeImage(sensor.getParameter('outputImageWithAlpha'))""",
+            outputImage = deserializeImage(yaml.load((sensor.getParameter('outputImageWithAlpha')))""",
           dataType='Byte',
           count=0,
           constraints='',
           accessMode='Read'
         ),
         originalImage=dict(
-          description="""Serialized version of the original, unfiltered version of the
+          description="""YAML serialized version of the original, unfiltered version of the
             current image. To deserialize:
             from nupicvision.image import deserializeImage
-            originalImage = deserializeImage(sensor.getParameter('originalImage'))""",
+            originalImage = deserializeImage(yaml.load((sensor.getParameter('originalImage')))""",
           dataType='Byte',
           count=0,
           constraints='',
           accessMode='Read'
         ),
         locationImage=dict(
-          description="""Serialized version of the current 'location image', which shows the
+          description="""YAML serialized version of the current 'location image', which shows the
             position of the sensor overlaid on the filtered image (optionally, the
             original image). To deserialize:
             from nupicvision.image import deserializeImage
-            locationImage = deserializeImage(sensor.getParameter('locationImage'))""",
+            locationImage = deserializeImage(yaml.load((sensor.getParameter('locationImage')))""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2524,7 +2525,7 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         filters=dict(
-          description="""JSON serialized list of filters to apply to each
+          description="""YAML serialized list of filters to apply to each
             image. Each element in the list should be either a string (just
             the filter name) or a list containing both the filter name and a
             dictionary specifying its arguments.""",
@@ -2569,10 +2570,12 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         outputImage=dict(
-          description="""Serialized version of the current output image(s). If depth > 1,
-            multiple serialized images will be returned in a list. To deserialize:
+          description="""YAML serialized version of the current output
+            image(s). If depth > 1, multiple serialized images will be returned
+            in a list. To deserialize:
             from nupicvision.image import deserializeImage
-            outputImage = deserializeImage(sensor.getParameter('outputImage'))""",
+            outputImage = deserializeImage(
+                yaml.load(sensor.getParameter('outputImage')))""",
           dataType='Byte',
           count=0,
           constraints='',
@@ -2616,7 +2619,7 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         nextImageInfo=dict(
-          description="""JSON serialized dictionary of information for the
+          description="""YAML serialized dictionary of information for the
             image which will be used for the next compute.""",
           dataType='Byte',
           count=0,
@@ -2647,7 +2650,7 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         explorer=dict(
-          description="""A JSON serialized list containing the name of an
+          description="""A YAML serialized list containing the name of an
             explorer (used to move the sensor through the input space) and
             (optionally) a dictionary of arguments for the explorer. To use the
             default args for an explorer, specify only a string in the list
@@ -2659,7 +2662,7 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         imageInfo=dict(
-          description="""A JSON serialized list with a dictionary of
+          description="""A YAML serialized list with a dictionary of
             information for each image that has been loaded.""",
           dataType='Byte',
           count=0,
@@ -2720,7 +2723,7 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         position=dict(
-          description="""JSON serialized dictionary containing the position of
+          description="""YAML serialized dictionary containing the position of
             the sensor that will be used for the *next* compute.""",
           dataType='Byte',
           count=0,
@@ -2728,7 +2731,7 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         auxData=dict(
-          description="""JSON serialized list of Auxiliary Data for every image
+          description="""YAML serialized list of Auxiliary Data for every image
             in the image list""",
           dataType='Byte',
           count=0,
@@ -2745,7 +2748,7 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         categoryInfo=dict(
-          description="""JSON serialized list with a tuple for each category
+          description="""YAML serialized list with a tuple for each category
             that the sensor has learned. The tuple contains the category name
             (i.e. 'dog') and a serialized version of an example image for the
             category. To deserialize the image:
@@ -2757,7 +2760,7 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         prevImageInfo=dict(
-          description="""JSON serialized dictionary of information for the
+          description="""YAML serialized dictionary of information for the
             image used during the previous compute.""",
           dataType='Byte',
           count=0,
@@ -2818,7 +2821,7 @@ class ImageSensor(PyRegion):
           accessMode='Read'
         ),
         postFilters=dict(
-          description="""JSON serialized list of filters to apply to each image
+          description="""YAML serialized list of filters to apply to each image
             just before the image is sent to the network. Each element in the list
             should either be a string (just the filter name) or a list
             containing both the filter name and a dictionary specifying its
@@ -2861,11 +2864,7 @@ class ImageSensor(PyRegion):
     else:
       raise Exception('Unknown output: ' + name)
 
-  #def interpret2(self, command):
-  #  """NuPIC 2 replacement for interpret in NuPIC 1 nodes"""
-  #  # This process effectively strips out one level of quotes; manifests
-  #  # as a problem with pathnames on windows
-  #  exec(command.replace("\\", "\\\\"))
+
 
 
 
