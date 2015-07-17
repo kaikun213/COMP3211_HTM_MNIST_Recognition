@@ -2570,10 +2570,12 @@ class ImageSensor(PyRegion):
           accessMode='ReadWrite'
         ),
         outputImage=dict(
-          description="""YAML serialized version of the current output image(s). If depth > 1,
-            multiple serialized images will be returned in a list. To deserialize:
+          description="""YAML serialized version of the current output
+            image(s). If depth > 1, multiple serialized images will be returned
+            in a list. To deserialize:
             from nupicvision.image import deserializeImage
-            outputImage = deserializeImage(yaml.load(sensor.getParameter('outputImage')))""",
+            outputImage = deserializeImage(
+                yaml.load(sensor.getParameter('outputImage')))""",
           dataType='Byte',
           count=0,
           constraints='',
