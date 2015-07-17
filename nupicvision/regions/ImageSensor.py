@@ -23,28 +23,31 @@
 This file defines ImageSensor, an extensible sensor for images.
 """
 
+from base64 import b64encode, b64decode
+import copy
+import cPickle as pickle
+import inspect
 import os
 import re
 import shutil
-import inspect
-import cPickle as pickle
-import copy
-from base64 import b64encode, b64decode
 from unicodedata import normalize
 import yaml
 
-from nupic.regions.PyRegion import PyRegion
 import numpy
 from PIL import (Image,
                  ImageChops,
                  ImageDraw)
+
 from nupic.bindings.math import GetNTAReal
-
-RealNumpyDType = GetNTAReal()
-
-from nupicvision.image import (serializeImage,
+from nupic.image import (serializeImage,
                          deserializeImage,
                          imageExtensions)
+from nupic.regions.PyRegion import PyRegion
+
+
+_REAL_NUMPY_DTYPE = GetNTAReal()
+
+
 
 def containsConvolutionPostFilter(postFilters):
   """Determine if the post filters contain a convolution filter"""
@@ -130,7 +133,7 @@ class ImageSensor(PyRegion):
       automaskingTolerance=0, automaskingPadding=0, memoryLimit=100,
       minimalBoundingBox=False, dataOut=None, categoryOut=None,
       partitionOut=None, resetOut=None, bboxOut=None, alphaOut=None,
-      useAux=False, auxDataOut=None, auxDataWidth=None, **keywds):
+      auxDataWidth=None, **keywds):
     """
     width -- Width of the sensor's output to the network (pixels).
     height -- Height of the sensor's output to the network (pixels).
@@ -170,6 +173,7 @@ class ImageSensor(PyRegion):
       image).
     logBoundingBox -- Toggle for writing a log containing the bounding
       box information for each output image.
+    logDir --
     automaskingTolerance -- Affects the process by which bounding box masks
       are automatically generated from images based on similarity to the
       specified 'background' pixel value.  The bounding box will enclose all
@@ -194,7 +198,6 @@ class ImageSensor(PyRegion):
     categoryOut -- The output element count of the 'categoryOut' output (NuPIC 1 only).
     resetOut -- The output element count of the 'resetOut' output (NuPIC 1 only).
     bboxOut -- The output element count of the 'bboxOut' output (NuPIC 1 only).
-    alphaOut -- The output element count of the 'alphaOut' output (NuPIC 1 only)
     auxDataWidth -- The output element count of the 'auxData' output (NuPIC2 only).
     """
     PyRegion.__init__(self, **keywds)
@@ -226,7 +229,6 @@ class ImageSensor(PyRegion):
       raise RuntimeError("The 'alphaOut' output element count must be equal "
                          "to width * height")
 
-    self.useAux = useAux
     self.width = width
     self.height = height
     self.depth = depth
@@ -1927,6 +1929,7 @@ class ImageSensor(PyRegion):
       enabledWidth=self.enabledWidth, enabledHeight=self.enabledHeight,
       blankWithReset=self.blankWithReset)
 
+
   def _meetMemoryLimit(self):
     """
     Unload images as necessary to stay within the memory limit.
@@ -1954,6 +1957,7 @@ class ImageSensor(PyRegion):
       else:
         break
 
+
   def _updatePrevPosition(self):
     """
     Deep copy position to self.prevPosition.
@@ -1966,6 +1970,7 @@ class ImageSensor(PyRegion):
       'offset': copy.copy(position['offset']),
       'reset': position['reset']
     }
+
 
   def compute(self, inputs=None, outputs=None):
     """
@@ -2054,7 +2059,7 @@ class ImageSensor(PyRegion):
 
     if outputs:
       # Convert the output images to a numpy vector
-      croppedArrays = [numpy.asarray(image.split()[0], RealNumpyDType)
+      croppedArrays = [numpy.asarray(image.split()[0], _REAL_NUMPY_DTYPE)
         for image in outputImages]
       # Pad the images to fit the full output size if necessary generating
       # a stack of images, each of them self.width X self.height
@@ -2062,7 +2067,7 @@ class ImageSensor(PyRegion):
             (self.depth > 1 or
             croppedArrays[0].shape != (self.height, self.width))
       if pad:
-        fullArrays = [numpy.zeros((self.height, self.width), RealNumpyDType)
+        fullArrays = [numpy.zeros((self.height, self.width), _REAL_NUMPY_DTYPE)
           for i in xrange(self.depth)]
         for i in xrange(self.depth):
           fullArrays[i][:croppedArrays[i].shape[0],:croppedArrays[i].shape[1]] \
@@ -2085,7 +2090,7 @@ class ImageSensor(PyRegion):
 
       # categoryOut - category index
       outputs['categoryOut'][:] = \
-        numpy.array([float(category)], RealNumpyDType)
+        numpy.array([float(category)], _REAL_NUMPY_DTYPE)
 
       # auxDataOut - auxiliary data
       auxDataOut = imageInfo['auxData']
@@ -2095,14 +2100,14 @@ class ImageSensor(PyRegion):
       # resetOut - reset flag
       if 'resetOut' in outputs:
         outputs['resetOut'][:] = \
-          numpy.array([float(self.prevPosition['reset'])],RealNumpyDType)
+          numpy.array([float(self.prevPosition['reset'])],_REAL_NUMPY_DTYPE)
 
       # bboxOut - bounding box
       if 'bboxOut' in outputs and len(outputs['bboxOut']) == 4:
         bbox = outputImages[0].split()[1].getbbox()
         if bbox is None:
           bbox = (0, 0, 0, 0)
-        outputs['bboxOut'][:] = numpy.array(bbox, RealNumpyDType)
+        outputs['bboxOut'][:] = numpy.array(bbox, _REAL_NUMPY_DTYPE)
         # Optionally log the bounding box information
         if self.logBoundingBox:
           self._logBoundingBox(bbox)
@@ -2110,7 +2115,7 @@ class ImageSensor(PyRegion):
       # alphaOut - alpha channel
       if 'alphaOut' in outputs and len(outputs['alphaOut']) > 1:
         alphaOut = \
-          numpy.asarray(outputImages[0].split()[1], RealNumpyDType).flatten()
+          numpy.asarray(outputImages[0].split()[1], _REAL_NUMPY_DTYPE).flatten()
         if not imageInfo['erode']:
           # Change the 0th element of the output to signal that the alpha
           # channel should be dilated, not eroded
@@ -2123,7 +2128,8 @@ class ImageSensor(PyRegion):
         if partition is None:
           partition = 0
         outputs['partitionOut'][:] = \
-          numpy.array([float(partition)], RealNumpyDType)
+          numpy.array([float(partition)], _REAL_NUMPY_DTYPE)
+
 
   def getParameter(self, parameterName, index=-1):
     """Get the value of an ImageSensor parameter."""
@@ -2252,7 +2258,6 @@ class ImageSensor(PyRegion):
     elif parameterName == 'enabledHeight':
       self.enabledHeight = parameterValue
       self.explorer[2].update(enabledHeight=parameterValue)
-
 
     elif parameterName == 'width':
       self.width = parameterValue
@@ -2402,6 +2407,7 @@ class ImageSensor(PyRegion):
       # Set to True, the old behavior, though it is set to False by default
       # in new networks
       self.minimalBoundingBox = True
+
 
   @classmethod
   def getSpec(cls):
@@ -2883,6 +2889,8 @@ def _serializeImageList(imageList):
       sImageList[i]['filtered'] = _serializeAllImages(sImageList[i]['filtered'])
   return sImageList
 
+
+
 def _deserializeImageList(sImageList):
   imageList = sImageList
   for i in xrange(len(imageList)):
@@ -2892,11 +2900,15 @@ def _deserializeImageList(sImageList):
       imageList[i]['filtered'] = _deserializeAllImages(imageList[i]['filtered'])
   return imageList
 
+
+
 def _serializeAllImages(old):
   new = {}
   for key in old:
     new[key] = [serializeImage(image) for image in old[key]]
   return new
+
+
 
 def _deserializeAllImages(old):
   new = {}
