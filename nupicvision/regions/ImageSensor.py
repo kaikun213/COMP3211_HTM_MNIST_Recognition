@@ -2864,6 +2864,8 @@ class ImageSensor(PyRegion):
 
 
 
+
+
 def serializeCategoryInfo(categoryInfo):
   return yaml.dump([[name, b64encode(serializeImage(image))]
                      for name, image in categoryInfo])
