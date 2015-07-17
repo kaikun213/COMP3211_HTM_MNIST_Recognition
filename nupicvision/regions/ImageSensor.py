@@ -2000,6 +2000,13 @@ class ImageSensor(PyRegion):
     if newSequenceID != prevSequenceID:
       self.prevPosition['reset'] = True
 
+    holdFor = self.explorer[2].holdFor
+    self._holdForOffset += 1
+    if self._holdForOffset >= holdFor:
+      self._holdForOffset = 0
+      self.explorer[2].next()
+    self._iteration += 1
+
     # Get the image(s) to send out
     outputImages, final_output = self._getOutputImages()
 
@@ -2046,13 +2053,6 @@ class ImageSensor(PyRegion):
       self._logOriginalImage()
     if self.logLocationImages:
       self._logLocationImage()
-
-    holdFor = self.explorer[2].holdFor
-    self._holdForOffset += 1
-    if self._holdForOffset >= holdFor:
-      self._holdForOffset = 0
-      self.explorer[2].next()
-    self._iteration += 1
 
     # Save category to file
     self._writeCategoryToFile(category)
