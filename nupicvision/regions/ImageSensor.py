@@ -2636,7 +2636,7 @@ class ImageSensor(PyRegion):
         prevSaccadeInfo=dict(
           description="""YAML serialized dictionary of information about the
             previous saccade a RandomSaccade explorer made. NoneType if the
-            exoplorer isn't a RandomSaccade explorer.""",
+            explorer isn't a RandomSaccade explorer.""",
           dataType='Byte',
           count=0,
           constraints='',
