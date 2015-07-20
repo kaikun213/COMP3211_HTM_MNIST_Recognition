@@ -37,10 +37,10 @@ class RandomSaccade(BaseExplorer):
                numSaccades=8, maxDrift=0,
                *args, **kwargs):
     """
-    :param bool replacement: Allow the explorer to repeat images (if true)
-    :param int saccadeMin: Minimum distance a saccade will travel (in px)
-    :param int saccadeMax: Maxium distance a saccade will travel (in px)
-    :param int numSaccades: Number of saccades to run over each image
+    :param replacement: Allow the explorer to repeat images (if true)
+    :param saccadeMin: Minimum distance a saccade will travel (in px)
+    :param saccadeMax: Maxium distance a saccade will travel (in px)
+    :param numSaccades: Number of saccades to run over each image
     :param maxDrift: Amount (in px) a saccade's center (fovea) can move out
       of the bounds of the image
     """
@@ -62,17 +62,16 @@ class RandomSaccade(BaseExplorer):
 
 
   def seek(self, iteration=None, position=None):
-    """
-    Seek to the specified position or iteration.
-
-    iteration -- Target iteration number (or None).
-    position -- Target position (or None).
+    """ Seek to the specified position or iteration.
 
     ImageSensor checks validity of inputs, checks that one (but not both) of
     position and iteration are None, and checks that if position is not None,
     at least one of its values is not None.
 
     Updates value of position.
+
+    :param iteration: Target iteration number (or None).
+    :param position: Target position (or None).
     """
 
     # Zero out the history when seeking to iteration 0. This so we can replicate
@@ -84,7 +83,11 @@ class RandomSaccade(BaseExplorer):
 
 
   def first(self, seeking=False):
-    "Just used in initialization for ImageSensor..."
+    """ Used in initialization of ImageSensor.
+    Basic setup for running sequential saccades on random images.
+
+    :param seeking: If True, don't do unnecessary computations
+    """
     if not self.numImages:
       return
 
@@ -99,6 +102,8 @@ class RandomSaccade(BaseExplorer):
   def next(self, seeking=False):
     """ Move to the next saccade position if number of saccades on an image
     has not reached it's maximum. Otherwise, load the next random image.
+
+    :param seeking: If True, don't do unnecessary computations
     """
     if not self.numImages:
       return
@@ -165,6 +170,10 @@ class RandomSaccade(BaseExplorer):
   def _checkFoveaInImage(self, imageSize, saccadeLength, saccadeDirection):
     """ Used to check that a saccade falls within the bounds of the image
     (within the amount of drift specified during initialization)
+
+    :param imageSize: A tuple (height, width)
+    :param saccadeLength: Length of the random saccade
+    :param saccadeDirection: Direction of the random saccade
     """
     if saccadeDirection == "left":
       foveaCenter = [(((imageSize[0] - self.enabledWidth) / 2) +
@@ -207,14 +216,12 @@ class RandomSaccade(BaseExplorer):
 
 
   def getNumIterations(self, image):
-    """
-    Get the number of iterations required to completely explore the input space.
+    """ Get the number of iterations required to completely explore the input
+    space. ImageSensor takes care of the input validation.
 
-    image -- If None, returns the sum of the iterations for all the
+    :param image: If None, returns the sum of the iterations for all the
       loaded images. Otherwise, image should be an integer specifying the
       image for which to calculate iterations.
-
-    ImageSensor takes care of the input validation.
     """
 
     if self.replacement:
