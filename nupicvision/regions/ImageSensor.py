@@ -2177,6 +2177,13 @@ class ImageSensor(PyRegion):
       else:
         return None
 
+    elif parameterName == 'prevSaccadeInfo':
+      if (self.explorer[0] == "RandomSaccade" and
+          self.explorer[2].position and self._imageList):
+        return yaml.dump(self.explorer[2].prevSaccade)
+      else:
+        return None
+
     elif parameterName == 'categoryInfo':
       return serializeCategoryInfo(self.categoryInfo)
 
@@ -2621,6 +2628,15 @@ class ImageSensor(PyRegion):
         nextImageInfo=dict(
           description="""YAML serialized dictionary of information for the
             image which will be used for the next compute.""",
+          dataType='Byte',
+          count=0,
+          constraints='',
+          accessMode='Read'
+        ),
+        prevSaccadeInfo=dict(
+          description="""YAML serialized dictionary of information about the
+            previous saccade a RandomSaccade explorer made. NoneType if the
+            exoplorer isn't a RandomSaccade explorer.""",
           dataType='Byte',
           count=0,
           constraints='',
