@@ -2179,7 +2179,7 @@ class ImageSensor(PyRegion):
 
     elif parameterName == 'prevSaccadeInfo':
       if (self.explorer[0] == "RandomSaccade" and
-          self.explorer[2].position and len(self._imageList) > 0):
+          self.explorer[2].position is not None and len(self._imageList) > 0):
         return yaml.dump(self.explorer[2].prevSaccade)
       else:
         return None
