@@ -111,21 +111,21 @@ class MainGUI(object):
                                    command=self.buttonNextImgCb,
                                    state=Tk.DISABLED)
     self.buttonScrubFirst = Tk.Button(self.saccadeDetailTransportFrame,
-                                     text="<<",
-                                     command=self.buttonScrubFirstCb,
-                                     state=Tk.DISABLED)
+                                      text="<<",
+                                      command=self.buttonScrubFirstCb,
+                                      state=Tk.DISABLED)
     self.buttonScrubRev = Tk.Button(self.saccadeDetailTransportFrame,
-                                     text="<",
-                                     command=self.buttonScrubRevCb,
-                                     state=Tk.DISABLED)
+                                    text="<",
+                                    command=self.buttonScrubRevCb,
+                                    state=Tk.DISABLED)
     self.buttonScrubFwd = Tk.Button(self.saccadeDetailTransportFrame,
                                     text=">",
                                     command=self.buttonScrubFwdCb,
                                     state=Tk.DISABLED)
     self.buttonScrubLast = Tk.Button(self.saccadeDetailTransportFrame,
-                                    text=">>",
-                                    command=self.buttonScrubLastCb,
-                                    state=Tk.DISABLED)
+                                     text=">>",
+                                     command=self.buttonScrubLastCb,
+                                     state=Tk.DISABLED)
     self.buttonScrubLast.pack(side=Tk.RIGHT)
     self.buttonScrubFwd.pack(side=Tk.RIGHT)
     self.buttonScrubRev.pack(side=Tk.RIGHT)
@@ -320,10 +320,12 @@ class MainGUI(object):
     """
     self.saccadeHistImg.configure(
         image=self.saccadeHistImgList[self.currentDetailSaccadeIndex])
-    self.saccadeHistImg.image = self.saccadeHistImgList[self.currentDetailSaccadeIndex]
+    self.saccadeHistImg.image = self.saccadeHistImgList[
+        self.currentDetailSaccadeIndex]
     self.saccadeCurImage.configure(
         image=self.saccadeDetailImgList[self.currentDetailSaccadeIndex])
-    self.saccadeCurImage.image = self.saccadeDetailImgList[self.currentDetailSaccadeIndex]
+    self.saccadeCurImage.image = self.saccadeDetailImgList[
+        self.currentDetailSaccadeIndex]
     self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
 
 
@@ -394,10 +396,11 @@ if __name__ == "__main__":
 
   root = Tk.Tk()
   root.title("Saccades Experiment")
-  root.geometry("{width}x{height}".format(width=_APP_WIDTH, height=_APP_HEIGHT))
+  root.geometry("{width}x{height}".format(
+      width=_APP_WIDTH, height=_APP_HEIGHT))
   root.resizable(width=Tk.FALSE, height=Tk.FALSE)
   MainGUI(root,
-          loggingDir=datetimestr,
+          loggingDir=None, #datetimestr,
           networkName=netName,
           trainingSet="mnist/small_training",
           testingSet="mnist/testing")

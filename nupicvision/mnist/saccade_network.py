@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # ----------------------------------------------------------------------
 # Numenta Platform for Intelligent Computing (NuPIC)
 # Copyright (C) 2015, Numenta, Inc.  Unless you have an agreement
@@ -36,8 +35,9 @@ from nupicvision.image import deserializeImage
 
 
 SACCADES_PER_IMAGE = 20
-_SACCADE_SIZE = 5
-_FOVEA_SIZE = 10
+_SACCADE_SIZE = 4
+_FOVEA_SIZE = 12
+_MAX_DRIFT = -2
 IMAGE_WIDTH = 28
 IMAGE_HEIGHT = 28
 
@@ -51,7 +51,7 @@ DEFAULT_IMAGESENSOR_PARAMS = {
         "saccadeMin": _SACCADE_SIZE,
         "saccadeMax": _SACCADE_SIZE,
         "numSaccades": SACCADES_PER_IMAGE,
-        "maxDrift": 0,
+        "maxDrift": _MAX_DRIFT,
         "seed": 1738}]),
     "postFilters": yaml.dump([["Resize", {
         "size": (_FOVEA_SIZE, _FOVEA_SIZE), "method": "center" }]]),
@@ -227,7 +227,7 @@ class SaccadeNetwork(object):
 
         if enableViz:
           detailImage = deserializeImage(
-            yaml.load(self.networkSensor.getParameter("outputImage")))
+              yaml.load(self.networkSensor.getParameter("outputImage")))
           detailImage = detailImage.resize((self.detailedSaccadeWidth,
                                             self.detailedSaccadeHeight),
                                            Image.ANTIALIAS)
@@ -300,7 +300,6 @@ class SaccadeNetwork(object):
                                             self.detailedSaccadeHeight),
                                            Image.ANTIALIAS)
           saccadeHistList.append(ImageTk.PhotoImage(saccadeHist))
-        self.networkDutyCycles += self.networkPySP._spatialPoolerOutput #pylint: disable=W0212
 
       print ("Iteration: {iter}; Category: {cat}"
              .format(iter=self.trainingImageIndex,
@@ -321,8 +320,6 @@ class SaccadeNetwork(object):
       for i in range(SACCADES_PER_IMAGE):
         self.net.run(1)
 
-        self.networkDutyCycles += self.networkPySP._spatialPoolerOutput #pylint: disable=W0212
-
       if self.trainingImageIndex % (self.numTrainingImages/100) == 0:
         print ("Iteration: {iter}; Category: {cat}"
                .format(iter=self.trainingImageIndex,
@@ -342,8 +339,6 @@ class SaccadeNetwork(object):
     while self.trainingImageIndex < self.numTrainingImages:
       for i in range(SACCADES_PER_IMAGE):
         self.net.run(1)
-
-        self.networkDutyCycles += self.networkPySP._spatialPoolerOutput #pylint: disable=W0212
 
       if self.trainingImageIndex % batchSize == 0:
         print ("Iteration: {iter}; Category: {cat}"
