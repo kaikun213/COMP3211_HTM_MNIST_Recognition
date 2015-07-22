@@ -52,7 +52,7 @@ _REAL_NUMPY_DTYPE = GetNTAReal()
 def containsConvolutionPostFilter(postFilters):
   """Determine if the post filters contain a convolution filter"""
   for p in postFilters:
-    if p[0].endswith('Convolution'):
+    if p[0].endswith("Convolution"):
       return True
   return False
 
@@ -123,17 +123,17 @@ class ImageSensor(PyRegion):
   nodeHelp("py.ImageSensor")
   """
 
-  def _init(self, width=1, height=1, depth=1, mode='gray',
-      blankWithReset=False, background=255, invertOutput=False,
-      filters=None, postFilters=None, explorer="[\"Flash\"]",
-      categoryOutputFile="", logText=False, logOutputImages=False,
-      logOriginalImages=False, logFilteredImages=False,
-      logLocationImages=False, logLocationOnOriginalImage=False,
-      logBoundingBox=False, logDir="imagesensor_log",
-      automaskingTolerance=0, automaskingPadding=0, memoryLimit=100,
-      minimalBoundingBox=False, dataOut=None, categoryOut=None,
-      partitionOut=None, resetOut=None, bboxOut=None, alphaOut=None,
-      auxDataWidth=None, **keywds):
+  def _init(self, width=1, height=1, depth=1, mode="gray", #pylint: disable=R0913
+            blankWithReset=False, background=255, invertOutput=False,
+            filters=None, postFilters=None, explorer="[\"Flash\"]",
+            categoryOutputFile="", logText=False, logOutputImages=False,
+            logOriginalImages=False, logFilteredImages=False,
+            logLocationImages=False, logLocationOnOriginalImage=False,
+            logBoundingBox=False, logDir="imagesensor_log",
+            automaskingTolerance=0, automaskingPadding=0, memoryLimit=100,
+            minimalBoundingBox=False, dataOut=None, categoryOut=None,
+            partitionOut=None, resetOut=None, bboxOut=None, alphaOut=None,
+            auxDataWidth=None, **keywds):
     """
     width -- Width of the sensor's output to the network (pixels).
     height -- Height of the sensor's output to the network (pixels).
@@ -195,10 +195,13 @@ class ImageSensor(PyRegion):
       the image. Set to False to avoid chopping edges off certain images, or
       True if that is not an issue and you wish to use a sweeping explorer.
     dataOut -- The output element count of the 'dataOut' output.
-    categoryOut -- The output element count of the 'categoryOut' output (NuPIC 1 only).
-    resetOut -- The output element count of the 'resetOut' output (NuPIC 1 only).
+    categoryOut -- The output element count of the 'categoryOut' output
+      (NuPIC 1 only).
+    resetOut -- The output element count of the 'resetOut' output
+      (NuPIC 1 only).
     bboxOut -- The output element count of the 'bboxOut' output (NuPIC 1 only).
-    auxDataWidth -- The output element count of the 'auxData' output (NuPIC2 only).
+    auxDataWidth -- The output element count of the 'auxData' output
+      (NuPIC2 only).
     """
     PyRegion.__init__(self, **keywds)
 
@@ -316,17 +319,18 @@ class ImageSensor(PyRegion):
     self._holdForOffset = 0
 
     self._cubeOutputs = (
-      not containsConvolutionPostFilter(yaml.load(postFilters)
-                                        if postFilters
-                                        else []))
+        not containsConvolutionPostFilter(yaml.load(postFilters)
+                                          if postFilters
+                                          else []))
     self._auxDataWidth = auxDataWidth
 
   def __init__(self, *args, **kw):
     self._init(*args, **kw)
 
   def loadSingleImage(self, imagePath, maskPath=None, categoryName=None,
-      clearImageList=True, skipExplorerUpdate=False, auxPath=None, userAuxData=None,
-      sequenceIndex=None, frameIndex=None):
+                      clearImageList=True, skipExplorerUpdate=False,
+                      auxPath=None, userAuxData=None, sequenceIndex=None,
+                      frameIndex=None):
     """
     Add the specified image to the list of images.
 
@@ -342,7 +346,7 @@ class ImageSensor(PyRegion):
     sequenceIndex -- Unique sequence index.
     frameIndex --  The frame number within the sequence.
     """
-    if categoryName is not None and type(categoryName) is not str:
+    if categoryName is not None and not isinstance(categoryName, str):
       categoryName = str(categoryName)
 
     if clearImageList:
@@ -354,21 +358,22 @@ class ImageSensor(PyRegion):
       manualAux = False
 
     self._addImage(imagePath=imagePath, maskPath=maskPath,
-      categoryName=categoryName, auxPath=auxPath, manualAux = manualAux,
-      userAuxData=userAuxData, sequenceIndex=sequenceIndex, frameIndex=frameIndex)
+                   categoryName=categoryName, auxPath=auxPath,
+                   manualAux=manualAux, userAuxData=userAuxData,
+                   sequenceIndex=sequenceIndex, frameIndex=frameIndex)
 
     if not skipExplorerUpdate:
       self.explorer[2].update(numImages=len(self._imageList))
 
-    self._logCommand([('index', len(self._imageList)-1)])
+    self._logCommand([("index", len(self._imageList)-1)])
 
     if clearImageList:
       self.explorer[2].first()
 
-    return self.getParameter('numImages'), self.getParameter('numMasks')
+    return self.getParameter("numImages"), self.getParameter("numMasks")
 
   def loadSpecificImages(self, imagePaths, categoryNames=None,
-      clearImageList=True):
+                         clearImageList=True):
     """
     Add multiple images to the list of images.
 
@@ -405,7 +410,7 @@ class ImageSensor(PyRegion):
 
     self.explorer[2].update(numImages=len(self._imageList))
 
-    return self.getParameter('numImages'), self.getParameter('numMasks')
+    return self.getParameter("numImages"), self.getParameter("numMasks")
 
   def _walk(self, top):
     """
@@ -418,9 +423,10 @@ class ImageSensor(PyRegion):
       # Note that listdir and error are globals in this module due
       # to earlier import-*.
       names = os.listdir(top)
-    except OSError, e:
-      raise RuntimeError("Unable to get a list of files due to an OS error.\nDirectory: "+top+"\nThis may be due to an issue with Snow Leopard.")
-      #raise
+    except OSError:
+      raise RuntimeError("Unable to get a list of files due to an OS error."
+                         "\nDirectory: " + top +
+                         "\nThis may be due to an issue with Snow Leopard.")
     except:
       return
 
@@ -438,10 +444,11 @@ class ImageSensor(PyRegion):
         yield x
 
   def loadMultipleImages(self, imagePath, extension=None, maskPath=None,
-      first=None, last=None, subsample=1, clearImageList=True,
-      strictMaskLocations=True, categoryNameFilter=None, pattern=None,
-      skipInterval=None, skipOffset=None, useCategories=True, auxPath=None,
-      auxType=None):
+                         first=None, last=None, subsample=1,
+                         clearImageList=True, strictMaskLocations=True,
+                         categoryNameFilter=None, pattern=None,
+                         skipInterval=None, skipOffset=None,
+                         useCategories=True, auxPath=None, auxType=None):
     """
     Add images from multiple categories to the list of images.
 
@@ -484,14 +491,14 @@ class ImageSensor(PyRegion):
       non-None values of 'skipInterval' which are less than 2 cause
       RuntimeErrors to be raised.
     skipOffset -- Operates in conjunction with 'skipInterval'.  Specifies
-      an offset to use for the purpose of skipping.  For example, if 'skipInterval'
-      was 10 (skip every 10th image) and 'skipOffset' was 0 (or None), then
-      the first 9 images would be loaded, the 10th would be skipped, etc.
-      But if 'skipOffset' were 2, then the first 7 images would be loaded,
-      the 8th skipped, the next 9 loaded, the 17th skipped, etc.  Defaults
-      to None (equivalent to zero.)  If both 'skipOffset' and 'skipInterval'
-      are non-None, then 'skipOffset' must be non-negative and less than
-      'skipInterval'.
+      an offset to use for the purpose of skipping.  For example, if
+      'skipInterval' was 10 (skip every 10th image) and 'skipOffset' was 0
+      (or None), then the first 9 images would be loaded, the 10th would be
+      skipped, etc. But if 'skipOffset' were 2, then the first 7 images would
+      be loaded, the 8th skipped, the next 9 loaded, the 17th skipped, etc.
+      Defaults to None (equivalent to zero.)  If both 'skipOffset' and
+      'skipInterval' are non-None, then 'skipOffset' must be non-negative
+      and less than 'skipInterval'.
     useCategories -- True for normal behavior, or False to load any image found
       in imagePath, without looking for nested directory folders.
 
@@ -518,24 +525,24 @@ class ImageSensor(PyRegion):
     names of the image files are unimportant.
     """
 
-    if first is not None and type(first) != int:
+    if first is not None and not isinstance(first, int):
       raise RuntimeError("'first' must be None or a nonnegative integer")
-    if last is not None and type(last) != int:
+    if last is not None and not isinstance(last, int):
       raise RuntimeError("'last' must be None or a nonnegative integer")
-    if subsample is not None and type(subsample) != int:
+    if subsample is not None and not isinstance(subsample, int):
       raise RuntimeError("'subsample' must be None or a positive integer")
-    if skipInterval is not None and (type(skipInterval) != int
+    if skipInterval is not None and (not isinstance(skipInterval, int)
                                      or skipInterval < 2):
       raise RuntimeError("'skipInterval' must be None or an integer >= 2")
-    if skipOffset is not None and skipInterval is not None and \
-        (type(skipOffset) != int or skipOffset < 0
-                                 or skipOffset >= skipInterval):
-      raise RuntimeError("'skipOffset' must be None or a non-negative integer "
-                         "< 'skipInterval'")
+    if (skipOffset is not None and skipInterval is not None and
+        (not isinstance(skipOffset, int) or skipOffset < 0
+         or skipOffset >= skipInterval)):
+      raise RuntimeError("'skipOffset' must be None or a non-negative "
+                         "integer < 'skipInterval'")
 
     self._logCommand()
 
-    filterLogDir = os.path.join(self.logDir, 'output_from_filters')
+    filterLogDir = os.path.join(self.logDir, "output_from_filters")
     if self.logFilteredImages:
       if clearImageList and os.path.exists(filterLogDir):
         shutil.rmtree(filterLogDir)
@@ -547,8 +554,8 @@ class ImageSensor(PyRegion):
 
     if extension:
       # Only look for the extension specified by the user
-      if not extension.startswith('.'):
-        extension = '.' + extension
+      if not extension.startswith("."):
+        extension = "." + extension
       extensions = [extension]
     else:
       extensions = imageExtensions
@@ -556,11 +563,12 @@ class ImageSensor(PyRegion):
     # NTA_DATA_DIR may be set in the autotest environment
     if "NTA_DATA_DIR" in os.environ and not os.path.abspath(imagePath):
       imagePath = os.path.join(os.environ["NTA_DATA_DIR"], imagePath)
-      print "ImageSensor: looking for data in NTA_DATA_DIR=%s" % os.environ["NTA_DATA_DIR"]
+      print ("ImageSensor: looking for data in NTA_DATA_DIR=%s"
+             % os.environ["NTA_DATA_DIR"])
 
     imagePath = os.path.abspath(imagePath)
     if auxPath is not None:
-      if type(auxPath) is not list:
+      if not isinstance(auxPath, list):
         auxPath = [auxPath]
       for k in range(0, len(auxPath)):
         auxPath[k] = os.path.abspath(auxPath[k])
@@ -586,14 +594,14 @@ class ImageSensor(PyRegion):
     if useCategories:
       # Assume each directory in imagePath is its own category
       categoryList = [c for c in sorted(os.listdir(imagePath))
-                      if c[0] != '.' and
+                      if c[0] != "." and
                       os.path.isdir(os.path.join(imagePath, c))]
       if categoryList:
         # Filter categories if specified
         if categoryNameFilter:
           # Need to convert to NFC and re-encode to UTF-8 or else paths may not
           # match the category filter
-          categoryList = [normalize('NFC', unicode(c, 'utf8')).encode('utf8')
+          categoryList = [normalize("NFC", unicode(c, "utf8")).encode("utf8")
                           for c in categoryList]
           if isinstance(categoryNameFilter, basestring):
             categoryNameFilter = [categoryNameFilter]
@@ -607,16 +615,17 @@ class ImageSensor(PyRegion):
           hasRegex = False
           # use a regex to see if it has any regexes
           isTextRegex = re.compile("[a-zA-Z_]+")
-          hasRegex = False in [isTextRegex.match(r) is not None for r in categoryNameFilter]
+          hasRegex = False in [isTextRegex.match(r) is not None
+                               for r in categoryNameFilter]
           if not hasRegex:
             categoryList = [c for c in categoryList if c in categoryNameFilter]
           else:
             for i, r in enumerate(categoryNameFilter):
-              if r[-1] != '$':
-                categoryNameFilter[i] += '$'
+              if r[-1] != "$":
+                categoryNameFilter[i] += "$"
             matchers = [re.compile(r) for r in categoryNameFilter]
             categoryList = [c for c in categoryList if True in
-              [r.match(c) is not None for r in matchers]]
+                            [r.match(c) is not None for r in matchers]]
 
     for category in categoryList:
       skipCounter = skipOffset
@@ -642,14 +651,14 @@ class ImageSensor(PyRegion):
           break
         # Don't enter directories that begin with '.'
         for d in dirnames[:]:
-          if d.startswith('.'):
+          if d.startswith("."):
             dirnames.remove(d)
         dirnames.sort()
-        # Ignore files that begin with '.'
-        filenames = [f for f in filenames if not f.startswith('.')]
+        # Ignore files that begin with "."
+        filenames = [f for f in filenames if not f.startswith(".")]
         # Only load images with the right extension
         filenames = [f for f in filenames
-          if os.path.splitext(f)[1].lower() in extensions]
+                     if os.path.splitext(f)[1].lower() in extensions]
         if pattern:
           # Filter images with regular expression
           filenames = [f for f in filenames
@@ -695,9 +704,9 @@ class ImageSensor(PyRegion):
 
 
     # Load all images and masks
-    if not hasattr(auxType,'__iter__'):
+    if not hasattr(auxType,"__iter__"):
       auxType = [auxType]
-    if not hasattr(auxPath,'__iter__'):
+    if not hasattr(auxPath,"__iter__"):
       auxPath = [auxPath]
 
     sequenceInfo = self._computeSequenceInfo(images)
@@ -705,21 +714,26 @@ class ImageSensor(PyRegion):
       # Generate the auxiliary data path
       imageName = images[i][0].split(imagePath)
       if auxPath[0] is not None  and len(auxPath)>=1:
-          currentAuxPath =  []
-          for k in range(0, len(auxPath)):
-            currentAuxPath.append("".join([auxPath[k],imageName[1]+auxType[k]]))
+        currentAuxPath =  []
+        for k in range(0, len(auxPath)):
+          currentAuxPath.append("".join(
+              [auxPath[k],imageName[1]+auxType[k]]))
       else:
-          currentAuxPath = None
+        currentAuxPath = None
       self.loadSingleImage(imagePath=images[i][0], maskPath=images[i][1],
-        categoryName=images[i][2], clearImageList=False,
-        skipExplorerUpdate=True, auxPath=currentAuxPath,
-        sequenceIndex=sequenceInfo[i][0], frameIndex=sequenceInfo[i][1])
+                           categoryName=images[i][2], clearImageList=False,
+                           skipExplorerUpdate=True, auxPath=currentAuxPath,
+                           sequenceIndex=sequenceInfo[i][0],
+                           frameIndex=sequenceInfo[i][1])
 
-    self.explorer[2].update(numImages=len(self._imageList), sequenceCount=sequenceInfo[-1][0], frameCount=len(self._imageList))
+    self.explorer[2].update(numImages=len(self._imageList),
+                            sequenceCount=sequenceInfo[-1][0],
+                            frameCount=len(self._imageList))
 
-    return self.getParameter('numImages'), self.getParameter('numMasks')
+    return self.getParameter("numImages"), self.getParameter("numMasks")
 
-  def _computeSequenceInfo(self, images):
+  @staticmethod
+  def _computeSequenceInfo(images):
     """
     Generates the set of sequence IDs and frameIndexs
     for the images in the dataset.
@@ -776,23 +790,23 @@ class ImageSensor(PyRegion):
 
     self._meetMemoryLimit()
 
-    return self.getParameter('numImages'), self.getParameter('numMasks')
+    return self.getParameter("numImages"), self.getParameter("numMasks")
 
   def clearImageList(self, skipExplorerUpdate=False):
     """
     Clear the list of images.
     """
 
-    self._imageList = []
-    self._imageQueue = []
-    self._filterQueue = []
-    self._pixelCount = 0
-    self.prevPosition = None
+    self._imageList = [] #pylint: disable=W0201
+    self._imageQueue = [] #pylint: disable=W0201
+    self._filterQueue = [] #pylint: disable=W0201
+    self._pixelCount = 0 #pylint: disable=W0201
+    self.prevPosition = None #pylint: disable=W0201
     if not skipExplorerUpdate:
       self.explorer[2].update(numImages=0)
 
   def seek(self, iteration=None, image=None, filters=None, offset=None,
-      reset=None, sequenceIndex=None, frameIndex=None):
+           reset=None, sequenceIndex=None, frameIndex=None):
     """
     Seek to the specified iteration, image, filter position, or offset.
 
@@ -818,10 +832,12 @@ class ImageSensor(PyRegion):
     position = None
     if image is None and sequenceIndex is not None:
       image = self.getIterationFromSequence(sequenceIndex, frameIndex)
-    if image is not None or filters is not None or offset is not None \
-        or reset is not None:
-      position = {'image': image, 'filters': filters, 'offset': offset,
-        'reset': reset}
+    if (image is not None or filters is not None or offset is not None or
+        reset is not None):
+      position = {"image": image,
+                  "filters": filters,
+                  "offset": offset,
+                  "reset": reset}
 
     # Validate inputs
     if iteration is not None and position is not None:
@@ -829,23 +845,23 @@ class ImageSensor(PyRegion):
     if iteration is None and position is None:
       raise RuntimeError("Must specify at least one argument")
     if position is not None:
-      if position['offset'] and type(position['offset']) is tuple:
-        position['offset'] = list(position['offset'])
-      if position['image'] is not None:
-        if position['image'] < 0:
+      if position["offset"] and isinstance(position["offset"], tuple):
+        position["offset"] = list(position["offset"])
+      if position["image"] is not None:
+        if position["image"] < 0:
           raise RuntimeError("'image' must be nonnegative")
-        if position['image'] >= len(self._imageList):
+        if position["image"] >= len(self._imageList):
           raise RuntimeError("'image' exceeds number of loaded images")
-      if position['filters'] is not None:
-        if type(position['filters']) != list:
+      if position["filters"] is not None:
+        if not isinstance(position["filters"], list):
           raise RuntimeError("'filters' must be a list of nonnegative values")
-        if len(position['filters']) != len(self.filters):
+        if len(position["filters"]) != len(self.filters):
           raise RuntimeError("Length of 'filters' does not match numFilters")
 
-    # Account for holdFor as best we can. This won't be exact because it doesn't take into
-    #  account the current position within the holdFor
+    # Account for holdFor as best we can. This won't be exact because it
+    # doesn't take into account the current position within the holdFor
     if iteration is not None:
-      self._holdForOffset = iteration % self.explorer[2].holdFor
+      self._holdForOffset = iteration % self.explorer[2].holdFor #pylint: disable=W0201
       iteration //= self.explorer[2].holdFor
     self.explorer[2].seek(iteration=iteration, position=position)
 
@@ -858,8 +874,9 @@ class ImageSensor(PyRegion):
       which to calculate iterations.
     """
 
-    if image is not None and type(image) != int:
+    if image is not None and not isinstance(image, int):
       raise RuntimeError("'image' must be None or a nonnegative integer")
+      # TODO: Fix this error message
 
     return self.explorer[2].getNumIterations(image) * self.explorer[2].holdFor
 
@@ -871,7 +888,7 @@ class ImageSensor(PyRegion):
     if self._imageList is None:
       return -1
     else:
-      return self._imageList[-1]['sequenceIndex']+1
+      return self._imageList[-1]["sequenceIndex"]+1
 
   def getFrameCount(self, sequenceIndex):
     """
@@ -880,18 +897,18 @@ class ImageSensor(PyRegion):
     if sequenceIndex<0:
       raise RuntimeError("'sequenceIndex' must be a non-negative integer.")
 
-    if sequenceIndex>self._imageList[-1]['sequenceIndex']:
+    if sequenceIndex>self._imageList[-1]["sequenceIndex"]:
       raise RuntimeError("'sequenceIndex' out of range.")
 
     if self._imageList is None:
       return -1
-    elif sequenceIndex==self._imageList[-1]['sequenceIndex']:
-      return self._imageList[-1]['frameIndex']+1
+    elif sequenceIndex==self._imageList[-1]["sequenceIndex"]:
+      return self._imageList[-1]["frameIndex"]+1
     else:
-      ID = 0
-      while sequenceIndex>=self._imageList[ID]['sequenceIndex']:
-        ID+=1
-      return self._imageList[ID-1]['frameIndex']+1
+      i = 0
+      while sequenceIndex>=self._imageList[i]["sequenceIndex"]:
+        i+=1
+      return self._imageList[i-1]["frameIndex"]+1
 
   def getIterationRange(self, sequenceIndex=None):
     """
@@ -904,7 +921,8 @@ class ImageSensor(PyRegion):
       return 0, len(self._imageList)
     else:
       startIteration = self.getIterationFromSequence(sequenceIndex)
-      stopIteration = self.getIterationFromSequence(sequenceIndex, self.getFrameCount(sequenceIndex)-1)
+      stopIteration = self.getIterationFromSequence(
+          sequenceIndex, self.getFrameCount(sequenceIndex)-1)
 
       return startIteration, stopIteration
 
@@ -917,21 +935,21 @@ class ImageSensor(PyRegion):
     if sequenceIndex<0:
       raise RuntimeError("'sequenceIndex' must be a non-negative integer.")
 
-    if sequenceIndex>self._imageList[-1]['sequenceIndex']:
+    if sequenceIndex>self._imageList[-1]["sequenceIndex"]:
       raise RuntimeError("'sequenceIndex' out of range.")
 
 
     if self._imageList is None:
       return -1
     else:
-      ID = 0
-      while sequenceIndex>self._imageList[ID]['sequenceIndex']:
-        ID+=1
-      while frameIndex>self._imageList[ID]['frameIndex']:
-        ID+=1
-        if self._imageList[ID]['sequenceIndex'] != sequenceIndex:
+      i = 0
+      while sequenceIndex>self._imageList[i]["sequenceIndex"]:
+        i+=1
+      while frameIndex>self._imageList[i]["frameIndex"]:
+        i+=1
+        if self._imageList[i]["sequenceIndex"] != sequenceIndex:
           raise RuntimeError("'frameIndex' out of range.")
-      return ID
+      return i
 
 
   def getSequenceFromIteration(self, iteration):
@@ -944,7 +962,8 @@ class ImageSensor(PyRegion):
     if iteration>len(self._imageList):
       raise RuntimeError("'iteration' out of range.")
     else:
-      return self._imageList[iteration]['sequenceIndex'], self._imageList[iteration]['frameIndex']
+      return (self._imageList[iteration]["sequenceIndex"],
+              self._imageList[iteration]["frameIndex"])
 
   def saveImagesToFile(self, filename):
     """
@@ -965,13 +984,13 @@ class ImageSensor(PyRegion):
 
     # Create serializable versions for pickling
     sImageList = _serializeImageList(self._imageList)
-    filters = self.getParameter('filters')
-    sCategoryInfo = self.getParameter('categoryInfo')
+    filters = self.getParameter("filters")
+    sCategoryInfo = self.getParameter("categoryInfo")
 
     # Pickle serializable objects to file
-    f = open(filename, 'wb')
+    f = open(filename, "wb")
     pickle.dump((sImageList, filters, sCategoryInfo), f,
-      protocol=pickle.HIGHEST_PROTOCOL)
+                protocol=pickle.HIGHEST_PROTOCOL)
     f.close()
 
   def loadImagesFromFile(self, filename):
@@ -982,74 +1001,74 @@ class ImageSensor(PyRegion):
     the saved images, and overwrites ImageSensor.filters.
     """
 
-    f = open(filename, 'rb')
+    f = open(filename, "rb")
     sImageList, filters, sCategoryInfo = pickle.load(f)
     f.close()
 
-    self.setParameter('filters', -1, filters)
+    self.setParameter("filters", -1, filters)
 
-    self._imageList = _deserializeImageList(sImageList)
+    self._imageList = _deserializeImageList(sImageList) #pylint: disable=W0201
     self.explorer[2].update(numImages=len(self._imageList))
 
-    self.setParameter('categoryInfo', -1, sCategoryInfo)
+    self.setParameter("categoryInfo", -1, sCategoryInfo)
 
-    return self.getParameter('numImages'), self.getParameter('numMasks')
+    return self.getParameter("numImages"), self.getParameter("numMasks")
 
   def _addImage(self, image=None, imagePath=None, maskPath=None,
-      categoryName=None, erode=None, userAuxData=None, auxPath=None,
-      manualAux=False, sequenceIndex=None, frameIndex=None):
+                categoryName=None, erode=None, userAuxData=None, auxPath=None,
+                manualAux=False, sequenceIndex=None, frameIndex=None):
     """
     Create a dictionary for an image and metadata and add to the imageList.
     """
 
-    item = {'image': image,
-            'imagePath': imagePath,
-            'auxData': userAuxData,
-            'auxPath': auxPath,
-            'manualAux': manualAux,
-            'maskPath': maskPath,
-            'erode': True,
-            'categoryName': categoryName,
-            'categoryIndex': None,
-            'partitionID': None,
-            'filtered': {},
-            'sequenceIndex': sequenceIndex,
-            'frameIndex': frameIndex}
+    item = {"image": image,
+            "imagePath": imagePath,
+            "auxData": userAuxData,
+            "auxPath": auxPath,
+            "manualAux": manualAux,
+            "maskPath": maskPath,
+            "erode": True,
+            "categoryName": categoryName,
+            "categoryIndex": None,
+            "partitionID": None,
+            "filtered": {},
+            "sequenceIndex": sequenceIndex,
+            "frameIndex": frameIndex}
     self._imageList.append(item)
 
     if erode is not None:
-      item['erode'] = erode
+      item["erode"] = erode
       setErodeFlag = False
     else:
       setErodeFlag = True
 
     # Look up category index from name
-    if item['categoryName'] is None:
+    if item["categoryName"] is None:
       # Unspecified category
-      item['categoryName'] = ""
-      item['categoryIndex'] = -1
+      item["categoryName"] = ""
+      item["categoryIndex"] = -1
     else:
       # Look up the category in categoryInfo
       for i in xrange(len(self.categoryInfo)):
-        if self.categoryInfo[i][0] == item['categoryName']:
-          item['categoryIndex'] = i
+        if self.categoryInfo[i][0] == item["categoryName"]:
+          item["categoryIndex"] = i
           break
-    if item['categoryIndex'] is None:
+    if item["categoryIndex"] is None:
       # This is the first image of this category (blank categories ignored)
-      item['categoryIndex'] = len(self.categoryInfo)
+      item["categoryIndex"] = len(self.categoryInfo)
       # Load the image in order to use it for categoryInfo
       original = self._loadImage(len(self._imageList) - 1, returnOriginal=True,
                                  setErodeFlag=setErodeFlag)
       if not image:
         self._imageQueue.insert(0, len(self._imageList) - 1)
       # Append this category to categoryInfo
-      self.categoryInfo.append((item['categoryName'], original))
+      self.categoryInfo.append((item["categoryName"], original))
     elif image:
       # Image is already present, just prepare it
       # Not necessary if it was already loaded for categoryInfo
       self._loadImage(len(self._imageList) - 1, setErodeFlag=setErodeFlag)
 
-  def _loadImage(self, index, returnOriginal=False, setErodeFlag=True, userAuxData=None):
+  def _loadImage(self, index, returnOriginal=False, setErodeFlag=True):
     """
     Load an image that exists in the imageList but is not loaded into memory.
 
@@ -1060,110 +1079,110 @@ class ImageSensor(PyRegion):
 
     item = self._imageList[index]
 
-    if not item['image']:
+    if not item["image"]:
       # Load the image from disk
-      f = open(item['imagePath'], 'rb')
-      item['image'] = Image.open(f)
-      item['image'].load()
+      f = open(item["imagePath"], "rb")
+      item["image"] = Image.open(f)
+      item["image"].load()
       f.close()
       # Update the pixel count
-      self._pixelCount += item['image'].size[0] * item['image'].size[1]
+      self._pixelCount += item["image"].size[0] * item["image"].size[1]
 
 
     # Extract auxiliary data
-    if item['manualAux'] is False:
-      if item['auxPath'] is not None:
-        if item['auxData'] is None:
+    if item["manualAux"] is False:
+      if item["auxPath"] is not None:
+        if item["auxData"] is None:
           # Load the auxiliary data from disk
-          auxPath = item['auxPath']
+          auxPath = item["auxPath"]
           numAuxInput = len(auxPath)
           for k in range(0,numAuxInput):
-            if item['auxData'] is None:
-              item['auxData'] = numpy.fromfile(item['auxPath'][k])
+            if item["auxData"] is None:
+              item["auxData"] = numpy.fromfile(item["auxPath"][k])
             else:
-              item['auxData'] = numpy.concatenate([item['auxData'],numpy.fromfile(item['auxPath'][k])])
+              item["auxData"] = numpy.concatenate(
+                  [item["auxData"], numpy.fromfile(item["auxPath"][k])])
 
 
     # Extract partition ID if it exists
-    partitionID = item['image'].info.get('partitionID')
+    partitionID = item["image"].info.get("partitionID")
     if partitionID is None:
       partitionID = -1
-    item['partitionID'] = int(partitionID)
+    item["partitionID"] = int(partitionID)
 
     # Convert to grayscale
-    if item['image'].mode not in ('L', 'LA'):
-      if 'A' in item['image'].getbands():
+    if item["image"].mode not in ("L", "LA"):
+      if "A" in item["image"].getbands():
         # Convert to grayscale but preserve alpha channel
-        item['image'] = item['image'].convert('LA')
+        item["image"] = item["image"].convert("LA")
       else:
-        item['image'] = item['image'].convert('L')
+        item["image"] = item["image"].convert("L")
 
     if returnOriginal:
       # Keep copy of original image
-      original = item['image'].copy()
+      original = item["image"].copy()
 
     bbox = None
-    if item['maskPath'] is not None:
+    if item["maskPath"] is not None:
       # Load the mask image and add it to the image as the alpha channel
       # If the image already has an alpha channel, it will be overwritten
-      f = open(item['maskPath'], 'rb')
+      f = open(item["maskPath"], "rb")
       mask = Image.open(f)
       mask.load()
-      if mask.mode != 'L':
-        mask = mask.convert('L')
+      if mask.mode != "L":
+        mask = mask.convert("L")
       f.close()
-      item['image'].putalpha(mask)
-    elif item['image'].mode != 'LA':
-      diffImage = ImageChops.difference(item['image'],
-        ImageChops.constant(item['image'], self.background))
+      item["image"].putalpha(mask)
+    elif item["image"].mode != "LA":
+      diffImage = ImageChops.difference(
+          item["image"], ImageChops.constant(item["image"], self.background))
       if self.automaskingTolerance:
-        diffImage = ImageChops.subtract(diffImage,
-            ImageChops.constant(item['image'],
-            self.automaskingTolerance))
+        diffImage = ImageChops.subtract(
+            diffImage, ImageChops.constant(item["image"],
+                                           self.automaskingTolerance))
       bbox = diffImage.getbbox()
       if not bbox:
-        bbox = (0, 0, item['image'].size[0], item['image'].size[1])
+        bbox = (0, 0, item["image"].size[0], item["image"].size[1])
       elif self.automaskingPadding:
-        bbox = ( max(0, bbox[0] - self.automaskingPadding),
-                 max(0, bbox[1] - self.automaskingPadding),
-                 min(item['image'].size[0], bbox[2] + self.automaskingPadding),
-                 min(item['image'].size[1], bbox[3] + self.automaskingPadding),
-               )
+        bbox = (max(0, bbox[0] - self.automaskingPadding),
+                max(0, bbox[1] - self.automaskingPadding),
+                min(item["image"].size[0], bbox[2] + self.automaskingPadding),
+                min(item["image"].size[1], bbox[3] + self.automaskingPadding),)
       if not self.minimalBoundingBox:
         # Do not use the bounding box found from the background color unless
         # it does not touch any of the sides of the image
         if not (bbox[0] > 0
                 and bbox[1] > 0
-                and bbox[2] < item['image'].size[0]
-                and bbox[3] < item['image'].size[1]):
+                and bbox[2] < item["image"].size[0]
+                and bbox[3] < item["image"].size[1]):
           # Bounding box was not brought in on all four sides
           # Set it back to the full image
-          bbox = (0, 0, item['image'].size[0], item['image'].size[1])
-      mask = ImageChops.constant(item['image'], 0)
+          bbox = (0, 0, item["image"].size[0], item["image"].size[1])
+      mask = ImageChops.constant(item["image"], 0)
       mask.paste(255, bbox)
-      item['image'].putalpha(mask)
+      item["image"].putalpha(mask)
 
     if setErodeFlag:
       # Check if the image has a nonuniform alpha channel
-      # If so, set the 'erode' option to False, indicating that the alpha
+      # If so, set the "erode" option to False, indicating that the alpha
       # channel is meaningful and it does not need to be eroded by GaborNode
       # to avoid "phantom edges"
       # If a bounding box was used to generated the alpha channel, use the box
       # directly to avoid the expense of scanning the pixels
       if bbox:
         # Bounding box was used
-        # Set to dilate mode if the bounding box doesn't touch any of the edges
-        if bbox[0] != 0 \
-            and bbox[1] != 0 \
-            and bbox[2] != item['image'].size[0] \
-            and bbox[3] != item['image'].size[1]:
+        # Set to dilate mode if the bounding box doesn"t touch any of the edges
+        if (bbox[0] != 0 and
+            bbox[1] != 0 and
+            bbox[2] != item["image"].size[0] and
+            bbox[3] != item["image"].size[1]):
           # Nonuniform alpha channel (from bounding box)
-          item['erode'] = False
+          item["erode"] = False
       else:
-        extrema = item['image'].split()[1].getextrema()
+        extrema = item["image"].split()[1].getextrema()
         if extrema[0] != extrema[1]:
           # Nonuniform alpha channel
-          item['erode'] = False
+          item["erode"] = False
 
     if returnOriginal:
       return original
@@ -1173,33 +1192,35 @@ class ImageSensor(PyRegion):
 
     filtered = self.filters[filterIndex][2].process(image)
 
-    if type(filtered) is not list:
+    if not isinstance(filtered, list):
       filtered = [filtered]
 
     for i, item in enumerate(filtered):
-      if type(item) is not list:
+      if not isinstance(item, list):
         filtered[i] = [item]
 
     # Verify that the filter produced the correct number of outputs
     outputCount = self.filters[filterIndex][2].getOutputCount()
-    if type(outputCount) not in (tuple, list):
+    if (not isinstance(outputCount, tuple) and
+        not isinstance(outputCount, list)):
       outputCount = (outputCount, 1)
-    if len(filtered) != outputCount[0] or \
-        False in [len(outputs) == outputCount[1] for outputs in filtered]:
+    if (len(filtered) != outputCount[0] or
+        False in [len(outputs) == outputCount[1] for outputs in filtered]):
       raise RuntimeError("The %s filter " % self.filters[filterIndex][0] +
-        "did not return the correct number of outputs. The number of images " +
-        "that it returned does not match the return value of the filter's " +
-        "getOutputCount() method.")
+                         "did not return the correct number of outputs. "
+                         "The number of images that it returned does not "
+                         "match the return value of the filter's "
+                         "getOutputCount() method.")
 
     for item in filtered:
       for image in item:
         # Verify that the image has the correct mode
-        if image.mode != 'LA':
-          s = """Filtered image returned by the "%s" filter (index %d) has
-            illegal mode '%s'. Images must be mode 'LA' (grayscale with alpha
-            channel containing the mask).""" % (self.filters[filterIndex][0],
-            filterIndex, image.mode)
-          if image.mode == 'L':
+        if image.mode != "LA":
+          s = ("Filtered image returned by the '%s' filter (index %d) has "
+               "illegal mode '%s'. Images must be mode 'LA' (grayscale with "
+               "alpha channel containing the mask)." %
+               (self.filters[filterIndex][0], filterIndex, image.mode))
+          if image.mode == "L":
             s += " The filter may have removed the alpha channel."
           raise RuntimeError(s)
         # Update the pixel count
@@ -1207,25 +1228,26 @@ class ImageSensor(PyRegion):
 
     if self.logFilteredImages:
       # Save filter output to disk
-      filterLogDir = os.path.join(self.logDir, 'output_from_filters')
-      path = os.path.join(filterLogDir, '%02d_' % filterIndex +
-        self.filters[filterIndex][0], '%09d' % imageIndex)
+      filterLogDir = os.path.join(self.logDir, "output_from_filters")
+      path = os.path.join(filterLogDir,
+                          "%02d_" % filterIndex + self.filters[filterIndex][0],
+                          "%09d" % imageIndex)
       # Create the output directory if it does not exist
       if not os.path.exists(path):
         os.makedirs(path)
       index = 0
-      pathContents = [x for x in sorted(os.listdir(path)) if re.match('\d', x)]
+      pathContents = [x for x in sorted(os.listdir(path)) if re.match(r"\d", x)]
       if pathContents:
-        index = int(re.match('(\d*)', pathContents[-1]).groups()[0]) + 1
+        index = int(re.match(r"(\d*)", pathContents[-1]).groups()[0]) + 1
       for f in filtered:
         if len(f) > 1:
           # Simultaneous outputs
           for i, image in enumerate(f):
-            filename = os.path.join(path, '%02d_%02d.png' % (index, i))
+            filename = os.path.join(path, "%02d_%02d.png" % (index, i))
             image.split()[0].save(filename)
         else:
           # Single output
-          filename = os.path.join(path, '%02d.png' % index)
+          filename = os.path.join(path, "%02d.png" % index)
           f[0].split()[0].save(filename)
         index += 1
 
@@ -1236,23 +1258,23 @@ class ImageSensor(PyRegion):
     Recursively apply the postFilters to the image and return a list of images.
     """
     # Filter the image
-    raw_output = None
+    rawOutput = None
     filtered = self.postFilters[filterIndex][2].process(image)
 
     # Handle special case where the post filter wants to control the output
     # of the image sensor (e.g convolution post filters)
-    if type(filtered) is tuple:
+    if isinstance(filtered, tuple):
       assert len(filtered) == 2
-      raw_output = filtered[1]
-      assert type(raw_output) == numpy.ndarray
+      rawOutput = filtered[1]
+      assert isinstance(rawOutput, numpy.ndarray)
       filtered = filtered[0][0]
 
     # Flatten all responses into a single list
-    if type(filtered) is not list:
+    if not isinstance(filtered, list):
       # One response
       filtered = [filtered]
     else:
-      if type(filtered[0]) is list:
+      if isinstance(filtered[0], list):
         # Simultaneous responses
         filtered2 = []
         for responses in filtered:
@@ -1261,31 +1283,33 @@ class ImageSensor(PyRegion):
 
     # Verify that the filter produced the correct number of outputs
     outputCount = self.postFilters[filterIndex][2].getOutputCount()
-    if type(outputCount) in (tuple, list):
+    if isinstance(outputCount, tuple) or isinstance(outputCount, list):
       if len(outputCount) == 1:
         outputCount = outputCount[0]
       else:
         outputCount = outputCount[0] * outputCount[1]
     if len(filtered) != outputCount:
-      raise RuntimeError("%s postFilter " % self.postFilters[filterIndex][0] +
-        "did not return the correct number of outputs")
+      raise RuntimeError("{filter} postFilter did not return the correct "
+                         "number of outputs"
+                         .format(filter=self.postFilters[filterIndex][0]))
 
     for image in filtered:
       # Verify that the image has the correct mode
-      if image.mode != 'LA':
-        s = """Filtered image returned by the "%s" postFilter (index %d) has
-          illegal mode '%s'. Images must be mode 'LA' (grayscale with alpha
-          channel containing the mask).""" % (self.postFilters[filterIndex][0],
-          filterIndex, image.mode)
-        if image.mode == 'L':
+      if image.mode != "LA":
+        s = ("Filtered image returned by the '%s' postFilter (index %d) has "
+             "illegal mode '%s'. Images must be mode 'LA' (grayscale with "
+             "alpha channel containing the mask)."
+             % (self.postFilters[filterIndex][0], filterIndex, image.mode))
+        if image.mode == "L":
           s += " The filter may have removed the alpha channel."
         raise RuntimeError(s)
 
     if self.logFilteredImages:
       # Save intermediate outputs to disk
-      filterLogDir = os.path.join(self.logDir, 'output_from_post_filters')
-      path = os.path.join(filterLogDir, '%02d_' % filterIndex +
-        self.postFilters[filterIndex][0])
+      filterLogDir = os.path.join(self.logDir, "output_from_post_filters")
+      path = os.path.join(filterLogDir,
+                          "%02d_" % (
+                              filterIndex + self.postFilters[filterIndex][0]))
       # Create the output directory if it does not exist
       if not os.path.exists(path):
         os.makedirs(path)
@@ -1299,18 +1323,19 @@ class ImageSensor(PyRegion):
         filtered[0].save(name)
 
     if filterIndex == len(self.postFilters) - 1:
-      return filtered, raw_output
+      return filtered, rawOutput
 
     # Concatenate all responses into one flat list of simultaneous responses
     responses = []
     for image in filtered:
       response = self._applyPostFilters(image, filterIndex+1)
-      if raw_output is not None:
-        assert (response[1] is None) # Only one post-filter can determine raw_output
+      if rawOutput is not None:
+        assert response[1] is None
+        # Only one post-filter can determine rawOutput
 
       responses.extend(response[0])
 
-    return responses, raw_output
+    return responses, rawOutput
 
   def _applyAllFilters(self, image=None):
     """
@@ -1325,7 +1350,7 @@ class ImageSensor(PyRegion):
     for image in images:
       filterPosition = [0] * len(self.filters)
       while True:
-        self._getFilteredImages({'image': image, 'filters': filterPosition})
+        self._getFilteredImages({"image": image, "filters": filterPosition})
         for i in xrange(len(self.filters)-1, -1, -1):
           filterPosition[i] += 1
           if filterPosition[i] == numFilterOutputs[i]:
@@ -1344,13 +1369,13 @@ class ImageSensor(PyRegion):
     """
 
     if index is None:
-      index = self.explorer[2].position['image']
+      index = self.explorer[2].position["image"]
 
-    if not self._imageList[index]['image']:
+    if not self._imageList[index]["image"]:
       # Image needs to be loaded
       self._loadImage(index)
 
-    return self._imageList[index]['image']
+    return self._imageList[index]["image"]
 
   def _getFilteredImages(self, position=None):
     """
@@ -1362,19 +1387,19 @@ class ImageSensor(PyRegion):
     if not position:
       position = self.explorer[2].position
 
-    if not self._imageList[position['image']]['image']:
+    if not self._imageList[position["image"]]["image"]:
       # Image needs to be loaded
-      self._loadImage(position['image'])
+      self._loadImage(position["image"])
 
     if not self.filters:
       # No filters - return original version
-      return [self._imageList[position['image']]['image']]
+      return [self._imageList[position["image"]]["image"]]
 
     # Iterate through the specified list of filter positions
     # Run filters as necessary
-    allFilteredImages = self._imageList[position['image']]['filtered']
+    allFilteredImages = self._imageList[position["image"]]["filtered"]
     filterPosition = tuple()
-    for filterIndex, pos in enumerate(position['filters']):
+    for filterIndex, pos in enumerate(position["filters"]):
       filterPosition += (pos,)
       if not filterPosition in allFilteredImages:
         # Run the filter
@@ -1382,31 +1407,33 @@ class ImageSensor(PyRegion):
           # Use the first of the simultaneous responses
           imageToFilter = allFilteredImages[filterPosition[:-1]][0]
         else:
-          imageToFilter = self._imageList[position['image']]['image']
-          # Inject the original image path to the Image's info
+          imageToFilter = self._imageList[position["image"]]["image"]
+          # Inject the original image path to the Image"s info
           # dict in case the filter wants to use it.
-          imageToFilter.info['path'] = self._imageList[position['image']]['imagePath']
-        newFilteredImages = self._applyFilter(imageToFilter, position['image'],
-          filterIndex)
+          imageToFilter.info["path"] = (
+              self._imageList[position["image"]]["imagePath"])
+        newFilteredImages = self._applyFilter(imageToFilter,
+                                              position["image"],
+                                              filterIndex)
         for j, image in enumerate(newFilteredImages):
           # Store in the dictionary of filtered images
           thisFilterPosition = filterPosition[:-1] + (j,)
           allFilteredImages[thisFilterPosition] = image
           # Update the filter queue
-          thisFilterTuple = (position['image'], thisFilterPosition)
+          thisFilterTuple = (position["image"], thisFilterPosition)
           if thisFilterTuple in self._filterQueue:
             self._filterQueue.remove(thisFilterTuple)
           self._filterQueue.insert(0, thisFilterTuple)
 
     # Update the queues to mark this image as recently accessed
     # Only mark the original image if it could be loaded from disk again
-    if self._imageList[position['image']]['imagePath']:
-      if position['image'] in self._imageQueue:
-        self._imageQueue.remove(position['image'])
-      self._imageQueue.insert(0, position['image'])
+    if self._imageList[position["image"]]["imagePath"]:
+      if position["image"] in self._imageQueue:
+        self._imageQueue.remove(position["image"])
+      self._imageQueue.insert(0, position["image"])
     # Mark all precursors to the current filter
-    for i in xrange(1, len(position['filters']) + 1):
-      partialFilterTuple = (position['image'], tuple(position['filters'][:i]))
+    for i in xrange(1, len(position["filters"]) + 1):
+      partialFilterTuple = (position["image"], tuple(position["filters"][:i]))
       if partialFilterTuple in self._filterQueue:
         self._filterQueue.remove(partialFilterTuple)
       self._filterQueue.insert(0, partialFilterTuple)
@@ -1423,10 +1450,10 @@ class ImageSensor(PyRegion):
     """
 
     if imageIndex is None:
-      imageIndex = self.explorer[2].position['image']
+      imageIndex = self.explorer[2].position["image"]
     item = self._imageList[imageIndex].copy()
-    item.pop('image')
-    item.pop('filtered')
+    item.pop("image")
+    item.pop("filtered")
     return item
 
   def _getOutputImages(self):
@@ -1437,9 +1464,9 @@ class ImageSensor(PyRegion):
     use as the output of the node regardless of the output images.
     """
 
-    if self.prevPosition['reset'] and self.blankWithReset:
+    if self.prevPosition["reset"] and self.blankWithReset:
       # Blank
-      return ([Image.new('LA', (self.enabledWidth, self.enabledHeight))] \
+      return ([Image.new("LA", (self.enabledWidth, self.enabledHeight))] \
         * self.depth, None)
 
     else:
@@ -1451,13 +1478,14 @@ class ImageSensor(PyRegion):
                 for image in allImages]
       scaleY = [image.size[1] / float(allImages[0].size[1])
                 for image in allImages]
-      offset = self.explorer[2].position['offset']
+      offset = self.explorer[2].position["offset"]
 
-      # Normally, the enabledSize is smaller than the sensor size. But, there are some
-      #  configurations where the user might want to explore in a larger size, then run
-      #  it through a post-filter to get the end sensor size (for example, when using a
-      #  fish-eye post filter). If we detect that the enabledSize is greater than the
-      #  sensor size, then change our crop bounds
+      # Normally, the enabledSize is smaller than the sensor size. But, there
+      # are some configurations where the user might want to explore in a
+      # larger size, then run it through a post-filter to get the end sensor
+      # size (for example, when using a fish-eye post filter). If we detect
+      # that the enabledSize is greater than the sensor size, then change our
+      # crop bounds
       dstImgWidth = max(self.width, self.enabledWidth)
       dstImgHeight = max(self.height, self.enabledHeight)
 
@@ -1474,8 +1502,8 @@ class ImageSensor(PyRegion):
         newImage = Image.new(croppedImage.split()[0].mode,
                              (dstImgWidth, dstImgHeight),
                              self.background)
-        if newImage.mode == 'L':
-          newImage.putalpha(Image.new('L', newImage.size))
+        if newImage.mode == "L":
+          newImage.putalpha(Image.new("L", newImage.size))
         newImage.paste(croppedImage, (max(0, -x), max(0, -y)))
         newImages.append(newImage)
 
@@ -1483,32 +1511,33 @@ class ImageSensor(PyRegion):
       croppedImages = [image.crop((0, 0,
                                    int(round(self.enabledWidth * scaleX[i])),
                                    int(round(self.enabledHeight * scaleY[i]))))
-                        for i, image in enumerate(newImages)]
+                       for i, image in enumerate(newImages)]
 
       # Filter through the post filters
-      final_output = None
+      finalOutput = None
       if self.postFilters:
 
         newCroppedImages = []
         for i in xrange(len(croppedImages)):
-          (responses, raw_output) = self._applyPostFilters(croppedImages[i])
-          if raw_output is not None:
-            assert final_output is None
-            final_output = raw_output
-          while type(responses[0]) == list:
+          (responses, rawOutput) = self._applyPostFilters(croppedImages[i])
+          if rawOutput is not None:
+            assert finalOutput is None
+            finalOutput = rawOutput
+          while isinstance(responses[0], list):
             responses = responses[0]
           newCroppedImages.extend(responses)
         croppedImages = newCroppedImages
 
       # Check that the number of images matches the depth
       if len(croppedImages) != self.depth:
-        raise RuntimeError("The filters and postFilters created %d images to"
-          " send out simultaneously, which does not match ImageSensor's"
-          " depth parameter, set to %d." % (len(croppedImages), self.depth))
+        raise RuntimeError(
+            "The filters and postFilters created %d images to "
+            "send out simultaneously, which does not match ImageSensor's "
+            "depth parameter, set to %d." % (len(croppedImages), self.depth))
 
       # Invert output if necessary
       if self.invertOutput:
-        if croppedImages[0].mode == '1':
+        if croppedImages[0].mode == "1":
           croppedImages = [ImageChops.invert(image) for image in croppedImages]
         else:
           for i, croppedImage in enumerate(croppedImages):
@@ -1518,9 +1547,9 @@ class ImageSensor(PyRegion):
             inverted.putalpha(alpha)
             croppedImages[i] = inverted
 
-      return (croppedImages, final_output)
+      return croppedImages, finalOutput
 
-  def _logCommand(self, reportList=None, argList='auto'):
+  def _logCommand(self, reportList=None, argList="auto"):
     """
     Print information about the calling command to the ImageSensor log file.
 
@@ -1559,36 +1588,37 @@ class ImageSensor(PyRegion):
     if not os.path.exists(self.logDir):
       os.makedirs(self.logDir)
     if self.logFile is None:
-      self.logFile = open(os.path.join(self.logDir, 'imagesensor_log.txt'), 'w')
+      self.logFile = open( #pylint: disable=W0201
+          os.path.join(self.logDir, "imagesensor_log.txt"), "w")
 
     # Get the caller's name
     callerInfo = inspect.stack()[1]
     callerName = callerInfo[3]
 
     # Automatically get the caller's arguments, unless they were specified
-    if argList == 'auto':
+    if argList == "auto":
       callerFrame = callerInfo[0]
-      callerArgs, a, k, callerLocals = inspect.getargvalues(callerFrame)
+      callerArgs, _, _, callerLocals = inspect.getargvalues(callerFrame)
       argList = [(name, callerLocals[name]) for name in callerArgs
-        if name != 'self']
+                 if name != "self"]
 
     # Create strings to print
     # argList and reportList are lists of tuples
     # Convert each into a string form of a dictionary, but preserve the order
     argStr = reportStr = {}
     if argList:
-      argStr = '{'
+      argStr = "{"
       for key, value in argList:
-        argStr += "'%s': %s, " % (key, repr(value))
-      argStr = argStr[:-2] + '}'
+        argStr += ""%s": %s, " % (key, repr(value))
+      argStr = argStr[:-2] + "}"
     if reportList:
-      reportStr = '{'
+      reportStr = "{"
       for key, value in reportList:
-        reportStr += "'%s': %s, " % (key, repr(value))
-      reportStr = reportStr[:-2] + '}'
+        reportStr += ""%s": %s, " % (key, repr(value))
+      reportStr = reportStr[:-2] + "}" #pylint: disable=W0201
 
     # Print to the file
-    print >>self.logFile, '(%s, %s, %s)' \
+    print >>self.logFile, "(%s, %s, %s)" \
       % (repr(callerName), argStr, reportStr) + os.linesep
     self.logFile.flush()
 
@@ -1598,7 +1628,7 @@ class ImageSensor(PyRegion):
     """
 
     # Create output directory if necessary
-    outputLogDir = os.path.join(self.logDir, 'output_to_network')
+    outputLogDir = os.path.join(self.logDir, "output_to_network")
     if not os.path.exists(outputLogDir):
       os.makedirs(outputLogDir)
     # Save the sensor's output images
@@ -1621,10 +1651,14 @@ class ImageSensor(PyRegion):
     if not os.path.exists(self.logDir):
       os.makedirs(self.logDir)
     if self.bboxLogFile is None:
-      self.bboxLogFile = open(os.path.join(self.logDir, 'imagesensor_bbox_log.txt'), 'w')
+      self.bboxLogFile = open( #pylint: disable=W0201
+          os.path.join(self.logDir, "imagesensor_bbox_log.txt"), "w")
 
     # Log the bounding box
-    print >>self.bboxLogFile, '%d %d %d %d' % (bbox[0], bbox[1], bbox[2], bbox[3])
+    print >>self.bboxLogFile, "%d %d %d %d" % (bbox[0],
+                                               bbox[1],
+                                               bbox[2],
+                                               bbox[3])
     self.bboxLogFile.flush()
 
   def _logOriginalImage(self):
@@ -1633,7 +1667,7 @@ class ImageSensor(PyRegion):
     """
 
     # Create output directory if necessary
-    originalLogDir = os.path.join(self.logDir, 'original_images')
+    originalLogDir = os.path.join(self.logDir, "original_images")
     if not os.path.exists(originalLogDir):
       os.makedirs(originalLogDir)
 
@@ -1648,13 +1682,13 @@ class ImageSensor(PyRegion):
     """
 
     # Create output directory if necessary
-    locationLogDir = os.path.join(self.logDir, 'output_locations')
+    locationLogDir = os.path.join(self.logDir, "output_locations")
     if not os.path.exists(locationLogDir):
       os.makedirs(locationLogDir)
 
     # Save the location image
     if not self.locationImage:
-      self.locationImage = self._createLocationImage()
+      self.locationImage = self._createLocationImage() #pylint: disable=W0201
     locationImageName = "%09d.png" % self._iteration
     self.locationImage.save(os.path.join(locationLogDir, locationImageName))
 
@@ -1663,9 +1697,9 @@ class ImageSensor(PyRegion):
     Create the 'location' image, with a rectangle around the sensor window.
     """
 
-    if self.prevPosition['reset'] and self.blankWithReset:
+    if self.prevPosition["reset"] and self.blankWithReset:
       # Create a blank image
-      locationImage = Image.new('1', (self.width, self.height))
+      locationImage = Image.new("1", (self.width, self.height))
       if self.invertOutput:
         locationImage = ImageChops.invert(locationImage)
     else:
@@ -1674,20 +1708,21 @@ class ImageSensor(PyRegion):
       # Select backdrop upon which sensor position will be overlaid
       if self.logLocationOnOriginalImage:
         filteredImage = firstImage
-        firstImage = self._getOriginalImage(self.prevPosition['image'])
+        firstImage = self._getOriginalImage(self.prevPosition["image"])
         if firstImage.size != filteredImage.size:
-          raise RuntimeError("logLocationOnOriginalImage is True, but the"
-            " filtered image does not match the size of the original"
-            " image, so the location image would be invalid")
-      locationImage = Image.new('RGB', firstImage.size)
+          raise RuntimeError(
+              "logLocationOnOriginalImage is True, but the "
+              "filtered image does not match the size of the original "
+              "image, so the location image would be invalid")
+      locationImage = Image.new("RGB", firstImage.size)
       locationImage.paste(firstImage, (0,0))
       locationImageDraw = ImageDraw.Draw(locationImage)
-      x, y = self.prevPosition['offset']
+      x, y = self.prevPosition["offset"]
       x2, y2 = x + self.enabledWidth - 1, y + self.enabledHeight - 1
-      locationImageDraw.rectangle((x-1, y-1, x2+1, y2+1), outline='red')
+      locationImageDraw.rectangle((x-1, y-1, x2+1, y2+1), outline="red")
       if locationImage.size[0] > 32 or locationImage.size[1] > 32:
         # Draw again to create a thicker border
-        locationImageDraw.rectangle((x-2, y-2, x2+2, y2+2), outline='red')
+        locationImageDraw.rectangle((x-2, y-2, x2+2, y2+2), outline="red")
 
     return locationImage
 
@@ -1700,9 +1735,9 @@ class ImageSensor(PyRegion):
 
     if self.categoryOutputFile:  # Only write if we have a valid filename
       if not self._categoryOutputFile:
-        self._categoryOutputFile = open(self.categoryOutputFile, 'w')
+        self._categoryOutputFile = open(self.categoryOutputFile, "w") #pylint: disable=W0201
         # Write a 1 to the first line to specify one entry per line
-        self._categoryOutputFile.write('1' + os.linesep)
+        self._categoryOutputFile.write("1" + os.linesep)
       self._categoryOutputFile.write(str(category) + os.linesep)
       self._categoryOutputFile.flush()
 
@@ -1730,50 +1765,53 @@ class ImageSensor(PyRegion):
 
     if self.logFilteredImages:
       # Remove the filter log directory if it exists
-      filterLogDir = os.path.join(self.logDir, 'output_from_filters')
+      filterLogDir = os.path.join(self.logDir, "output_from_filters")
       if os.path.exists(filterLogDir):
         shutil.rmtree(filterLogDir)
 
     if filters is None:
       filters = []
-    elif type(filters) is tuple:
+    elif isinstance(filters, tuple):
       filters = list(filters)
-    for i, filter in enumerate(filters):
-      if type(filter) is str:
-        filters[i] = [filter, {}]
-      elif type(filter) is tuple:
+    for i, f in enumerate(filters):
+      if isinstance(f, str):
+        filters[i] = [f, {}]
+      elif isinstance(f, tuple):
         filters[i] = list(filters[i])
       if len(filters[i]) == 1:
         filters[i].append({})
-    self.filters = filters
+    self.filters = filters #pylint: disable=W0201
     self._importFilters(self.filters)
 
     # Validate no filter except the last returns simultaneous responses
     for i in xrange(len(self.filters)-1):
       outputCount = self.filters[i][2].getOutputCount()
-      if type(outputCount) in (tuple, list) and len(outputCount) > 1 \
-          and outputCount[1] > 1:
-        raise RuntimeError("Only the last filter can return a nested list of "
-          "images (multiple simultaneous responses). "
-          "The %s filter, " % self.filters[i][0] +
-          "index %d of %d, " % (i, len(self.filters)-1) +
-          "creates %d simultaneous responses." % outputCount[1])
+      if (isinstance(outputCount, tuple) or isinstance(outputCount, list) and
+          len(outputCount) > 1 and
+          outputCount[1] > 1):
+        raise RuntimeError(
+            "Only the last filter can return a nested list of "
+            "images (multiple simultaneous responses). "
+            "The %s filter, " % self.filters[i][0] +
+            "index %d of %d, " % (i, len(self.filters)-1) +
+            "creates %d simultaneous responses." % outputCount[1])
 
     # Invalidate the filtered versions of all images
     for item in self._imageList:
-      if item['filtered']:
-        item['filtered'] = {}
-    self._filterQueue = []
+      if item["filtered"]:
+        item["filtered"] = {}
+    self._filterQueue = [] #pylint: disable=W0201
     # Update the pixel count to only count to the original images
-    self._pixelCount = 0
+    self._pixelCount = 0 #pylint: disable=W0201
     for i in self._imageQueue:
-      image = self._imageList[i]['image']
+      image = self._imageList[i]["image"]
       self._pixelCount += image.size[0] * image.size[1]
 
     # Tell the explorer about these new filters
-    if type(self.explorer) == list and len(self.explorer) > 2:
-      self.explorer[2].update(numFilters=len(filters),
-        numFilterOutputs=self._getNumFilterOutputs(self.filters))
+    if isinstance(self.explorer, list) and len(self.explorer) > 2:
+      self.explorer[2].update(
+          numFilters=len(filters),
+          numFilterOutputs=self._getNumFilterOutputs(self.filters))
 
   def _setPostFilters(self, postFilters):
     """
@@ -1799,19 +1837,20 @@ class ImageSensor(PyRegion):
 
     if postFilters is None:
       postFilters = []
-    elif type(postFilters) is tuple:
+    elif isinstance(postFilters, tuple):
       postFilters = list(postFilters)
-    for i, filter in enumerate(postFilters):
-      if type(filter) is str:
-        postFilters[i] = [filter, {}]
-      elif type(filter) is tuple:
+    for i, f in enumerate(postFilters):
+      if isinstance(f, str):
+        postFilters[i] = [f, {}]
+      elif isinstance(f, tuple):
         postFilters[i] = list(postFilters[i])
       if len(postFilters[i]) == 1:
         postFilters[i].append({})
-    self.postFilters = postFilters
+    self.postFilters = postFilters  #pylint: disable=W0201
     self._importFilters(self.postFilters)
 
-  def _getNumFilterOutputs(self, filters):
+  @staticmethod
+  def _getNumFilterOutputs(filters):
     """
     Return the number of outputs for each filter.
 
@@ -1821,13 +1860,14 @@ class ImageSensor(PyRegion):
     numFilterOutputs = []
     for f in filters:
       n = f[2].getOutputCount()
-      if type(n) in (tuple, list):
+      if isinstance(n, tuple) or isinstance(n, list):
         numFilterOutputs.append(n[0])
-      elif type(n) is int:
+      elif isinstance(n, int):
         numFilterOutputs.append(n)
       else:
-        raise RuntimeError("%s filter must return an int or a " % f[0]
-          + "list/tuple of two ints from getOutputCount()")
+        raise RuntimeError(
+            "%s filter must return an int or a " % f[0] + " "
+            "list/tuple of two ints from getOutputCount()")
     return numFilterOutputs
 
   def _importFilters(self, filters):
@@ -1845,24 +1885,24 @@ class ImageSensor(PyRegion):
       # If name is of the form 'ModuleName.ClassName' (useful to try multiple
       # versions of the same filter): names = ['ModuleName', 'ClassName']
       # By default, ImageSensor searches for filters in
-      # nupicvision.regions.ImageSensorFilters. If the import fails, it tries the
-      # import unmodified - so you may use filters that are located anywhere
-      # that Python knows about.
-      if not '.' in filters[i][0]:
+      # nupicvision.regions.ImageSensorFilters. If the import fails, it tries
+      # the import unmodified - so you may use filters that are located
+      # anywhere that Python knows about.
+      if not "." in filters[i][0]:
         moduleName = className = filters[i][0]
       else:
-        components = filters[i][0].split('.')
-        moduleName = '.'.join(components[:-1])
+        components = filters[i][0].split(".")
+        moduleName = ".".join(components[:-1])
         className = components[-1]
       try:
         # Search in ImageSensorFilters first
-        filterModule = __import__('nupicvision.regions.ImageSensorFilters.%s'
-          % moduleName, {}, {}, className)
+        filterModule = __import__("nupicvision.regions.ImageSensorFilters.%s"
+                                  % moduleName, {}, {}, className)
       except:
         try:
           filterModule = __import__(moduleName, {}, {}, className)
         except:
-          raise RuntimeError('Could not find filter "%s"' % filters[i][0])
+          raise RuntimeError("Could not find filter '%s'" % filters[i][0])
       filterClass = getattr(filterModule, className)
       # Instantiate the filter
       filters[i].append(filterClass(**copy.deepcopy(filters[i][1])))
@@ -1880,9 +1920,9 @@ class ImageSensor(PyRegion):
 
     explorer = copy.deepcopy(explorer)
 
-    if type(explorer) is str:
+    if isinstance(explorer, str):
       explorer = [explorer, {}]
-    elif type(explorer) is tuple:
+    elif isinstance(explorer, tuple):
       explorer = list(explorer)
     if len(explorer) == 1:
       explorer.append({})
@@ -1893,41 +1933,40 @@ class ImageSensor(PyRegion):
     # If name is of the form 'ModuleName.ClassName' (useful to try multiple
     # versions of the same explorer): names = ['ModuleName', 'ClassName']
     # By default, ImageSensor searches for explorers in
-    # nupicvision.regions.ImageSensorExplorers. If the import fails, it tries the
-    # import unmodified - so you may use explorers that are located anywhere
-    # that Python knows about.
-    if not '.' in explorer[0]:
+    # nupicvision.regions.ImageSensorExplorers. If the import fails, it tries
+    # the import unmodified - so you may use explorers that are located
+    # anywhere that Python knows about.
+    if not "." in explorer[0]:
       moduleName = className = explorer[0]
     else:
-      components = explorer[0].split('.')
-      moduleName = '.'.join(components[:-1])
+      components = explorer[0].split(".")
+      moduleName = ".".join(components[:-1])
       className = components[-1]
     try:
       # Search in ImageSensorExplorers first
-      explorerModule = __import__('nupicvision.regions.ImageSensorExplorers.%s'
-        % moduleName, {}, {}, className)
+      explorerModule = __import__("nupicvision.regions.ImageSensorExplorers.%s"
+                                  % moduleName, {}, {}, className)
     except ImportError:
       try:
         explorerModule = __import__(moduleName, {}, {}, className)
       except ImportError:
-        raise RuntimeError('Could not find explorer "%s"' % explorer[0])
+        raise RuntimeError("Could not find explorer '%s'" % explorer[0])
     explorerClass = getattr(explorerModule, className)
     explorerArgs = copy.deepcopy(explorer[1])
     # Append the image accessor methods to the arguments
     explorerArgs.update({
-      'getOriginalImage': self._getOriginalImage,
-      'getFilteredImages': self._getFilteredImages,
-      'getImageInfo': self._getImageInfo
-    })
+        "getOriginalImage": self._getOriginalImage,
+        "getFilteredImages": self._getFilteredImages,
+        "getImageInfo": self._getImageInfo})
 
     # Instantiate the explorer
-    self.explorer = explorer
+    self.explorer = explorer #pylint: disable=W0201
     self.explorer.append(explorerClass(**explorerArgs))
-    self.explorer[2].update(numImages=len(self._imageList),
-      numFilters=len(self.filters),
-      numFilterOutputs=self._getNumFilterOutputs(self.filters),
-      enabledWidth=self.enabledWidth, enabledHeight=self.enabledHeight,
-      blankWithReset=self.blankWithReset)
+    self.explorer[2].update(
+        numImages=len(self._imageList), numFilters=len(self.filters),
+        numFilterOutputs=self._getNumFilterOutputs(self.filters),
+        enabledWidth=self.enabledWidth, enabledHeight=self.enabledHeight,
+        blankWithReset=self.blankWithReset)
 
 
   def _meetMemoryLimit(self):
@@ -1941,19 +1980,19 @@ class ImageSensor(PyRegion):
       if len(self._filterQueue) > 1:
         # Unload the filtered image used least recently
         imageIndex, filterPosition = self._filterQueue.pop()
-        filtered = self._imageList[imageIndex]['filtered'][filterPosition]
+        filtered = self._imageList[imageIndex]["filtered"][filterPosition]
         for i in xrange(len(filtered)):
           self._pixelCount -= filtered[i].size[0] * filtered[i].size[1]
-        self._imageList[imageIndex]['filtered'].pop(filterPosition)
+        self._imageList[imageIndex]["filtered"].pop(filterPosition)
       elif self._imageQueue:
         if len(self._imageQueue) == 1 and not self.filters:
           # No filters and this is the current image - don't unload it
           break
         # Unload the original image used least recently
         imageIndex = self._imageQueue.pop()
-        size = self._imageList[imageIndex]['image'].size
+        size = self._imageList[imageIndex]["image"].size
         self._pixelCount -= size[0] * size[1]
-        self._imageList[imageIndex]['image'] = None
+        self._imageList[imageIndex]["image"] = None
       else:
         break
 
@@ -1964,12 +2003,11 @@ class ImageSensor(PyRegion):
     """
 
     position = self.explorer[2].position
-    self.prevPosition = {
-      'image': position['image'],
-      'filters': copy.copy(position['filters']),
-      'offset': copy.copy(position['offset']),
-      'reset': position['reset']
-    }
+    self.prevPosition = { #pylint: disable=W0201
+        "image": position["image"],
+        "filters": copy.copy(position["filters"]),
+        "offset": copy.copy(position["offset"]),
+        "reset": position["reset"]}
 
 
   def compute(self, inputs=None, outputs=None):
@@ -1982,10 +2020,10 @@ class ImageSensor(PyRegion):
     if len(self._imageList) == 0:
       raise RuntimeError("ImageSensor can't run compute: no images loaded")
 
-    # Check to see if the new image belongs to a new sequence, if so force Reset
+    # Check to see if new image belongs to a new sequence, if so force Reset
     prevPosition = self.prevPosition
     if prevPosition is not None:
-      prevSequenceID = self._imageList[prevPosition['image']]['sequenceIndex']
+      prevSequenceID = self._imageList[prevPosition["image"]]["sequenceIndex"]
     else:
       prevSequenceID = None
 
@@ -1993,58 +2031,58 @@ class ImageSensor(PyRegion):
 
     newPosition = self.prevPosition
     if newPosition is not None:
-      newSequenceID = self._imageList[newPosition['image']]['sequenceIndex']
+      newSequenceID = self._imageList[newPosition["image"]]["sequenceIndex"]
     else:
       newSequenceID = None
 
     if newSequenceID != prevSequenceID:
-      self.prevPosition['reset'] = True
+      self.prevPosition["reset"] = True
 
     holdFor = self.explorer[2].holdFor
     self._holdForOffset += 1
     if self._holdForOffset >= holdFor:
-      self._holdForOffset = 0
+      self._holdForOffset = 0 #pylint: disable=W0201
       self.explorer[2].next()
     self._iteration += 1
 
     # Get the image(s) to send out
-    outputImages, final_output = self._getOutputImages()
+    outputImages, finalOutput = self._getOutputImages()
 
     # Compile information about this iteration and log it
     imageInfo = self._getImageInfo()
-    if imageInfo['imagePath'] is None:
+    if imageInfo["imagePath"] is None:
       filename = ""
     else:
-      filename = os.path.split(imageInfo['imagePath'])[1]
-    category = imageInfo['categoryIndex']
+      filename = os.path.split(imageInfo["imagePath"])[1]
+    category = imageInfo["categoryIndex"]
     if category == -1:
       categoryName = ""
     else:
       categoryName = self.categoryInfo[category][0]
     self._logCommand([
-      ('iteration', self._iteration),
-      ('position', self.explorer[2].position),
-      ('filename', filename),
-      ('categoryIndex', category),
-      ('categoryName', categoryName),
-      ('erode', imageInfo['erode']),
-      ('blank', bool(self.prevPosition['reset'] and self.blankWithReset))
+        ("iteration", self._iteration),
+        ("position", self.explorer[2].position),
+        ("filename", filename),
+        ("categoryIndex", category),
+        ("categoryName", categoryName),
+        ("erode", imageInfo["erode"]),
+        ("blank", bool(self.prevPosition["reset"] and self.blankWithReset))
     ], None)
 
-    # If we don't have a partition ID at this point (e.g., because
+    # If we don"t have a partition ID at this point (e.g., because
     # of memory limits), then we need to try and pull from the
     # just-loaded image
-    if imageInfo['partitionID'] is None:
-      imgPosn = self.explorer[2].position['image']
-      imageInfo['partitionID'] = self._imageList[imgPosn].get('partitionID')
+    if imageInfo["partitionID"] is None:
+      imgPosn = self.explorer[2].position["image"]
+      imageInfo["partitionID"] = self._imageList[imgPosn].get("partitionID")
 
     if self.depth == 1:
-      self.outputImage = outputImages[0]
+      self.outputImage = outputImages[0]  #pylint: disable=W0201
     else:
-      self.outputImage = outputImages
+      self.outputImage = outputImages  #pylint: disable=W0201
 
     # Invalidate the old location image
-    self.locationImage = None
+    self.locationImage = None #pylint: disable=W0201
 
     # Log the images and locations if specified
     if self.logOutputImages:
@@ -2060,134 +2098,134 @@ class ImageSensor(PyRegion):
     if outputs:
       # Convert the output images to a numpy vector
       croppedArrays = [numpy.asarray(image.split()[0], _REAL_NUMPY_DTYPE)
-        for image in outputImages]
+                       for image in outputImages]
       # Pad the images to fit the full output size if necessary generating
       # a stack of images, each of them self.width X self.height
-      pad = self._cubeOutputs and \
-            (self.depth > 1 or
-            croppedArrays[0].shape != (self.height, self.width))
+      pad = (self._cubeOutputs and
+             (self.depth > 1 or
+              croppedArrays[0].shape != (self.height, self.width)))
       if pad:
         fullArrays = [numpy.zeros((self.height, self.width), _REAL_NUMPY_DTYPE)
-          for i in xrange(self.depth)]
+                      for i in xrange(self.depth)]
         for i in xrange(self.depth):
-          fullArrays[i][:croppedArrays[i].shape[0],:croppedArrays[i].shape[1]] \
-            = croppedArrays[i]
+          fullArrays[i][:croppedArrays[i].shape[0],
+                        :croppedArrays[i].shape[1]] = croppedArrays[i]
       else:
         fullArrays = croppedArrays
       # Flatten and concatenate the arrays
       outputArray = numpy.concatenate([a.flat for a in fullArrays])
 
       # Send black and white images as binary (0, 1) instead of (0..255)
-      if self.mode == 'bw':
+      if self.mode == "bw":
         outputArray /= 255
         outputArray = outputArray.round()
 
       # dataOut - main output
-      if final_output is None:
-        outputs['dataOut'][:] = outputArray
+      if finalOutput is None:
+        outputs["dataOut"][:] = outputArray
       else:
-        outputs['dataOut'][:] = final_output
+        outputs["dataOut"][:] = finalOutput
 
       # categoryOut - category index
-      outputs['categoryOut'][:] = \
+      outputs["categoryOut"][:] = \
         numpy.array([float(category)], _REAL_NUMPY_DTYPE)
 
       # auxDataOut - auxiliary data
-      auxDataOut = imageInfo['auxData']
+      auxDataOut = imageInfo["auxData"]
       if auxDataOut is not None:
-        outputs['auxDataOut'][:] = auxDataOut
+        outputs["auxDataOut"][:] = auxDataOut
 
       # resetOut - reset flag
-      if 'resetOut' in outputs:
-        outputs['resetOut'][:] = \
-          numpy.array([float(self.prevPosition['reset'])],_REAL_NUMPY_DTYPE)
+      if "resetOut" in outputs:
+        outputs["resetOut"][:] = \
+          numpy.array([float(self.prevPosition["reset"])],_REAL_NUMPY_DTYPE)
 
       # bboxOut - bounding box
-      if 'bboxOut' in outputs and len(outputs['bboxOut']) == 4:
+      if "bboxOut" in outputs and len(outputs["bboxOut"]) == 4:
         bbox = outputImages[0].split()[1].getbbox()
         if bbox is None:
           bbox = (0, 0, 0, 0)
-        outputs['bboxOut'][:] = numpy.array(bbox, _REAL_NUMPY_DTYPE)
+        outputs["bboxOut"][:] = numpy.array(bbox, _REAL_NUMPY_DTYPE)
         # Optionally log the bounding box information
         if self.logBoundingBox:
           self._logBoundingBox(bbox)
 
       # alphaOut - alpha channel
-      if 'alphaOut' in outputs and len(outputs['alphaOut']) > 1:
-        alphaOut = \
-          numpy.asarray(outputImages[0].split()[1], _REAL_NUMPY_DTYPE).flatten()
-        if not imageInfo['erode']:
+      if "alphaOut" in outputs and len(outputs["alphaOut"]) > 1:
+        alphaOut = numpy.asarray(outputImages[0].split()[1],
+                                 _REAL_NUMPY_DTYPE).flatten()
+        if not imageInfo["erode"]:
           # Change the 0th element of the output to signal that the alpha
           # channel should be dilated, not eroded
           alphaOut[0] = -alphaOut[0] - 1
-        outputs['alphaOut'][:alphaOut.shape[0]] = alphaOut
+        outputs["alphaOut"][:alphaOut.shape[0]] = alphaOut
 
       # partitionOut - partition ID (defaults to zero)
-      if 'partitionOut' in outputs:
-        partition = imageInfo.get('partitionID')
+      if "partitionOut" in outputs:
+        partition = imageInfo.get("partitionID")
         if partition is None:
           partition = 0
-        outputs['partitionOut'][:] = \
-          numpy.array([float(partition)], _REAL_NUMPY_DTYPE)
+        outputs["partitionOut"][:] = numpy.array([float(partition)],
+                                                 _REAL_NUMPY_DTYPE)
 
 
   def getParameter(self, parameterName, index=-1):
     """Get the value of an ImageSensor parameter."""
 
-    if parameterName == 'filters':
+    if parameterName == "filters":
       # Remove filter objects
-      return yaml.dump([filter[:2] for filter in self.filters])
+      return yaml.dump([f[:2] for f in self.filters])
 
-    elif parameterName == 'postFilters':
+    elif parameterName == "postFilters":
       # Remove filter objects
-      return yaml.dump([filter[:2] for filter in self.postFilters])
+      return yaml.dump([f[:2] for f in self.postFilters])
 
-    elif parameterName == 'explorer':
+    elif parameterName == "explorer":
       # Remove explorer object
       return yaml.dump(self.explorer[:2])
 
-    elif parameterName == 'numImages':
+    elif parameterName == "numImages":
       return len(self._imageList)
 
-    elif parameterName == 'numMasks':
-      return len([True for x in self._imageList if x['maskPath']])
+    elif parameterName == "numMasks":
+      return len([True for x in self._imageList if x["maskPath"]])
 
-    elif parameterName in ('numIterations', 'maxOutputVectorCount'):
+    elif parameterName in ("numIterations", "maxOutputVectorCount"):
       return self.getNumIterations()
 
-    elif parameterName == 'activeOutputCount':
+    elif parameterName == "activeOutputCount":
       return self.width * self.height * self.depth
 
-    elif parameterName == 'position':
+    elif parameterName == "position":
       return yaml.dump(self.explorer[2].position)
 
-    elif parameterName == 'imageInfo':
+    elif parameterName == "imageInfo":
       return yaml.dump([self._getImageInfo(i)
-                         for i in xrange(len(self._imageList))])
+                        for i in xrange(len(self._imageList))])
 
-    elif parameterName == 'prevImageInfo':
+    elif parameterName == "prevImageInfo":
       if self.prevPosition and self._imageList:
-        return yaml.dump(self._getImageInfo(self.prevPosition['image']))
+        return yaml.dump(self._getImageInfo(self.prevPosition["image"]))
       else:
         return None
 
-    elif parameterName == 'nextImageInfo':
+    elif parameterName == "nextImageInfo":
       if self.explorer[2].position and self._imageList:
         return yaml.dump(self._getImageInfo())
       else:
         return None
 
-    elif parameterName == 'prevSaccadeInfo':
+    elif parameterName == "prevSaccadeInfo":
       if (self.explorer[0] == "RandomSaccade" and
           self.explorer[2].position is not None and len(self._imageList) > 0):
         return yaml.dump(self.explorer[2].prevSaccade)
       else:
         return None
 
-    elif parameterName == 'categoryInfo':
+    elif parameterName == "categoryInfo":
       return serializeCategoryInfo(self.categoryInfo)
 
-    elif parameterName == 'outputImage':
+    elif parameterName == "outputImage":
       if self._iteration == 0:
         return
       if self.depth == 1:
@@ -2196,7 +2234,7 @@ class ImageSensor(PyRegion):
         return yaml.dump([serializeImage(image.split()[0])
                           for image in self.outputImage])
 
-    elif parameterName == 'outputImageWithAlpha':
+    elif parameterName == "outputImageWithAlpha":
       if self._iteration == 0:
         return
       if self.depth == 1:
@@ -2204,42 +2242,43 @@ class ImageSensor(PyRegion):
       else:
         return yaml.dump([serializeImage(image) for image in self.outputImage])
 
-    elif parameterName == 'originalImage':
+    elif parameterName == "originalImage":
       if not self._imageList or self._iteration == 0:
         return
       return yaml.dump(serializeImage(
           self._getOriginalImage().split()[0]))
 
-    elif parameterName == 'locationImage':
+    elif parameterName == "locationImage":
       if not self._imageList or self._iteration == 0 or not self.prevPosition:
         return
       if not self.locationImage:
-        self.locationImage = self._createLocationImage()
+        self.locationImage = self._createLocationImage() #pylint: disable=W0201
       return serializeImage(self.locationImage)
 
-    elif parameterName == 'background':
-      if self.mode == 'bw':
+    elif parameterName == "background":
+      if self.mode == "bw":
         return self.background / 255
       else:
         return self.background
-    elif parameterName =='auxData':
-      auxData = [numpy.array(imageList['auxData']) for imageList in self._imageList]
+    elif parameterName =="auxData":
+      auxData = [numpy.array(imageList["auxData"])
+                 for imageList in self._imageList]
       return auxData
-    elif parameterName == 'sequenceCount':
+    elif parameterName == "sequenceCount":
       return self.getSequenceCount()
 
-    elif parameterName == 'metadata':
+    elif parameterName == "metadata":
       metadata = dict()
       # Compute the position relative to center
-      imageIdx = self.prevPosition['image']
+      imageIdx = self.prevPosition["image"]
       image = self._getOriginalImage(imageIdx)
       centerX = (image.size[0] - self.enabledWidth)  / 2
       centerY = (image.size[1] - self.enabledHeight) / 2
-      (posX, posY) = self.prevPosition['offset']
-      metadata['posnY'] = centerY - posY
-      metadata['posnX'] = centerX - posX
-      metadata['catIndex'] = self._getImageInfo(imageIdx)['categoryIndex']
-      metadata['catName'] = self.categoryInfo[metadata['catIndex']][0]
+      (posX, posY) = self.prevPosition["offset"]
+      metadata["posnY"] = centerY - posY
+      metadata["posnX"] = centerX - posX
+      metadata["catIndex"] = self._getImageInfo(imageIdx)["categoryIndex"]
+      metadata["catName"] = self.categoryInfo[metadata["catIndex"]][0]
       return str(metadata)
 
     else:
@@ -2249,73 +2288,73 @@ class ImageSensor(PyRegion):
   def setParameter(self, parameterName, index, parameterValue):
     """Set the value of an ImageSensor parameter."""
 
-    if parameterName == 'filters':
+    if parameterName == "filters":
       self._setFilters(yaml.load(parameterValue))
 
-    elif parameterName == 'postFilters':
+    elif parameterName == "postFilters":
       self._setPostFilters(yaml.load(parameterValue))
 
-    elif parameterName == 'explorer':
+    elif parameterName == "explorer":
       self._setExplorer(yaml.load(parameterValue))
 
-    elif parameterName == 'enabledWidth':
-      self.enabledWidth = parameterValue
+    elif parameterName == "enabledWidth":
+      self.enabledWidth = parameterValue #pylint: disable=W0201
       self.explorer[2].update(enabledWidth=parameterValue)
 
-    elif parameterName == 'enabledHeight':
-      self.enabledHeight = parameterValue
+    elif parameterName == "enabledHeight":
+      self.enabledHeight = parameterValue #pylint: disable=W0201
       self.explorer[2].update(enabledHeight=parameterValue)
 
-    elif parameterName == 'width':
-      self.width = parameterValue
+    elif parameterName == "width":
+      self.width = parameterValue #pylint: disable=W0201
 
-    elif parameterName == 'height':
-      self.height = parameterValue
+    elif parameterName == "height":
+      self.height = parameterValue #pylint: disable=W0201
 
-    elif parameterName == 'blankWithReset':
-      self.blankWithReset = parameterValue
+    elif parameterName == "blankWithReset":
+      self.blankWithReset = parameterValue #pylint: disable=W0201
       self.explorer[2].update(blankWithReset=parameterValue)
 
-    elif parameterName == 'categoryOutputFile':
+    elif parameterName == "categoryOutputFile":
       if self._categoryOutputFile:
         self._categoryOutputFile.close()
-        self._categoryOutputFile = None
-      self.categoryOutputFile = parameterValue
+        self._categoryOutputFile = None #pylint: disable=W0201
+      self.categoryOutputFile = parameterValue #pylint: disable=W0201
 
-    elif parameterName == 'categoryInfo':
-      self.categoryInfo = deserializeCategoryInfo(parameterValue)
+    elif parameterName == "categoryInfo":
+      self.categoryInfo = deserializeCategoryInfo(parameterValue) #pylint: disable=W0201
       # TODO change the names and indices of the loaded image?
 
-    elif parameterName == 'background':
-      self.background = parameterValue
-      if self.mode == 'bw':
+    elif parameterName == "background":
+      self.background = parameterValue #pylint: disable=W0201
+      if self.mode == "bw":
         self.background *= 255
-      for filter in self.filters + self.postFilters:
-        filter[2].update(background=self.background)
+      for f in self.filters + self.postFilters:
+        f[2].update(background=self.background)
 
-    elif parameterName == 'logDir':
+    elif parameterName == "logDir":
       if self.logFile is not None and self.logDir != parameterValue:
         self.logFile.close()
-        self.logFile = None
+        self.logFile = None #pylint: disable=W0201
       if self.bboxLogFile is not None and self.logDir != parameterValue:
         self.bboxLogFile.close()
-        self.bboxLogFile = None
-      self.logDir = parameterValue
+        self.bboxLogFile = None #pylint: disable=W0201
+      self.logDir = parameterValue #pylint: disable=W0201
 
-    elif parameterName == 'logText':
-      self.logText = parameterValue
+    elif parameterName == "logText":
+      self.logText = parameterValue #pylint: disable=W0201
       if self.logFile is not None and not self.logText:
-        self.logFile.close()
-        self.logFile = None
+        self.logFile.close() #pylint: disable=W0201
+        self.logFile = None #pylint: disable=W0201
 
-    elif parameterName == 'memoryLimit':
-      self.memoryLimit = parameterValue
+    elif parameterName == "memoryLimit":
+      self.memoryLimit = parameterValue #pylint: disable=W0201
       self._meetMemoryLimit()
 
     else:
       if not hasattr(self, parameterName):
-        raise Exception("%s is not a valid parameter of the ImageSensor" \
-                % parameterName)
+        raise Exception(
+            "%s is not a valid parameter of the ImageSensor" % parameterName)
       setattr(self, parameterName, parameterValue)
 
 
@@ -2323,25 +2362,26 @@ class ImageSensor(PyRegion):
     """Get serializable state."""
 
     # Get the object-less filters and explorer
-    resetFilters = self.getParameter('filters')
-    resetPostFilters = self.getParameter('postFilters')
-    resetExplorer = self.getParameter('explorer')
+    resetFilters = self.getParameter("filters")
+    resetPostFilters = self.getParameter("postFilters")
+    resetExplorer = self.getParameter("explorer")
 
     # Compile a dictionary of attributes to save
     state = dict()
-    for name in ['width', 'height', 'depth', 'mode',
-      'blankWithReset', 'enabledWidth', 'enabledHeight', 'invertOutput',
-      'background', 'automaskingTolerance', 'automaskingPadding',
-      'memoryLimit', 'minimalBoundingBox', '_cubeOutputs', '_auxDataWidth']:
+    for name in ["width", "height", "depth", "mode", "blankWithReset",
+                 "enabledWidth", "enabledHeight", "invertOutput", "background",
+                 "automaskingTolerance", "automaskingPadding", "memoryLimit",
+                 "minimalBoundingBox", "_cubeOutputs", "_auxDataWidth"]:
       state[name] = getattr(self, name)
 
     # Add attributes that have been manipulated
-    state.update({'serializedCategoryInfo': self.getParameter('categoryInfo'),
-      'resetExplorer': resetExplorer, 'resetFilters': resetFilters,
-      'resetPostFilters': resetPostFilters})
+    state.update({"serializedCategoryInfo": self.getParameter("categoryInfo"),
+                  "resetExplorer": resetExplorer,
+                  "resetFilters": resetFilters,
+                  "resetPostFilters": resetPostFilters})
 
     # Save a version number
-    state['version'] = 999.0
+    state["version"] = 999.0
 
     return state
 
@@ -2349,71 +2389,71 @@ class ImageSensor(PyRegion):
   def __setstate__(self, state):
     """Set state from serialized state."""
     # Register a global variable for scanning or other tomfoolery
-    #PyNodeModule.nodes = getattr(PyNodeModule, 'nodes', []) + [self]
+    #PyNodeModule.nodes = getattr(PyNodeModule, "nodes", []) + [self]
 
-    if type(state) is tuple:
+    if isinstance(state, tuple):
       raise RuntimeError("Cannot convert legacy ImageSensor state")
 
     # Get the version number
-    version = state.pop('version')
+    version = state.pop("version")
 
     # Get attributes that need to be manipulated
-    serializedCategoryInfo = state.pop('serializedCategoryInfo')
-    resetFilters = state.pop('resetFilters')
-    resetPostFilters = state.pop('resetPostFilters')
-    resetExplorer = state.pop('resetExplorer')
+    serializedCategoryInfo = state.pop("serializedCategoryInfo")
+    resetFilters = state.pop("resetFilters")
+    resetPostFilters = state.pop("resetPostFilters")
+    resetExplorer = state.pop("resetExplorer")
 
     for name in state:
       setattr(self, name, state[name])
 
-    self.setParameter('categoryInfo', -1, serializedCategoryInfo)
+    self.setParameter("categoryInfo", -1, serializedCategoryInfo)
 
     # Set variables that weren't saved
-    self._imageList = []
-    self._imageQueue = []
-    self._filterQueue = []
-    self._pixelCount = 0
-    self._iteration = 0
-    self.logFile = None
-    self.bboxLogFile = None
-    self.logText = False
-    self.logOutputImages = False
-    self.logOriginalImages = False
-    self.logFilteredImages = False
-    self.logLocationImages = False
-    self.logLocationOnOriginalImage = False
-    self.logBoundingBox = False
-    self.logDir = "imagesensor_log"
-    self.categoryOutputFile = None
-    self._categoryOutputFile = None
-    self.outputImage = None
-    self.locationImage = None
-    self.prevPosition = None
+    self._imageList = [] #pylint: disable=W0201
+    self._imageQueue = [] #pylint: disable=W0201
+    self._filterQueue = [] #pylint: disable=W0201
+    self._pixelCount = 0 #pylint: disable=W0201
+    self._iteration = 0 #pylint: disable=W0201
+    self.logFile = None  #pylint: disable=W0201
+    self.bboxLogFile = None #pylint: disable=W0201
+    self.logText = False #pylint: disable=W0201
+    self.logOutputImages = False #pylint: disable=W0201
+    self.logOriginalImages = False #pylint: disable=W0201
+    self.logFilteredImages = False #pylint: disable=W0201
+    self.logLocationImages = False #pylint: disable=W0201
+    self.logLocationOnOriginalImage = False #pylint: disable=W0201
+    self.logBoundingBox = False #pylint: disable=W0201
+    self.logDir = "imagesensor_log" #pylint: disable=W0201
+    self.categoryOutputFile = None #pylint: disable=W0201
+    self._categoryOutputFile = None #pylint: disable=W0201
+    self.outputImage = None  #pylint: disable=W0201
+    self.locationImage = None #pylint: disable=W0201
+    self.prevPosition = None #pylint: disable=W0201
 
     # Set up the filters and explorer
-    self.explorer = None
-    self.setParameter('filters', -1, resetFilters)
-    self.setParameter('postFilters', -1, resetPostFilters)
-    self.setParameter('explorer', -1, resetExplorer)
-    self._cubeOutputs = (
-      not containsConvolutionPostFilter(yaml.load(resetPostFilters)))
+    self.explorer = None #pylint: disable=W0201
+    self.setParameter("filters", -1, resetFilters)
+    self.setParameter("postFilters", -1, resetPostFilters)
+    self.setParameter("explorer", -1, resetExplorer)
+    self._cubeOutputs = ( #pylint: disable=W0201
+        not containsConvolutionPostFilter(yaml.load(resetPostFilters)))
 
     # Backward compatibility
     if version < 1.63:
-      if not hasattr(self, 'automaskingTolerance'):
-        self.automaskingTolerance = 0
-      if not hasattr(self, 'automaskingPadding'):
-        self.automaskingPadding = 0
-    if not hasattr(self, '_holdForOffset'):
-      self._holdForOffset = 0
+      if not hasattr(self, "automaskingTolerance"):
+        self.automaskingTolerance = 0 #pylint: disable=W0201
+      if not hasattr(self, "automaskingPadding"):
+        self.automaskingPadding = 0 #pylint: disable=W0201
+    if not hasattr(self, "_holdForOffset"):
+      self._holdForOffset = 0 #pylint: disable=W0201
 
-    if not hasattr(self, '_auxDataWidth'):
-      self._auxDataWidth = 0
+    if not hasattr(self, "_auxDataWidth"):
+      self._auxDataWidth = 0 #pylint: disable=W0201
 
     if version < 1.65:
       # Set to True, the old behavior, though it is set to False by default
       # in new networks
-      self.minimalBoundingBox = True
+      self.minimalBoundingBox = True #pylint: disable=W0201
 
 
   @classmethod
@@ -2421,446 +2461,434 @@ class ImageSensor(PyRegion):
     """Return the Spec for this Region."""
 
     ns = dict(
-      description=ImageSensor.__doc__,
-      singleNodeOnly=False,
-      inputs = {},
-      outputs = dict(
-          dataOut=dict(
-            description="""Pixels of the image.""",
-            dataType='Real32',
-            count=0,
-            regionLevel=False,
-            isDefaultOutput=True),
+        description=ImageSensor.__doc__,
+        singleNodeOnly=False,
+        inputs = {},
+        outputs = dict(
+            dataOut=dict(
+                description="""Pixels of the image.""",
+                dataType="Real32",
+                count=0,
+                regionLevel=False,
+                isDefaultOutput=True),
 
-          categoryOut=dict(
-            description="""Index of the current image's category.""",
-            dataType='Real32',
-            count=1,
-            regionLevel=True,
-            isDefaultOutput=False),
+            categoryOut=dict(
+                description="""Index of the current image's category.""",
+                dataType="Real32",
+                count=1,
+                regionLevel=True,
+                isDefaultOutput=False),
 
-          resetOut=dict(
-            description="""Boolean reset output.""",
-            dataType='Real32',
-            count=1,
-            regionLevel=True,
-            isDefaultOutput=False),
+            resetOut=dict(
+                description="""Boolean reset output.""",
+                dataType="Real32",
+                count=1,
+                regionLevel=True,
+                isDefaultOutput=False),
 
-          bboxOut=dict(
-            description="""Bounding box output (4-tuple).""",
-            dataType='Real32',
-            count=4,
-            regionLevel=True,
-            isDefaultOutput=False),
+            bboxOut=dict(
+                description="""Bounding box output (4-tuple).""",
+                dataType="Real32",
+                count=4,
+                regionLevel=True,
+                isDefaultOutput=False),
 
-          alphaOut=dict(
-            description="""Alpha channel output.""",
-            dataType='Real32',
-            count=0,
-            regionLevel=True,
-            isDefaultOutput=False),
+            alphaOut=dict(
+                description="""Alpha channel output.""",
+                dataType="Real32",
+                count=0,
+                regionLevel=True,
+                isDefaultOutput=False),
 
-          partitionOut=dict(
-            description="""Index of the leave-one-out partition associated with the current image.""",
-            dataType='Real32',
-            count=1,
-            regionLevel=True,
-            isDefaultOutput=False),
+            partitionOut=dict(
+                description="""Index of the leave-one-out partition associated
+                  with the current image.""",
+                dataType="Real32",
+                count=1,
+                regionLevel=True,
+                isDefaultOutput=False),
 
-          auxDataOut=dict(
-            description="""Auxiliary data sent directly to the classifier.""",
-            dataType='Real32',
-            count=0,
-            regionLevel=True,
-            isDefaultOutput=False),
-      ),
-      parameters = dict(
-        outputImageWithAlpha=dict(
-          description="""YAML serialized version of the current output image(s) with the alpha channel.
-            If depth > 1, multiple serialized images will be returned in a list. To deserialize:
-            from nupicvision.image import deserializeImage
-            outputImage = deserializeImage(yaml.load((sensor.getParameter('outputImageWithAlpha')))""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
+            auxDataOut=dict(
+                description="""Auxiliary data sent directly to the
+                  classifier.""",
+                dataType="Real32",
+                count=0,
+                regionLevel=True,
+                isDefaultOutput=False),
         ),
-        originalImage=dict(
-          description="""YAML serialized version of the original, unfiltered version of the
-            current image. To deserialize:
-            from nupicvision.image import deserializeImage
-            originalImage = deserializeImage(yaml.load((sensor.getParameter('originalImage')))""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
+        parameters = dict(
+            outputImageWithAlpha=dict(
+                description="""YAML serialized version of the current output
+                  image(s) with the alpha channel. If depth > 1, multiple
+                  serialized images  will be returned in a list.
+                  To deserialize:
+                  from nupicvision.image import deserializeImage
+                  outputImage = deserializeImage(
+                      yaml.load((sensor.getParameter('outputImageWithAlpha')))
+                  """,
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            originalImage=dict(
+                description="""YAML serialized version of the original,
+                  unfiltered version of the current image. To deserialize:
+                  from nupicvision.image import deserializeImage
+                  originalImage = deserializeImage(
+                      yaml.load((sensor.getParameter('originalImage')))""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            locationImage=dict(
+                description="""YAML serialized version of the current
+                  'location image', which shows the position of the sensor
+                  overlaid on the filtered image (optionally, the original
+                  image). To deserialize:
+                  from nupicvision.image import deserializeImage
+                  locationImage = deserializeImage(
+                      yaml.load((sensor.getParameter('locationImage')))""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            height=dict(
+                description="""Height of the image, in pixels.""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [1, ...]",
+                accessMode="ReadWrite"),
+            automaskingPadding=dict(
+                description="""Affects the process by which bounding box masks
+                  are automatically generated from images.  After computing the
+                  bounding box based on image similarity with respect to the
+                  background, the box will be expanded by 'automaskPadding'
+                  pixels in all four directions (constrained by the original
+                  size of the image.)""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [0, ...]",
+                accessMode="ReadWrite"),
+            numMasks=dict(
+                description="""Number of masks that the sensor has loaded.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="Read"),
+            filters=dict(
+                description="""YAML serialized list of filters to apply to each
+                  image. Each element in the list should be either a string
+                  (just the filter name) or a list containing both the filter
+                  name and a dictionary specifying its arguments.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="ReadWrite"),
+            logOutputImages=dict(
+                description="""Toggle for writing each output to disk (as an
+                  image) on each iteration.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            minimalBoundingBox=dict(
+                description="""Whether the bounding box found by looking at the
+                    image background should be set even if it touches one of
+                    the sides of the image. Set to False to avoid chopping
+                    edges off certain images, or True if that is not an issue
+                    and you wish to use a sweeping explorer.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            numImages=dict(
+                description="""Number of images that the sensor has loaded.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="Read"),
+            logLocationOnOriginalImage=dict(
+                description="""Whether to overlay the location rectangle on the
+                  original image instead of the filtered image. Does not work
+                  if the two images do not have the same size, and may be
+                  nonsensical even if they do (for example, if a filter moved
+                  the object within the image).""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            outputImage=dict(
+                description="""YAML serialized version of the current output
+                  image(s). If depth > 1, multiple serialized images will be
+                  returned in a list. To deserialize:
+                  from nupicvision.image import deserializeImage
+                  outputImage = deserializeImage(
+                      yaml.load(sensor.getParameter('outputImage')))""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            logFilteredImages=dict(
+                description="""Toggle for writing the intermediate versions of
+                  images to disk as they pass through the filter chain.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            width=dict(
+                description="""Width of the image, in pixels.""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [1, ...]",
+                accessMode="ReadWrite"),
+            auxDataWidth=dict(
+                description="""The number of elements in in the auxiliary data
+                  vector.""",
+                dataType="int",
+                count=1,
+                constraints="",
+                accessMode="ReadWrite"),
+            categoryOutputFile=dict(
+                description="""Name of file to which to write category number
+                  on each compute.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="ReadWrite"),
+            logLocationImages=dict(
+                description="""Toggle for writing an image to disk on each
+                  iteration which shows the location of the sensor window.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            nextImageInfo=dict(
+                description="""YAML serialized dictionary of information for
+                  the image which will be used for the next compute.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            prevSaccadeInfo=dict(
+                description="""YAML serialized dictionary of information about
+                  the previous saccade a RandomSaccade explorer made. NoneType
+                  if the explorer isn't a RandomSaccade explorer.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            enabledWidth=dict(
+                description="""Width of the enabled 'window', in pixels.""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [1, ...]",
+                accessMode="ReadWrite"),
+            numIterations=dict(
+                description="""Number of iterations necessary to fully explore
+                  all loaded images. Only some explorers support this. Use the
+                  getNumIterations command if you wish to get the number of
+                  iterations for a particular image.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="Read"),
+            logText=dict(
+                description="""Toggle for verbose logging to
+                  imagesensor_log.txt.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            explorer=dict(
+                description="""A YAML serialized list containing the name of an
+                  explorer (used to move the sensor through the input space)
+                  and (optionally) a dictionary of arguments for the explorer.
+                  To use the default args for an explorer, specify only a
+                  string in the list (just the explorer name) or for advanced
+                  configuration specify the explorer name and a dictionary
+                  specifying its arguments.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="ReadWrite"),
+            imageInfo=dict(
+                description="""A YAML serialized list with a dictionary of
+                  information for each image that has been loaded.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            useAux=dict(
+                description="""Use auxiliary input data at the classifier
+                  level""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            automaskingTolerance=dict(
+                description="""Controls the process by which bounding box masks
+                  are automatically generated from images based on similarity
+                  to the specified 'background' pixel value.  The bounding box
+                  will enclose all pixels in the image that differ from
+                  'background' by more than the value specified in
+                  'automaskingTolerance'.  Default is 0, which generates
+                  bounding boxes that enclose all pixels that differ at all
+                  from the background.  In general, increasing the value of
+                  'automaskingTolerance' will produce tighter (smaller)
+                  bounding box masks.""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [0, 255]",
+                accessMode="ReadWrite"),
+            activeOutputCount=dict(
+                description="""The number of active elements in the dataOut
+                  output.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="Read"),
+            memoryLimit=dict(
+                description="""Maximum amount of memory that ImageSensor should
+                  use for storing images, in megabytes. ImageSensor will unload
+                  images and filter outputs to stay beneath this ceiling. Set
+                  to -1 for no limit.""",
+                dataType="int",
+                count=1,
+                constraints="interval: [-1, ...]",
+                accessMode="ReadWrite"),
+            logDir=dict(
+                description="""Name of the imagesensor log directory, which is
+                  created in the session bundle if any logging options are
+                  enabled. Default is imagesensor_log.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="ReadWrite"),
+            background=dict(
+                description="""Value of "background" pixels. May be used to pad
+                  images during sweeping, as well as to find the bounds of an
+                  object if no mask is available.""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [0, 255]",
+                accessMode="ReadWrite"),
+            position=dict(
+                description="""YAML serialized dictionary containing the
+                  position of the sensor that will be used for the *next*
+                  compute.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            auxData=dict(
+                description="""YAML serialized list of Auxiliary Data for every
+                  image in the image list""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            invertOutput=dict(
+                description="""Whether to invert the pixel values before
+                  sending an image to the network. If invertOutput is enabled,
+                  a white object on a black background becomes a black object
+                  on a white background.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            categoryInfo=dict(
+                description="""YAML serialized list with a tuple for each
+                  category that the sensor has learned. The tuple contains
+                  the category name (i.e. 'dog') and a serialized version of an
+                  example image for the category. To deserialize the image:
+                  from nupicvision.regions.ImageSensor import (
+                      deserializeCategoryInfo)
+                  categoryInfo = deserializeCategoryInfo(
+                      sensor.getParameter('categoryInfo'))""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="ReadWrite"),
+            prevImageInfo=dict(
+                description="""YAML serialized dictionary of information for
+                  the image used during the previous compute.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            logOriginalImages=dict(
+                description="""Toggle for writing the original, unfiltered
+                  version of the current image to disk on each iteration.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            enabledHeight=dict(
+                description="""Height of the enabled 'window', in pixels.""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [1, ...]",
+                accessMode="ReadWrite"),
+            depth=dict(
+                description="""Number of images to send out simultaneously.""",
+                dataType="UInt32",
+                count=1,
+                constraints="interval: [1, ...]",
+                accessMode="Read"),
+            mode=dict(
+                description="""'gray' (8-bit grayscale) or 'bw' (1-bit black
+                  and white).""",
+                dataType="Byte",
+                count=0,
+                constraints="enum: gray, bw",
+                accessMode="Read"),
+            logBoundingBox=dict(
+                description="""Toggle for logging the bounding box information
+                  on each iteration.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            blankWithReset=dict(
+                description="""** DEPRECATED ** Whether to send a blank output
+                  every time the explorer generates a reset signal (such as
+                  when beginning a new sweep). Turning on blanks increases the
+                  number of iterations.""",
+                dataType="bool",
+                count=1,
+                constraints="bool",
+                accessMode="ReadWrite"),
+            metadata=dict(
+                description="""Parameter that contains a dict of metadata for
+                  the most recently generated output image.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            postFilters=dict(
+                description="""YAML serialized list of filters to apply to each
+                  image just before the image is sent to the network. Each
+                  element in the list should either be a string (just the
+                  filter name) or a list containing both the filter name and a
+                  dictionary specifying its arguments.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="ReadWrite"),
+            maxOutputVectorCount=dict(
+                description="""(alias for numIterations) Number of iterations
+                  necessary to fully explore all loaded images. Only some
+                  explorers support this. Use the getNumIterations command if
+                  you wish to get the number of iterations for a particular
+                  image.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="Read")
         ),
-        locationImage=dict(
-          description="""YAML serialized version of the current 'location image', which shows the
-            position of the sensor overlaid on the filtered image (optionally, the
-            original image). To deserialize:
-            from nupicvision.image import deserializeImage
-            locationImage = deserializeImage(yaml.load((sensor.getParameter('locationImage')))""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        height=dict(
-          description="""Height of the image, in pixels.""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [1, ...]',
-          accessMode='ReadWrite'
-        ),
-        automaskingPadding=dict(
-          description="""Affects the process by which bounding box masks
-            are automatically generated from images.  After computing the
-            bounding box based on image similarity with respect to the background,
-            the box will be expanded by 'automaskPadding' pixels in all four
-            directions (constrained by the original size of the image.)""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [0, ...]',
-          accessMode='ReadWrite'
-        ),
-        numMasks=dict(
-          description="""Number of masks that the sensor has loaded.""",
-          dataType='UInt32',
-          count=1,
-          constraints='',
-          accessMode='Read'
-        ),
-        filters=dict(
-          description="""YAML serialized list of filters to apply to each
-            image. Each element in the list should be either a string (just
-            the filter name) or a list containing both the filter name and a
-            dictionary specifying its arguments.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='ReadWrite'
-        ),
-        logOutputImages=dict(
-          description="""Toggle for writing each output to disk (as an image)
-            on each iteration.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        minimalBoundingBox=dict(
-          description="""Whether the bounding box found by looking at the
-              image background should be set even if it touches one of the sides of
-              the image. Set to False to avoid chopping edges off certain images, or
-              True if that is not an issue and you wish to use a sweeping explorer.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        numImages=dict(
-          description="""Number of images that the sensor has loaded.""",
-          dataType='UInt32',
-          count=1,
-          constraints='',
-          accessMode='Read'
-        ),
-        logLocationOnOriginalImage=dict(
-          description="""Whether to overlay the location rectangle on the original image instead
-            of the filtered image. Does not work if the two images do not have the
-            same size, and may be nonsensical even if they do (for example, if a filter
-            moved the object within the image).""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        outputImage=dict(
-          description="""YAML serialized version of the current output
-            image(s). If depth > 1, multiple serialized images will be returned
-            in a list. To deserialize:
-            from nupicvision.image import deserializeImage
-            outputImage = deserializeImage(
-                yaml.load(sensor.getParameter('outputImage')))""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        logFilteredImages=dict(
-          description="""Toggle for writing the intermediate versions of images to disk
-            as they pass through the filter chain.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        width=dict(
-          description="""Width of the image, in pixels.""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [1, ...]',
-          accessMode='ReadWrite'
-        ),
-        auxDataWidth=dict(
-          description="""The number of elements in in the auxiliary data vector.""",
-          dataType='int',
-          count=1,
-          constraints='',
-          accessMode='ReadWrite'
-        ),
-        categoryOutputFile=dict(
-          description="""Name of file to which to write category number on each compute.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='ReadWrite'
-        ),
-        logLocationImages=dict(
-          description="""Toggle for writing an image to disk on each iteration which shows
-            the location of the sensor window.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        nextImageInfo=dict(
-          description="""YAML serialized dictionary of information for the
-            image which will be used for the next compute.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        prevSaccadeInfo=dict(
-          description="""YAML serialized dictionary of information about the
-            previous saccade a RandomSaccade explorer made. NoneType if the
-            explorer isn't a RandomSaccade explorer.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        enabledWidth=dict(
-          description="""Width of the enabled 'window', in pixels.""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [1, ...]',
-          accessMode='ReadWrite'
-        ),
-        numIterations=dict(
-          description="""Number of iterations necessary to fully explore all loaded images. Only
-            some explorers support this. Use the getNumIterations command if you wish to
-            get the number of iterations for a particular image.""",
-          dataType='UInt32',
-          count=1,
-          constraints='',
-          accessMode='Read'
-        ),
-        logText=dict(
-          description="""Toggle for verbose logging to imagesensor_log.txt.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        explorer=dict(
-          description="""A YAML serialized list containing the name of an
-            explorer (used to move the sensor through the input space) and
-            (optionally) a dictionary of arguments for the explorer. To use the
-            default args for an explorer, specify only a string in the list
-            (just the explorer name) or for advanced configuration specify the
-            explorer name and a dictionary specifying its arguments.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='ReadWrite'
-        ),
-        imageInfo=dict(
-          description="""A YAML serialized list with a dictionary of
-            information for each image that has been loaded.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        useAux=dict(
-          description="""Use auxiliary input data at the classifier level""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        automaskingTolerance=dict(
-          description="""Controls the process by which bounding box masks
-            are automatically generated from images based on similarity to the
-            specified 'background' pixel value.  The bounding box will enclose all
-            pixels in the image that differ from 'background' by more than
-            the value specified in 'automaskingTolerance'.  Default is 0, which
-            generates bounding boxes that enclose all pixels that differ at all
-            from the background.  In general, increasing the value of
-            'automaskingTolerance' will produce tighter (smaller) bounding box masks.""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [0, 255]',
-          accessMode='ReadWrite'
-        ),
-        activeOutputCount=dict(
-          description="""The number of active elements in the dataOut output.""",
-          dataType='UInt32',
-          count=1,
-          constraints='',
-          accessMode='Read'
-        ),
-        memoryLimit=dict(
-          description="""Maximum amount of memory that ImageSensor should use for storing images,
-            in megabytes. ImageSensor will unload images and filter outputs to stay beneath
-            this ceiling. Set to -1 for no limit.""",
-          dataType='int',
-          count=1,
-          constraints='interval: [-1, ...]',
-          accessMode='ReadWrite'
-        ),
-        logDir=dict(
-          description="""Name of the imagesensor log directory, which is created in the session
-            bundle if any logging options are enabled. Default is imagesensor_log.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='ReadWrite'
-        ),
-        background=dict(
-          description="""Value of "background" pixels. May be used to pad images during sweeping,
-            as well as to find the bounds of an object if no mask is available.""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [0, 255]',
-          accessMode='ReadWrite'
-        ),
-        position=dict(
-          description="""YAML serialized dictionary containing the position of
-            the sensor that will be used for the *next* compute.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        auxData=dict(
-          description="""YAML serialized list of Auxiliary Data for every image
-            in the image list""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        invertOutput=dict(
-          description="""Whether to invert the pixel values before sending an image to the
-            network. If invertOutput is enabled, a white object on a black background
-            becomes a black object on a white background.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        categoryInfo=dict(
-          description="""YAML serialized list with a tuple for each category
-            that the sensor has learned. The tuple contains the category name
-            (i.e. 'dog') and a serialized version of an example image for the
-            category. To deserialize the image:
-            from nupicvision.regions.ImageSensor import deserializeCategoryInfo
-            categoryInfo = deserializeCategoryInfo(sensor.getParameter('categoryInfo'))""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='ReadWrite'
-        ),
-        prevImageInfo=dict(
-          description="""YAML serialized dictionary of information for the
-            image used during the previous compute.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        logOriginalImages=dict(
-          description="""Toggle for writing the original, unfiltered version of the current
-            image to disk on each iteration.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        enabledHeight=dict(
-          description="""Height of the enabled 'window', in pixels.""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [1, ...]',
-          accessMode='ReadWrite'
-        ),
-        depth=dict(
-          description="""Number of images to send out simultaneously.""",
-          dataType='UInt32',
-          count=1,
-          constraints='interval: [1, ...]',
-          accessMode='Read'
-        ),
-        mode=dict(
-          description="""'gray' (8-bit grayscale) or 'bw' (1-bit black and white).""",
-          dataType='Byte',
-          count=0,
-          constraints='enum: gray, bw',
-          accessMode='Read'
-        ),
-        logBoundingBox=dict(
-          description="""Toggle for logging the bounding box information on each iteration.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        blankWithReset=dict(
-          description="""** DEPRECATED ** Whether to send a blank output every time the explorer
-            generates a reset signal (such as when beginning a new sweep). Turning
-            on blanks increases the number of iterations.""",
-          dataType='bool',
-          count=1,
-          constraints='bool',
-          accessMode='ReadWrite'
-        ),
-        metadata=dict(
-          description="""Parameter that contains a dict of metadata for the most
-                           recently generated output image.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='Read'
-        ),
-        postFilters=dict(
-          description="""YAML serialized list of filters to apply to each image
-            just before the image is sent to the network. Each element in the list
-            should either be a string (just the filter name) or a list
-            containing both the filter name and a dictionary specifying its
-            arguments.""",
-          dataType='Byte',
-          count=0,
-          constraints='',
-          accessMode='ReadWrite'
-        ),
-        maxOutputVectorCount=dict(
-          description="""(alias for numIterations) Number of iterations necessary to fully explore
-            all loaded images. Only some explorers support this. Use the getNumIterations command
-            if you wish to get the number of iterations for a particular image.""",
-          dataType='UInt32',
-          count=1,
-          constraints='',
-          accessMode='Read'
-        )
-      ),
-      commands=dict(
-        loadSingleImage=dict(description='load a single image'),
-        loadMultipleImages=dict(description='load multiple images'),
-      )
+        commands=dict(
+            loadSingleImage=dict(description="load a single image"),
+            loadMultipleImages=dict(description="load multiple images"))
     )
 
     return ns
@@ -2871,14 +2899,14 @@ class ImageSensor(PyRegion):
 
 
   def getOutputElementCount(self, name):
-    if name == 'auxDataOut':
+    if name == "auxDataOut":
       return self._auxDataWidth if self._auxDataWidth else 0
-    elif name == 'dataOut':
+    elif name == "dataOut":
       return self.width * self.height * self.depth
-    elif name == 'alphaOut':
+    elif name == "alphaOut":
       return 1
     else:
-      raise Exception('Unknown output: ' + name)
+      raise Exception("Unknown output: " + name)
 
 
 
@@ -2886,12 +2914,13 @@ class ImageSensor(PyRegion):
 
 def serializeCategoryInfo(categoryInfo):
   return yaml.dump([[name, b64encode(serializeImage(image))]
-                     for name, image in categoryInfo])
+                    for name, image in categoryInfo])
 
 
 
 def deserializeCategoryInfo(sCategoryInfo):
-  if yaml.load(sCategoryInfo) is None: return []
+  if yaml.load(sCategoryInfo) is None:
+    return []
   return [[name, (deserializeImage(b64decode(sImage))
                   if sImage is not None
                   else None)]
@@ -2903,10 +2932,11 @@ def _serializeImageList(imageList):
   sImageList = []
   for i in xrange(len(imageList)):
     sImageList.append(imageList[i].copy())
-    if sImageList[i]['image']:
-      sImageList[i]['image'] = serializeImage(sImageList[i]['image'])
-    if sImageList[i]['filtered']:
-      sImageList[i]['filtered'] = _serializeAllImages(sImageList[i]['filtered'])
+    if sImageList[i]["image"]:
+      sImageList[i]["image"] = serializeImage(sImageList[i]["image"])
+    if sImageList[i]["filtered"]:
+      sImageList[i]["filtered"] = _serializeAllImages(
+          sImageList[i]["filtered"])
   return sImageList
 
 
@@ -2914,10 +2944,11 @@ def _serializeImageList(imageList):
 def _deserializeImageList(sImageList):
   imageList = sImageList
   for i in xrange(len(imageList)):
-    if imageList[i]['image']:
-      imageList[i]['image'] = deserializeImage(imageList[i]['image'])
-    if imageList[i]['filtered']:
-      imageList[i]['filtered'] = _deserializeAllImages(imageList[i]['filtered'])
+    if imageList[i]["image"]:
+      imageList[i]["image"] = deserializeImage(imageList[i]["image"])
+    if imageList[i]["filtered"]:
+      imageList[i]["filtered"] = _deserializeAllImages(
+          imageList[i]["filtered"])
   return imageList
 
 
