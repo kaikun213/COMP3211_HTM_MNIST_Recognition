@@ -1609,12 +1609,12 @@ class ImageSensor(PyRegion):
     if argList:
       argStr = "{"
       for key, value in argList:
-        argStr += ""%s": %s, " % (key, repr(value))
+        argStr += "'%s': %s, " % (key, repr(value))
       argStr = argStr[:-2] + "}"
     if reportList:
       reportStr = "{"
       for key, value in reportList:
-        reportStr += ""%s": %s, " % (key, repr(value))
+        reportStr += "'%s': %s, " % (key, repr(value))
       reportStr = reportStr[:-2] + "}" #pylint: disable=W0201
 
     # Print to the file
