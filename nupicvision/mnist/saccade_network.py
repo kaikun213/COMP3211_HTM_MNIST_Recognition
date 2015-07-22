@@ -20,13 +20,13 @@
 # ----------------------------------------------------------------------
 
 import copy
+import itertools
+import operator
 import time
 
-import numpy
 from PIL import ImageTk, ImageDraw, Image
 import yaml
 
-from nupic.bindings.math import GetNTAReal
 from nupic.engine import Network
 
 from nupicvision.regions.ImageSensor import ImageSensor
@@ -101,9 +101,9 @@ class SaccadeNetwork(object):
       (note: no image logging if none)
     :param validationSet: (optional) Path to set of images to validate on
     :param int detailedSaccadeWidth: (optional) Width of detailed saccades to
-      return from the runNetworkOneImage
+      return from the runNetworkOneImage and testNetworkOneImage
     :param int detailedSaccadeHeight: (optional) Height of detailed saccades to
-      return from the runNetworkOneImage
+      return from the runNetworkOneImage and testNetworkOneImage
     :param bool createNetwork: If false, wait until createNet is manually
       called to create the network. Otherwise, create on __init__
     """
@@ -122,7 +122,9 @@ class SaccadeNetwork(object):
     self.networkSP = None
     self.networkSensor = None
     self.numTrainingImages = 0
-    self.networkPySP = None
+    self.numTestingImages = 0
+    self.trainingImageIndex = 0
+    self.testingImageIndex = 0
 
     if createNetwork:
       self.createNet()
@@ -159,14 +161,25 @@ class SaccadeNetwork(object):
     self.net = net
 
 
+  def loadFromFile(self, filename):
+    """ Load a serialized network
+    :param filename: Where the network should be loaded from
+    """
+    print "Loading network from {file}...".format(file=filename)
+    Network.unregisterRegion(ImageSensor.__name__)
+    Network.registerRegion(ImageSensor)
+    self.net = Network(filename)
+
+    self.networkSensor = self.net.regions["sensor"]
+    self.networkSP = self.net.regions["SP"]
+    self.networkClassifier = self.net.regions["classifier"]
+
+
   def loadExperiment(self):
     """ Load images into ImageSensor and set the learning mode for the SP. """
     self.networkSensor = self.net.regions["sensor"]
     self.networkSP = self.net.regions["SP"]
-    self.networkPySP = self.networkSP.getSelf()
     self.networkClassifier = self.net.regions["classifier"]
-    self.networkDutyCycles = numpy.zeros(DEFAULT_SP_PARAMS["columnCount"],
-                                         dtype=GetNTAReal())
 
     print "============= Loading training images ================="
     t1 = time.time()
@@ -307,7 +320,8 @@ class SaccadeNetwork(object):
       self.trainingImageIndex += 1
 
       if enableViz:
-        return (saccadeImgsList, saccadeDetailList, saccadeHistList)
+        return (saccadeImgsList, saccadeDetailList, saccadeHistList,
+                self.networkSensor.getOutputData("categoryOut"))
       return True
 
     else:
@@ -326,8 +340,6 @@ class SaccadeNetwork(object):
                        cat=self.networkSensor.getOutputData("categoryOut")))
       self.trainingImageIndex += 1
 
-    print "Done training SP!"
-
 
   def runNetworkBatch(self, batchSize):
     """ Run the network in batches.
@@ -340,14 +352,207 @@ class SaccadeNetwork(object):
       for i in range(SACCADES_PER_IMAGE):
         self.net.run(1)
 
+      self.trainingImageIndex += 1
       if self.trainingImageIndex % batchSize == 0:
         print ("Iteration: {iter}; Category: {cat}"
                .format(iter=self.trainingImageIndex,
                        cat=self.networkSensor.getOutputData("categoryOut")))
-
-      self.trainingImageIndex += 1
-      if self.trainingImageIndex % batchSize == 1:
         return True
-
-    print "Done training SP!"
     return False
+
+  def setupNetworkTest(self):
+    self.networkSensor.executeCommand(["loadMultipleImages", self.testingSet])
+    self.numTestingImages = self.networkSensor.getParameter("numImages")
+    self.testingImageIndex = 0
+
+    print "NumTestingImages {test}".format(test=self.numTestingImages)
+
+
+  def testNetworkOneImage(self, enableViz=False):
+    if self.testingImageIndex < self.numTestingImages:
+      saccadeList = []
+      saccadeImgsList = []
+      saccadeHistList = []
+      saccadeDetailList = []
+      inferredCategoryList = []
+      originalImage = None
+      for i in range(SACCADES_PER_IMAGE):
+        self.net.run(1)
+        if originalImage is None:
+          originalImage = deserializeImage(
+              yaml.load(self.networkSensor.getParameter("originalImage")))
+          imgCenter = (originalImage.size[0] / 2,
+                       originalImage.size[1] / 2,)
+        saccadeList.append({
+            "offset1":
+                (yaml.load(
+                    self.networkSensor
+                    .getParameter("prevSaccadeInfo"))
+                 ["prevOffset"]),
+            "offset2":
+                (yaml.load(
+                    self.networkSensor
+                    .getParameter("prevSaccadeInfo"))
+                 ["newOffset"])})
+        inferredCategoryList.append(
+            self.networkClassifier.getOutputData("categoriesOut").argmax())
+
+        if enableViz:
+          detailImage = deserializeImage(
+              yaml.load(self.networkSensor.getParameter("outputImage")))
+          detailImage = detailImage.resize((self.detailedSaccadeWidth,
+                                            self.detailedSaccadeHeight),
+                                           Image.ANTIALIAS)
+          saccadeDetailList.append(ImageTk.PhotoImage(detailImage))
+
+          imgWithSaccade = originalImage.convert("RGB")
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset2"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] - (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset2"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] + (_FOVEA_SIZE / 2)),
+              fill=(255, 0, 0), width=1) # Left
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset2"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] - (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset2"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] + (_FOVEA_SIZE / 2)),
+              fill=(255, 0, 0), width=1) # Right
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset2"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] - (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset2"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] - (_FOVEA_SIZE / 2)),
+              fill=(255, 0, 0), width=1) # Top
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset2"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] + (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset2"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset2"][1] + (_FOVEA_SIZE / 2)),
+              fill=(255, 0, 0), width=1) # Bottom
+
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset1"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] - (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset1"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] + (_FOVEA_SIZE / 2)),
+              fill=(0, 255, 0), width=1) # Left
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset1"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] - (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset1"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] + (_FOVEA_SIZE / 2)),
+              fill=(0, 255, 0), width=1) # Right
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset1"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] - (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset1"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] - (_FOVEA_SIZE / 2)),
+              fill=(0, 255, 0), width=1) # Top
+          ImageDraw.Draw(imgWithSaccade).line(
+              (imgCenter[0] + saccadeList[i]["offset1"][0] + (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] + (_FOVEA_SIZE / 2),
+               imgCenter[0] + saccadeList[i]["offset1"][0] - (_FOVEA_SIZE / 2),
+               imgCenter[1] + saccadeList[i]["offset1"][1] + (_FOVEA_SIZE / 2)),
+              fill=(0, 255, 0), width=1) # Bottom
+
+          saccadeImgsList.append(ImageTk.PhotoImage(imgWithSaccade))
+
+          saccadeHist = originalImage.convert("RGB")
+          for i, saccade in enumerate(saccadeList):
+            ImageDraw.Draw(saccadeHist).rectangle(
+                (imgCenter[0] + saccade["offset2"][0] - _FOVEA_SIZE/2,
+                 imgCenter[0] + saccade["offset2"][1] - _FOVEA_SIZE/2,
+                 imgCenter[0] + saccade["offset2"][0] + _FOVEA_SIZE/2,
+                 imgCenter[0] + saccade["offset2"][1] + _FOVEA_SIZE/2),
+                fill=(0,
+                      (255/SACCADES_PER_IMAGE*(SACCADES_PER_IMAGE-i)),
+                      (255/SACCADES_PER_IMAGE*i)))
+          saccadeHist = saccadeHist.resize((self.detailedSaccadeWidth,
+                                            self.detailedSaccadeHeight),
+                                           Image.ANTIALIAS)
+          saccadeHistList.append(ImageTk.PhotoImage(saccadeHist))
+
+      inferredCategory = self.getMostCommonCategory(inferredCategoryList)
+      isCorrectClassification = False
+      if self.networkSensor.getOutputData("categoryOut") == inferredCategory:
+        isCorrectClassification = True
+      print ("Iteration: {iter}; Category: {cat}"
+             .format(iter=self.trainingImageIndex,
+                     cat=self.networkSensor.getOutputData("categoryOut")))
+      self.trainingImageIndex += 1
+
+      if enableViz:
+        return (saccadeImgsList, saccadeDetailList, saccadeHistList,
+                inferredCategoryList,
+                self.networkSensor.getOutputData("categoryOut"),
+                isCorrectClassification)
+      return (True, isCorrectClassification)
+
+    else:
+      return False
+
+
+  def testNetworkBatch(self, batchSize):
+    if self.testingImageIndex >= self.numTestingImages:
+      return False
+
+    numCorrect = 0
+    while self.testingImageIndex < self.numTestingImages:
+      inferredCategoryList = []
+      for i in range(SACCADES_PER_IMAGE):
+        self.net.run(1)
+        inferredCategoryList.append(
+            self.networkClassifier.getOutputData("categoriesOut").argmax())
+      inferredCategory = self.getMostCommonCategory(inferredCategoryList)
+      if self.networkSensor.getOutputData("categoryOut") == inferredCategory:
+        numCorrect += 1
+
+      self.testingImageIndex += 1
+
+      if self.testingImageIndex % batchSize == 0:
+        print ("Testing iteration: {iter}"
+               .format(iter=self.testingImageIndex))
+        break
+
+    return numCorrect
+
+
+  @staticmethod
+  def getMostCommonCategory(categoryList):
+    # from http://stackoverflow.com/questions/1518522/python-most-common-element-in-a-list #pylint: disable=C0301
+    SL = sorted((x, i) for i, x in enumerate(categoryList))
+    groups = itertools.groupby(SL, key=operator.itemgetter(0))
+    def _auxfun(g):
+      item, iterable = g
+      count = 0
+      min_index = len(categoryList)
+      for _, where in iterable:
+        count += 1
+        min_index = min(min_index, where)
+      return count, -min_index
+    return max(groups, key=_auxfun)[0]
+
+
+  def setLearningMode(self, learningSP=False, learningClassifier=False):
+    if learningSP:
+      self.networkSP.setParameter("learningMode", 1)
+      self.networkSP.setParameter("inferenceMode", 0)
+    else:
+      self.networkSP.setParameter("learningMode", 0)
+      self.networkSP.setParameter("inferenceMode", 1)
+
+    if learningClassifier:
+      self.networkClassifier.setParameter("learningMode", 1)
+      self.networkClassifier.setParameter("inferenceMode", 0)
+    else:
+      self.networkClassifier.setParameter("learningMode", 0)
+      self.networkClassifier.setParameter("inferenceMode", 1)
+
+
+  def saveNetwork(self):
+    self.net.save(self.netFile)
+
+
+  def resetIndex(self):
+    self.trainingImageIndex = 0

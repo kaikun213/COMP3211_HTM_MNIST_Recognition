@@ -47,6 +47,15 @@ _APP_SACCADE_DETAIL_FRAME_WIDTH = _APP_WIDTH * 1 / 3 - 10
 _APP_DETAILED_SACCADE_WIDTH = 100
 _APP_DETAILED_SACCADE_HEIGHT = 100
 
+# Where to save serialized networks
+_NETWORK_DIR_NAME = "networks"
+
+
+
+class NetworkMode(object):
+  TRAINING_MODE = 1
+  TESTING_MODE = 2
+
 
 
 class MainGUI(object):
@@ -133,12 +142,12 @@ class MainGUI(object):
     self.buttonNextImg.pack(side=Tk.RIGHT)
 
 
-    # Add images (labels) to saccade detail frame
+    # Add images (Tk.Label's) to saccade detail frame
     self.saccadeHistImgList = [None for i in range(SACCADES_PER_IMAGE)]
     self.saccadeHistImg = Tk.Label(self.saccadeDetailImagesFrame,
                                    height=_APP_DETAILED_SACCADE_HEIGHT,
                                    width=_APP_DETAILED_SACCADE_WIDTH)
-    self.saccadeHistImg.image = None #self.saccadeHistImg
+    self.saccadeHistImg.image = None
     self.saccadeHistLabel = Tk.Label(self.saccadeDetailImagesFrame,
                                      text="History")
     self.saccadeDetailImgList = [None for i in range(SACCADES_PER_IMAGE)]
@@ -148,11 +157,17 @@ class MainGUI(object):
     self.saccadeCurImage.image = None
     self.saccadeCurLabel = Tk.Label(self.saccadeDetailImagesFrame,
                                     text="Current saccade")
+    self.saccadeCategoryList = [None for i in range(SACCADES_PER_IMAGE)]
+    self.saccadeCategoryVar = Tk.StringVar()
+    self.saccadeCategoryVar.set("Category: ")
+    self.saccadeCategoryLabel = Tk.Label(self.saccadeDetailFrame,
+                                         textvariable=self.saccadeCategoryVar)
 
     self.saccadeHistImg.pack(side=Tk.TOP, expand=Tk.YES, fill=Tk.X)
     self.saccadeHistLabel.pack(side=Tk.TOP, fill=Tk.X)
     self.saccadeCurImage.pack(side=Tk.TOP, expand=Tk.YES, fill=Tk.X)
     self.saccadeCurLabel.pack(side=Tk.TOP, fill=Tk.X)
+    self.saccadeCategoryLabel.pack(side=Tk.TOP, fill=Tk.X)
 
 
     # Control section
@@ -167,20 +182,30 @@ class MainGUI(object):
     self.controlProgBarRunningFrame.pack(side=Tk.RIGHT, fill=Tk.BOTH)
 
     # Add buttons to control section
-    self.buttonLoadExperiment = Tk.Button(self.controlButtonsFrame,
-                                          text="Load...",
-                                          command=self.buttonLoadExperimentCb)
-    self.buttonRun = Tk.Button(self.controlButtonsFrame,
-                               text="Run",
-                               command=self.buttonRunCb,
-                               state=Tk.DISABLED)
+    self.buttonLoadTraining = Tk.Button(self.controlButtonsFrame,
+                                        text="Load (train)...",
+                                        command=self.buttonLoadTrainingCb)
+    self.buttonLoadTesting = Tk.Button(self.controlButtonsFrame,
+                                       text="Load (test)...",
+                                       command=self.buttonLoadTestingCb)
+    self.buttonRunTraining = Tk.Button(self.controlButtonsFrame,
+                                       text="Train",
+                                       command=self.buttonRunTrainingCb,
+                                       state=Tk.DISABLED)
+    self.buttonRunTesting = Tk.Button(self.controlButtonsFrame,
+                                      text="Test",
+                                      command=self.buttonRunTestingCb,
+                                      state=Tk.DISABLED)
+
     self.enableVisualizations = Tk.IntVar()
     self.enableVisualizationsCheckbox = Tk.Checkbutton(
         self.controlButtonsFrame, text="Show visualizations",
         variable=self.enableVisualizations)
     self.enableVisualizationsCheckbox.select()
-    self.buttonLoadExperiment.pack(side=Tk.LEFT)
-    self.buttonRun.pack(side=Tk.LEFT)
+    self.buttonLoadTraining.pack(side=Tk.LEFT)
+    self.buttonLoadTesting.pack(side=Tk.LEFT)
+    self.buttonRunTraining.pack(side=Tk.LEFT)
+    self.buttonRunTesting.pack(side=Tk.LEFT)
     self.enableVisualizationsCheckbox.pack(side=Tk.LEFT)
 
     # Add progress bars
@@ -197,28 +222,44 @@ class MainGUI(object):
     # Other setup
     self.currentDetailSaccadeIndex = 0
 
-    # Set up the network & queue
+    # Set up the networks & queue
     self.eventQueue = Queue.Queue()
-    self.network = SaccadeNetwork(
+    self.networkName = networkName
+    self.trainingNetwork = SaccadeNetwork(
         loggingDir=loggingDir, networkName=networkName,
         trainingSet=trainingSet, validationSet=validationSet,
         testingSet=testingSet,
         detailedSaccadeWidth=_APP_DETAILED_SACCADE_WIDTH,
         detailedSaccadeHeight=_APP_DETAILED_SACCADE_HEIGHT,
         createNetwork=False)
-    print "Ready..."
+    self.testingNetwork = SaccadeNetwork(
+        loggingDir=loggingDir, networkName=networkName,
+        trainingSet=trainingSet, validationSet=validationSet,
+        testingSet=testingSet,
+        detailedSaccadeWidth=_APP_DETAILED_SACCADE_WIDTH,
+        detailedSaccadeHeight=_APP_DETAILED_SACCADE_HEIGHT,
+        createNetwork=False)
+    self.networkMode = None
+    # Special variables used for testing
+    self.testingNumCorrect = 0
+    self.currentTestImgIsCorrect = None
+    self.currentTestImgActualCategory = None
 
 
-  def buttonLoadExperimentCb(self):
+  def buttonLoadTrainingCb(self):
     """ Callback for the "Load" button. Creates a network and loads
     the training images for the experiment.
     """
-    self.network.createNet()
-    self.network.loadExperiment()
+    self.networkMode = NetworkMode.TRAINING_MODE
+    self.trainingNetwork.createNet()
+    self.trainingNetwork.loadExperiment()
+    self.trainingNetwork.setLearningMode(learningSP=False,
+                                         learningClassifier=False)
 
     # Update GUI
-    self.buttonLoadExperiment.config(state=Tk.DISABLED)
-    self.buttonRun.config(state=Tk.NORMAL)
+    self.buttonLoadTraining.config(state=Tk.DISABLED)
+    self.buttonLoadTesting.config(state=Tk.DISABLED)
+    self.buttonRunTraining.config(state=Tk.NORMAL)
     self.buttonNextImg.config(state=Tk.NORMAL)
     self.buttonNextImgCb()
 
@@ -227,41 +268,98 @@ class MainGUI(object):
     """ Callback for the "Next" button. Advances the network one training
     image.
     """
-    if self.enableVisualizations.get():
-      result = self.network.runNetworkOneImage(enableViz=True)
+    if self.networkMode == NetworkMode.TRAINING_MODE:
+      if self.enableVisualizations.get():
+        result = self.trainingNetwork.runNetworkOneImage(enableViz=True)
 
-      if result == False:
-        # The sp has no more images to learn
-        self.buttonNextImg.config(state=Tk.DISABLED)
-        self.buttonRun.config(state=Tk.DISABLED)
-        tkMessageBox.showinfo("INFO", "SP learning is done!")
-        return
+        if result == False:
+          # The sp has no more images to learn
+          self.buttonNextImg.config(state=Tk.DISABLED)
+          self.buttonRunTraining.config(state=Tk.DISABLED)
+          tkMessageBox.showinfo("INFO", "SP learning is done!")
+          return
 
-      (saccadeImgs, saccadeDetailImgs, saccadeHistImgs) = result
-      for i in range(SACCADES_PER_IMAGE):
-        self.saccadeImgs[i].configure(image=saccadeImgs[i])
-        self.saccadeImgs[i].image = saccadeImgs[i]
-        self.saccadeImgs[i].configure(bg="blue")
+        (saccadeImgs, saccadeDetailImgs, saccadeHistImgs, categoryOut) = result
+        for i in range(SACCADES_PER_IMAGE):
+          self.saccadeImgs[i].configure(image=saccadeImgs[i])
+          self.saccadeImgs[i].image = saccadeImgs[i]
+          self.saccadeImgs[i].configure(bg="blue")
 
-        self.saccadeHistImgList[i] = saccadeHistImgs[i]
-        self.saccadeDetailImgList[i] = saccadeDetailImgs[i]
+          self.saccadeHistImgList[i] = saccadeHistImgs[i]
+          self.saccadeDetailImgList[i] = saccadeDetailImgs[i]
 
-      self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE-1 # Show last saccade
-      self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
-      self.buttonScrubFirst.config(state=Tk.NORMAL)
-      self.buttonScrubRev.config(state=Tk.NORMAL)
-      self.buttonScrubLast.config(state=Tk.DISABLED)
-      self.buttonScrubFwd.config(state=Tk.DISABLED)
-      self.updateDetailImages()
+        self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE-1 # Last saccade
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+        self.saccadeCategoryVar.set("Category = {cat}".format(cat=categoryOut))
 
-    else:
-      result = self.network.runNetworkOneImage(enableViz=False)
+        self.buttonScrubFirst.config(state=Tk.NORMAL)
+        self.buttonScrubRev.config(state=Tk.NORMAL)
+        self.buttonScrubLast.config(state=Tk.DISABLED)
+        self.buttonScrubFwd.config(state=Tk.DISABLED)
+        self.updateDetailImages()
 
-      if result == False:
-        self.buttonNextImg.config(state=Tk.DISABLED)
-        self.buttonRun.config(state=Tk.DISABLED)
-        tkMessageBox.showinfo("INFO", "SP learning is done!")
-        return
+      else:
+        result = self.trainingNetwork.runNetworkOneImage(enableViz=False)
+
+        if result == False:
+          self.buttonNextImg.config(state=Tk.DISABLED)
+          self.buttonRunTraining.config(state=Tk.DISABLED)
+          tkMessageBox.showinfo("INFO", "SP learning is done!")
+          return
+    elif self.networkMode == NetworkMode.TESTING_MODE:
+      if self.enableVisualizations.get():
+        result = self.testingNetwork.testNetworkOneImage(enableViz=True)
+
+        if result == False:
+          # The sp has no more images to learn
+          self.buttonNextImg.config(state=Tk.DISABLED)
+          self.buttonRunTesting.config(state=Tk.DISABLED)
+          print "% correct={pct}".format(
+              pct=((100.0*self.testingNumCorrect) /
+                   self.testingNetwork.numTestingImages))
+          tkMessageBox.showinfo("INFO",
+                                "Testing is done! numCorrect = {num}"
+                                .format(num=self.testingNumCorrect))
+          return
+
+        (saccadeImgs, saccadeDetailImgs, saccadeHistImgs,
+         inferredCategoryList, currentTestImgActualCategory,
+         currentTestImgIsCorrect) = result
+        for i in range(SACCADES_PER_IMAGE):
+          self.saccadeImgs[i].configure(image=saccadeImgs[i])
+          self.saccadeImgs[i].image = saccadeImgs[i]
+          self.saccadeImgs[i].configure(bg="blue")
+
+          self.saccadeHistImgList[i] = saccadeHistImgs[i]
+          self.saccadeDetailImgList[i] = saccadeDetailImgs[i]
+          self.saccadeCategoryList[i] = inferredCategoryList[i]
+        self.currentTestImgIsCorrect = currentTestImgIsCorrect
+        self.currentTestImgActualCategory = currentTestImgActualCategory
+
+        if self.currentTestImgIsCorrect:
+          self.testingNumCorrect += 1
+        self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE-1 # Last saccade
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+
+        self.buttonScrubFirst.config(state=Tk.NORMAL)
+        self.buttonScrubRev.config(state=Tk.NORMAL)
+        self.buttonScrubLast.config(state=Tk.DISABLED)
+        self.buttonScrubFwd.config(state=Tk.DISABLED)
+        self.updateDetailImages()
+
+      else:
+        result = self.testingNetwork.testNetworkOneImage(enableViz=False)
+
+        if result == False:
+          self.buttonNextImg.config(state=Tk.DISABLED)
+          self.buttonRunTesting.config(state=Tk.DISABLED)
+          tkMessageBox.showinfo("INFO",
+                                "Testing is done! numCorrect = {num}"
+                                .format(num=self.testingNumCorrect))
+          return
+
+        if result[1]:
+          self.testingNumCorrect += 1
 
 
   def buttonScrubFirstCb(self):
@@ -328,39 +426,99 @@ class MainGUI(object):
         self.currentDetailSaccadeIndex]
     self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
 
+    if self.networkMode == NetworkMode.TESTING_MODE:
+      if self.currentTestImgIsCorrect:
+        self.saccadeCategoryVar.set(
+            "Inference Worked! Actual={actual}; Inferred={inferred}"
+            .format(actual=self.currentTestImgActualCategory,
+                    inferred=self.saccadeCategoryList[
+                        self.currentDetailSaccadeIndex]))
+      else:
+        self.saccadeCategoryVar.set(
+            "Inference Failed! Actual={actual}; Inferred={inferred}".format(
+                actual=self.currentTestImgActualCategory,
+                inferred=self.saccadeCategoryList[
+                    self.currentDetailSaccadeIndex]))
 
-  def buttonRunCb(self):
+
+  def buttonRunTrainingCb(self):
     """ Runs the training on the network.
     NOTE: Automatically disables visualizations for speed
     """
     self.enableVisualizationsCheckbox.deselect()
     self.buttonNextImg.config(state=Tk.DISABLED)
-    self.buttonRun.config(state=Tk.DISABLED)
+    self.buttonRunTraining.config(state=Tk.DISABLED)
     self.buttonScrubLast.config(state=Tk.DISABLED)
     self.buttonScrubFwd.config(state=Tk.DISABLED)
     self.buttonScrubFirst.config(state=Tk.DISABLED)
     self.buttonScrubRev.config(state=Tk.DISABLED)
 
-    self.progressbarRunning.step()
-
     threading.Thread(target=self.runNetworkBatch,
-                     kwargs={"network": self.network,
-                             "queue": self.eventQueue}).start()
+                     kwargs={"network": self.trainingNetwork,
+                             "queue": self.eventQueue,
+                             "process": "SP"}).start()
 
     self.root.after(100, self.processEventQueue)
 
 
   @staticmethod
-  def runNetworkBatch(network, queue):
+  def runNetworkBatch(network, queue, process=""):
     """ A static function that allows the network to be run in batches from
     threads that won't block the GUI from updating.
 
     :param network: An initialized network
     :param queue: The queue to send results to
+    :param process: The name of the process. Used in sending results to queue
     """
     result = network.runNetworkBatch(batchSize=10)
-    queue.put({"process": "runNetworkBatch",
+    queue.put({"process": process,
                "running": result})
+
+
+  def buttonLoadTestingCb(self):
+    self.networkMode = NetworkMode.TESTING_MODE
+    self.networkName = "{networksDir}/{network}".format(
+        networksDir=_NETWORK_DIR_NAME,
+        network=os.listdir(_NETWORK_DIR_NAME)[-1])
+    self.testingNetwork.loadFromFile(self.networkName)
+
+    self.testingNetwork.setLearningMode(learningSP=False,
+                                        learningClassifier=False)
+
+    print "Loading testing images..."
+    self.testingNetwork.setupNetworkTest()
+
+    # GUI Setup
+    self.buttonRunTesting.config(state=Tk.NORMAL)
+    self.buttonLoadTesting.config(state=Tk.DISABLED)
+    self.buttonNextImg.config(state=Tk.NORMAL)
+    self.enableVisualizationsCheckbox.select()
+    self.buttonNextImgCb()
+
+  def buttonRunTestingCb(self):
+    self.buttonRunTesting.config(state=Tk.DISABLED)
+
+    print "Running test..."
+    threading.Thread(target=self.testNetworkBatch,
+                     kwargs={"network": self.testingNetwork,
+                             "queue": self.eventQueue,
+                             "process": "TEST",
+                             "numCorrect": self.testingNumCorrect}).start()
+    self.root.after(100, self.processEventQueue)
+
+
+  @staticmethod
+  def testNetworkBatch(network, queue, process="", numCorrect=0):
+    result = network.testNetworkBatch(batchSize=100)
+    if result is not False:
+      numCorrect += result
+      queue.put({"process": process,
+                 "running": True,
+                 "numCorrect": numCorrect})
+    else:
+      queue.put({"process": process,
+                 "running": False,
+                 "numCorrect": numCorrect})
 
 
   def processEventQueue(self):
@@ -369,18 +527,63 @@ class MainGUI(object):
     """
     try:
       msg = self.eventQueue.get(0)
-      if (msg["process"] == "runNetworkBatch" and
+      if (msg["process"] == "SP" and
           msg["running"] == False):
-        tkMessageBox.showinfo("INFO", "SP learning is done!")
+        print "SP learning is done!"
         self.progressbarRunning.stop()
         self.progressbarLearning.stop()
-      elif (msg["process"] == "runNetworkBatch" and
+        # Classifier
+        self.trainingNetwork.setLearningMode(learningSP=False,
+                                             learningClassifier=True)
+        self.trainingNetwork.resetIndex()
+        threading.Thread(target=self.runNetworkBatch,
+                         kwargs={"network": self.trainingNetwork,
+                                 "queue": self.eventQueue,
+                                 "process": "CLAS"}).start()
+        self.root.after(100, self.processEventQueue)
+      elif (msg["process"] == "SP" and
             msg["running"] == True):
         self.progressbarLearning.step()
         threading.Thread(target=self.runNetworkBatch,
-                         kwargs={"network": self.network,
-                                 "queue": self.eventQueue}).start()
+                         kwargs={"network": self.trainingNetwork,
+                                 "queue": self.eventQueue,
+                                 "process": "SP"}).start()
         self.root.after(100, self.processEventQueue)
+      elif (msg["process"] == "CLAS" and
+            msg["running"] == False):
+        self.trainingNetwork.saveNetwork()
+        tkMessageBox.showinfo("INFO", "Classifier learning is done!")
+        self.progressbarRunning.stop()
+        self.progressbarLearning.stop()
+        self.buttonLoadTesting.config(state=Tk.NORMAL)
+      elif (msg["process"] == "CLAS" and
+            msg["running"] == True):
+        self.progressbarLearning.step()
+        threading.Thread(target=self.runNetworkBatch,
+                         kwargs={"network": self.trainingNetwork,
+                                 "queue": self.eventQueue,
+                                 "process": "CLAS"}).start()
+        self.root.after(100, self.processEventQueue)
+      elif (msg["process"] == "TEST" and
+            msg["running"] == False):
+        print "Done testing!"
+        self.testingNumCorrect = msg["numCorrect"]
+        tkMessageBox.showinfo("INFO",
+                              "Classifier num correct = {num}".format(
+                                  num=msg["numCorrect"]))
+        self.progressbarRunning.stop()
+        self.progressbarLearning.stop()
+      elif (msg["process"] == "TEST" and
+            msg["running"] == True):
+        self.progressbarLearning.step()
+        self.testingNumCorrect = msg["numCorrect"]
+        threading.Thread(target=self.testNetworkBatch,
+                         kwargs={"network": self.testingNetwork,
+                                 "queue": self.eventQueue,
+                                 "process": "TEST",
+                                 "numCorrect": self.testingNumCorrect}).start()
+        self.root.after(100, self.processEventQueue)
+
     except Queue.Empty:
       self.progressbarRunning.step()
       self.root.after(100, self.processEventQueue)
@@ -389,10 +592,9 @@ class MainGUI(object):
 
 if __name__ == "__main__":
   datetimestr = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-  networkDirName = "networks"
-  if not os.path.exists(networkDirName):
-    os.makedirs(networkDirName)
-  netName = "%s/%s_mnist_net.nta" % (networkDirName, datetimestr)
+  if not os.path.exists(_NETWORK_DIR_NAME):
+    os.makedirs(_NETWORK_DIR_NAME)
+  netName = "%s/%s_mnist_net.nta" % (_NETWORK_DIR_NAME, datetimestr)
 
   root = Tk.Tk()
   root.title("Saccades Experiment")
