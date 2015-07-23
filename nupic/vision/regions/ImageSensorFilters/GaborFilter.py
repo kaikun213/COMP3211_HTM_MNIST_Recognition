@@ -32,7 +32,7 @@ import math
 import numpy
 from PIL import (Image,
                  ImageChops)
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter
 from nupic.math import GetNTAReal
 
 

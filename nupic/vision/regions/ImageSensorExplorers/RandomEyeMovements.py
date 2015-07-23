@@ -19,7 +19,7 @@
 # http://numenta.org/licenses/
 # ----------------------------------------------------------------------
 
-from nupicvision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
+from nupic.vision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
 
 
 class RandomEyeMovements(BaseExplorer):

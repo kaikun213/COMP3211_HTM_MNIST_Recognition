@@ -24,7 +24,7 @@ This file defines RotatePictureExplorer, an explorer for
 PictureSensor.
 """
 
-from nupicvision.regions.PictureSensor import PictureSensor
+from nupic.vision.regions.PictureSensor import PictureSensor
 
 #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 # RotatePictureExplorer

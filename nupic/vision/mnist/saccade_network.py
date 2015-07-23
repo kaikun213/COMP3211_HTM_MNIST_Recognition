@@ -29,8 +29,8 @@ import yaml
 from nupic.bindings.math import GetNTAReal
 from nupic.engine import Network
 
-from nupicvision.regions.ImageSensor import ImageSensor
-from nupicvision.image import deserializeImage
+from nupic.vision.regions.ImageSensor import ImageSensor
+from nupic.vision.image import deserializeImage
 
 
 

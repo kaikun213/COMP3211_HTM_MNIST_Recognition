@@ -23,7 +23,7 @@ import os
 import copy
 import re
 
-from nupicvision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
+from nupic.vision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
 
 
 class MultiSweep(BaseExplorer):

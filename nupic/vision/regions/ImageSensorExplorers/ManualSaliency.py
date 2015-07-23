@@ -22,7 +22,7 @@
 import os
 import cPickle as pickle
 
-from nupicvision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
+from nupic.vision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
 
 
 class ManualSaliency(BaseExplorer):

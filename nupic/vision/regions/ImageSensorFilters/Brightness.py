@@ -25,7 +25,7 @@
 
 from PIL import ImageEnhance
 
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter
 
 
 class Brightness(BaseFilter):

@@ -27,7 +27,7 @@ from PIL import (Image,
                  ImageOps)
 import numpy
 
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
 
 
 class EqualizeHistogram(BaseFilter):

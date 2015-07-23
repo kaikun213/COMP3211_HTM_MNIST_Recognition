@@ -21,7 +21,7 @@
 
 from copy import deepcopy
 
-from nupicvision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
+from nupic.vision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
 
 
 _DIRECTIONS = ("left", "right", "up", "down")

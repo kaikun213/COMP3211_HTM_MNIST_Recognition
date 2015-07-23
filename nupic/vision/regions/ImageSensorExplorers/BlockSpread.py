@@ -21,7 +21,7 @@
 
 import math
 
-from nupicvision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
+from nupic.vision.regions.ImageSensorExplorers.BaseExplorer import BaseExplorer
 from nupic.math.cross import cross
 
 

@@ -28,7 +28,7 @@ import random
 import numpy
 from PIL import Image
 from PIL import ImageDraw
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
 
 class Lines(BaseFilter):
   """

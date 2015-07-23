@@ -24,7 +24,7 @@
 """
 
 import numpy
-from nupicvision.regions.ImageSensorFilters.Convolution import Convolution
+from nupic.vision.regions.ImageSensorFilters.Convolution import Convolution
 
 class CenterSurroundConvolution(Convolution):
   """

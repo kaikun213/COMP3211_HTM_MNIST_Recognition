@@ -30,7 +30,7 @@ from nupic.bindings.math import GetNTAReal
 from nupic.engine import Network
 from nupic.research import fdrutilities
 
-from nupicvision.regions.ImageSensor import ImageSensor
+from nupic.vision.regions.ImageSensor import ImageSensor
 
 
 

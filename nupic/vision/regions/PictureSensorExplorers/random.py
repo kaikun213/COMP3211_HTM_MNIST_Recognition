@@ -28,7 +28,7 @@ PictureSensor.
 import numpy
 
 # Local imports
-from nupicvision.regions.PictureSensor import PictureSensor
+from nupic.vision.regions.PictureSensor import PictureSensor
 
 #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 # RandomPictureExplorer

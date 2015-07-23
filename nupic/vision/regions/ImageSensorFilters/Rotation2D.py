@@ -21,7 +21,7 @@
 
 from PIL import Image
 
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter
 
 
 class Rotation2D(BaseFilter):

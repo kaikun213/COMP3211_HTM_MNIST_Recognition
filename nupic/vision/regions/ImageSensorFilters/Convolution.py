@@ -29,7 +29,7 @@ import platform
 
 import numpy
 from PIL import Image
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
 
 
 # Global counter used for some debugging operations

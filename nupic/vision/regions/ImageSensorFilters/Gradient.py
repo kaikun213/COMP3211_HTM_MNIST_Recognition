@@ -27,7 +27,7 @@ import math
 
 import numpy
 from PIL import Image
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter, uint
 
 class Gradient(BaseFilter):
   """

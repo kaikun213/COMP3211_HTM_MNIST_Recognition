@@ -24,7 +24,7 @@ This file defines Block1DOFPictureExplorer, an explorer for
 PictureSensor.
 """
 
-from nupicvision.regions.PictureSensor import PictureSensor
+from nupic.vision.regions.PictureSensor import PictureSensor
 
 #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 # Block1DOFPictureExplorer

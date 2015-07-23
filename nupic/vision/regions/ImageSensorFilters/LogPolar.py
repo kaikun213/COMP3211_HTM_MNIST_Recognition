@@ -28,7 +28,7 @@ incoming images in a "fish-eye" manner.
 from PIL import Image
 import numpy
 
-from nupicvision.regions.ImageSensorFilters.BaseFilter import BaseFilter
+from nupic.vision.regions.ImageSensorFilters.BaseFilter import BaseFilter
 
 
 class LogPolar(BaseFilter):

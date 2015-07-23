@@ -24,7 +24,7 @@ This file defines CenterPictureExplorer, an explorer for
 PictureSensor.
 """
 
-from nupicvision.regions.PictureSensor import PictureSensor
+from nupic.vision.regions.PictureSensor import PictureSensor
 
 #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 # CenterPictureExplorer

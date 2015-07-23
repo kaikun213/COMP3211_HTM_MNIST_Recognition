@@ -23,7 +23,7 @@
 This file defines HorizBlock a horizontal-only block explorer.
 """
 
-from nupicvision.regions.PictureSensor import PictureSensor
+from nupic.vision.regions.PictureSensor import PictureSensor
 
 #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 # BlockPictureExplorer

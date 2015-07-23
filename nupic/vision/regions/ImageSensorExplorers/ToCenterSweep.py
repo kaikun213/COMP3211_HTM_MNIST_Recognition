@@ -19,7 +19,7 @@
 # http://numenta.org/licenses/
 # ----------------------------------------------------------------------
 
-from nupicvision.regions.ImageSensorExplorers.SpiralSweep import SpiralSweep
+from nupic.vision.regions.ImageSensorExplorers.SpiralSweep import SpiralSweep
 
 class ToCenterSweep(SpiralSweep):
 
