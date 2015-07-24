@@ -34,9 +34,10 @@ from nupicvision.image import deserializeImage
 
 
 
-SACCADES_PER_IMAGE = 20
-_SACCADE_SIZE = 4
-_FOVEA_SIZE = 12
+SACCADES_PER_IMAGE_TRAINING = 60
+SACCADES_PER_IMAGE_TESTING = 20
+_SACCADE_SIZE = 7
+_FOVEA_SIZE = 14
 _MAX_DRIFT = -2
 IMAGE_WIDTH = 28
 IMAGE_HEIGHT = 28
@@ -50,7 +51,7 @@ DEFAULT_IMAGESENSOR_PARAMS = {
         "replacement": False,
         "saccadeMin": _SACCADE_SIZE,
         "saccadeMax": _SACCADE_SIZE,
-        "numSaccades": SACCADES_PER_IMAGE,
+        "numSaccades": SACCADES_PER_IMAGE_TRAINING,
         "maxDrift": _MAX_DRIFT,
         "seed": 1738}]),
     "postFilters": yaml.dump([["Resize", {
@@ -60,7 +61,7 @@ DEFAULT_IMAGESENSOR_PARAMS = {
 DEFAULT_SP_PARAMS = {
     "columnCount": 4096,
     "spatialImp": "cpp",
-    "inputWidth": 1024,
+    "inputWidth": 768,
     "spVerbosity": 1,
     "synPermConnected": 0.2,
     "synPermActiveInc": 0.0,
@@ -159,6 +160,9 @@ class SaccadeNetwork(object):
              srcOutput = "categoryOut", destInput = "categoryIn")
 
     self.net = net
+    self.networkSensor = self.net.regions["sensor"]
+    self.networkSP = self.net.regions["SP"]
+    self.networkClassifier = self.net.regions["classifier"]
 
 
   def loadFromFile(self, filename):
@@ -168,19 +172,22 @@ class SaccadeNetwork(object):
     print "Loading network from {file}...".format(file=filename)
     Network.unregisterRegion(ImageSensor.__name__)
     Network.registerRegion(ImageSensor)
+
     self.net = Network(filename)
 
     self.networkSensor = self.net.regions["sensor"]
+    self.networkSensor.setParameter("numSaccades", SACCADES_PER_IMAGE_TESTING)
+
     self.networkSP = self.net.regions["SP"]
     self.networkClassifier = self.net.regions["classifier"]
 
+    self.setLearningMode(learningSP=False,
+                         learningClassifier=False)
+
+    self.numCorrect = 0
 
   def loadExperiment(self):
     """ Load images into ImageSensor and set the learning mode for the SP. """
-    self.networkSensor = self.net.regions["sensor"]
-    self.networkSP = self.net.regions["SP"]
-    self.networkClassifier = self.net.regions["classifier"]
-
     print "============= Loading training images ================="
     t1 = time.time()
     self.networkSensor.executeCommand(
@@ -219,7 +226,7 @@ class SaccadeNetwork(object):
       saccadeHistList = []
       saccadeDetailList = []
       originalImage = None
-      for i in range(SACCADES_PER_IMAGE):
+      for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
         if originalImage is None:
           originalImage = deserializeImage(
@@ -307,8 +314,8 @@ class SaccadeNetwork(object):
                  imgCenter[0] + saccade["offset2"][0] + _FOVEA_SIZE/2,
                  imgCenter[0] + saccade["offset2"][1] + _FOVEA_SIZE/2),
                 fill=(0,
-                      (255/SACCADES_PER_IMAGE*(SACCADES_PER_IMAGE-i)),
-                      (255/SACCADES_PER_IMAGE*i)))
+                      (255/SACCADES_PER_IMAGE_TRAINING*(SACCADES_PER_IMAGE_TRAINING-i)),
+                      (255/SACCADES_PER_IMAGE_TRAINING*i)))
           saccadeHist = saccadeHist.resize((self.detailedSaccadeWidth,
                                             self.detailedSaccadeHeight),
                                            Image.ANTIALIAS)
@@ -331,7 +338,7 @@ class SaccadeNetwork(object):
   def run(self):
     """ Run the network until all images have been seen """
     while self.trainingImageIndex < self.numTrainingImages:
-      for i in range(SACCADES_PER_IMAGE):
+      for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
 
       if self.trainingImageIndex % (self.numTrainingImages/100) == 0:
@@ -349,7 +356,7 @@ class SaccadeNetwork(object):
       Otherwise False.
     """
     while self.trainingImageIndex < self.numTrainingImages:
-      for i in range(SACCADES_PER_IMAGE):
+      for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
 
       self.trainingImageIndex += 1
@@ -376,7 +383,8 @@ class SaccadeNetwork(object):
       saccadeDetailList = []
       inferredCategoryList = []
       originalImage = None
-      for i in range(SACCADES_PER_IMAGE):
+
+      for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         if originalImage is None:
           originalImage = deserializeImage(
@@ -466,8 +474,8 @@ class SaccadeNetwork(object):
                  imgCenter[0] + saccade["offset2"][0] + _FOVEA_SIZE/2,
                  imgCenter[0] + saccade["offset2"][1] + _FOVEA_SIZE/2),
                 fill=(0,
-                      (255/SACCADES_PER_IMAGE*(SACCADES_PER_IMAGE-i)),
-                      (255/SACCADES_PER_IMAGE*i)))
+                      (255/SACCADES_PER_IMAGE_TESTING*(SACCADES_PER_IMAGE_TESTING-i)),
+                      (255/SACCADES_PER_IMAGE_TESTING*i)))
           saccadeHist = saccadeHist.resize((self.detailedSaccadeWidth,
                                             self.detailedSaccadeHeight),
                                            Image.ANTIALIAS)
@@ -477,10 +485,11 @@ class SaccadeNetwork(object):
       isCorrectClassification = False
       if self.networkSensor.getOutputData("categoryOut") == inferredCategory:
         isCorrectClassification = True
+        self.numCorrect += 1
       print ("Iteration: {iter}; Category: {cat}"
-             .format(iter=self.trainingImageIndex,
+             .format(iter=self.testingImageIndex,
                      cat=self.networkSensor.getOutputData("categoryOut")))
-      self.trainingImageIndex += 1
+      self.testingImageIndex += 1
 
       if enableViz:
         return (saccadeImgsList, saccadeDetailList, saccadeHistList,
@@ -497,16 +506,15 @@ class SaccadeNetwork(object):
     if self.testingImageIndex >= self.numTestingImages:
       return False
 
-    numCorrect = 0
     while self.testingImageIndex < self.numTestingImages:
       inferredCategoryList = []
-      for i in range(SACCADES_PER_IMAGE):
+      for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         inferredCategoryList.append(
             self.networkClassifier.getOutputData("categoriesOut").argmax())
       inferredCategory = self.getMostCommonCategory(inferredCategoryList)
       if self.networkSensor.getOutputData("categoryOut") == inferredCategory:
-        numCorrect += 1
+        self.numCorrect += 1
 
       self.testingImageIndex += 1
 
@@ -515,7 +523,7 @@ class SaccadeNetwork(object):
                .format(iter=self.testingImageIndex))
         break
 
-    return numCorrect
+    return self.numCorrect
 
 
   @staticmethod
@@ -534,7 +542,9 @@ class SaccadeNetwork(object):
     return max(groups, key=_auxfun)[0]
 
 
-  def setLearningMode(self, learningSP=False, learningClassifier=False):
+  def setLearningMode(self,
+                      learningSP=False,
+                      learningClassifier=False):
     if learningSP:
       self.networkSP.setParameter("learningMode", 1)
       self.networkSP.setParameter("inferenceMode", 0)
@@ -551,6 +561,7 @@ class SaccadeNetwork(object):
 
 
   def saveNetwork(self):
+    print "Saving network at {path}".format(path=self.netFile)
     self.net.save(self.netFile)
 
 

@@ -30,7 +30,8 @@ import ttk as Ttk
 
 from saccade_network import (
     SaccadeNetwork,
-    SACCADES_PER_IMAGE,
+    SACCADES_PER_IMAGE_TRAINING,
+    SACCADES_PER_IMAGE_TESTING,
     IMAGE_HEIGHT,
     IMAGE_WIDTH,
 )
@@ -68,7 +69,7 @@ class MainGUI(object):
   def __init__(self, root,
                loggingDir,
                networkName,
-               trainingSet="mnist/small_training",
+               trainingSet="mnist/training",
                validationSet=None,
                testingSet="mnist/testing"):
     """
@@ -98,7 +99,7 @@ class MainGUI(object):
     # Add images (labels) to saccade list frame
     self.saccadeImgs = []
     maxImgsPerRow = _APP_SACCADE_LIST_FRAME_WIDTH / (IMAGE_WIDTH + 4)
-    for i in range(SACCADES_PER_IMAGE):
+    for i in range(SACCADES_PER_IMAGE_TRAINING):
       self.saccadeImgs.append(Tk.Label(self.saccadeListFrame,
                                        height=IMAGE_HEIGHT,
                                        width=IMAGE_WIDTH))
@@ -143,21 +144,21 @@ class MainGUI(object):
 
 
     # Add images (Tk.Label's) to saccade detail frame
-    self.saccadeHistImgList = [None for i in range(SACCADES_PER_IMAGE)]
+    self.saccadeHistImgList = [None for i in range(SACCADES_PER_IMAGE_TRAINING)]
     self.saccadeHistImg = Tk.Label(self.saccadeDetailImagesFrame,
                                    height=_APP_DETAILED_SACCADE_HEIGHT,
                                    width=_APP_DETAILED_SACCADE_WIDTH)
     self.saccadeHistImg.image = None
     self.saccadeHistLabel = Tk.Label(self.saccadeDetailImagesFrame,
                                      text="History")
-    self.saccadeDetailImgList = [None for i in range(SACCADES_PER_IMAGE)]
+    self.saccadeDetailImgList = [None for i in range(SACCADES_PER_IMAGE_TRAINING)]
     self.saccadeCurImage = Tk.Label(self.saccadeDetailImagesFrame,
                                     height=_APP_DETAILED_SACCADE_HEIGHT,
                                     width=_APP_DETAILED_SACCADE_WIDTH)
     self.saccadeCurImage.image = None
     self.saccadeCurLabel = Tk.Label(self.saccadeDetailImagesFrame,
                                     text="Current saccade")
-    self.saccadeCategoryList = [None for i in range(SACCADES_PER_IMAGE)]
+    self.saccadeCategoryList = [None for i in range(SACCADES_PER_IMAGE_TRAINING)]
     self.saccadeCategoryVar = Tk.StringVar()
     self.saccadeCategoryVar.set("Category: ")
     self.saccadeCategoryLabel = Tk.Label(self.saccadeDetailFrame,
@@ -241,7 +242,6 @@ class MainGUI(object):
         createNetwork=False)
     self.networkMode = None
     # Special variables used for testing
-    self.testingNumCorrect = 0
     self.currentTestImgIsCorrect = None
     self.currentTestImgActualCategory = None
 
@@ -253,7 +253,7 @@ class MainGUI(object):
     self.networkMode = NetworkMode.TRAINING_MODE
     self.trainingNetwork.createNet()
     self.trainingNetwork.loadExperiment()
-    self.trainingNetwork.setLearningMode(learningSP=False,
+    self.trainingNetwork.setLearningMode(learningSP=True,
                                          learningClassifier=False)
 
     # Update GUI
@@ -280,15 +280,15 @@ class MainGUI(object):
           return
 
         (saccadeImgs, saccadeDetailImgs, saccadeHistImgs, categoryOut) = result
-        for i in range(SACCADES_PER_IMAGE):
+        for i in range(SACCADES_PER_IMAGE_TRAINING):
           self.saccadeImgs[i].configure(image=saccadeImgs[i])
           self.saccadeImgs[i].image = saccadeImgs[i]
-          self.saccadeImgs[i].configure(bg="blue")
+          self.saccadeImgs[i].configure(bg="white")
 
           self.saccadeHistImgList[i] = saccadeHistImgs[i]
           self.saccadeDetailImgList[i] = saccadeDetailImgs[i]
 
-        self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE-1 # Last saccade
+        self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE_TRAINING-1 # Last saccade
         self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
         self.saccadeCategoryVar.set("Category = {cat}".format(cat=categoryOut))
 
@@ -314,21 +314,21 @@ class MainGUI(object):
           # The sp has no more images to learn
           self.buttonNextImg.config(state=Tk.DISABLED)
           self.buttonRunTesting.config(state=Tk.DISABLED)
-          print "% correct={pct}".format(
-              pct=((100.0*self.testingNumCorrect) /
-                   self.testingNetwork.numTestingImages))
           tkMessageBox.showinfo("INFO",
                                 "Testing is done! numCorrect = {num}"
-                                .format(num=self.testingNumCorrect))
+                                .format(num=self.testingNetwork.numCorrect))
           return
 
         (saccadeImgs, saccadeDetailImgs, saccadeHistImgs,
          inferredCategoryList, currentTestImgActualCategory,
          currentTestImgIsCorrect) = result
-        for i in range(SACCADES_PER_IMAGE):
+        for i in range(SACCADES_PER_IMAGE_TESTING):
           self.saccadeImgs[i].configure(image=saccadeImgs[i])
           self.saccadeImgs[i].image = saccadeImgs[i]
-          self.saccadeImgs[i].configure(bg="blue")
+          if inferredCategoryList[i] == currentTestImgActualCategory:
+            self.saccadeImgs[i].configure(bg="green")
+          else:
+            self.saccadeImgs[i].configure(bg="red")
 
           self.saccadeHistImgList[i] = saccadeHistImgs[i]
           self.saccadeDetailImgList[i] = saccadeDetailImgs[i]
@@ -336,10 +336,8 @@ class MainGUI(object):
         self.currentTestImgIsCorrect = currentTestImgIsCorrect
         self.currentTestImgActualCategory = currentTestImgActualCategory
 
-        if self.currentTestImgIsCorrect:
-          self.testingNumCorrect += 1
-        self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE-1 # Last saccade
-        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+        self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE_TESTING-1 # Last saccade
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="blue")
 
         self.buttonScrubFirst.config(state=Tk.NORMAL)
         self.buttonScrubRev.config(state=Tk.NORMAL)
@@ -355,17 +353,22 @@ class MainGUI(object):
           self.buttonRunTesting.config(state=Tk.DISABLED)
           tkMessageBox.showinfo("INFO",
                                 "Testing is done! numCorrect = {num}"
-                                .format(num=self.testingNumCorrect))
+                                .format(num=self.testingNetwork.numCorrect))
           return
 
-        if result[1]:
-          self.testingNumCorrect += 1
 
 
   def buttonScrubFirstCb(self):
     """ Callback for the "First" transport button. Go to the first saccade
     into the detailed saccade section """
-    self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="blue")
+    if self.networkMode == NetworkMode.TESTING_MODE:
+      if (self.saccadeCategoryList[self.currentDetailSaccadeIndex] ==
+          self.currentTestImgActualCategory):
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="green")
+      else:
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+    else:
+      self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="white")
     self.currentDetailSaccadeIndex = 0
     self.buttonScrubFirst.config(state=Tk.DISABLED)
     self.buttonScrubRev.config(state=Tk.DISABLED)
@@ -377,7 +380,14 @@ class MainGUI(object):
   def buttonScrubRevCb(self):
     """ Callback for the "Reverse" transport button. Go back by one saccade
     in the detailed saccade section """
-    self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="blue")
+    if self.networkMode == NetworkMode.TESTING_MODE:
+      if (self.saccadeCategoryList[self.currentDetailSaccadeIndex] ==
+          self.currentTestImgActualCategory):
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="green")
+      else:
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+    else:
+      self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="white")
     self.currentDetailSaccadeIndex -=1
     if self.currentDetailSaccadeIndex == 0:
       self.buttonScrubFirst.config(state=Tk.DISABLED)
@@ -390,9 +400,20 @@ class MainGUI(object):
   def buttonScrubFwdCb(self):
     """ Callback for the "Forward" transport button. Go forward by one saccade
     in the detailed saccade section """
-    self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="blue")
+    if self.networkMode == NetworkMode.TESTING_MODE:
+      if (self.saccadeCategoryList[self.currentDetailSaccadeIndex] ==
+          self.currentTestImgActualCategory):
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="green")
+      else:
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+    else:
+      self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="white")
     self.currentDetailSaccadeIndex +=1
-    if self.currentDetailSaccadeIndex == SACCADES_PER_IMAGE-1:
+
+
+    if self.currentDetailSaccadeIndex == (SACCADES_PER_IMAGE_TRAINING
+                                          if self.networkMode == NetworkMode.TRAINING_MODE
+                                          else SACCADES_PER_IMAGE_TESTING)-1:
       self.buttonScrubLast.config(state=Tk.DISABLED)
       self.buttonScrubFwd.config(state=Tk.DISABLED)
     self.buttonScrubFirst.config(state=Tk.NORMAL)
@@ -403,8 +424,17 @@ class MainGUI(object):
   def buttonScrubLastCb(self):
     """ Callback for the "Last" transport button. Go to the last saccade
     in the detailed saccade section """
-    self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="blue")
-    self.currentDetailSaccadeIndex = SACCADES_PER_IMAGE-1
+    if self.networkMode == NetworkMode.TESTING_MODE:
+      if (self.saccadeCategoryList[self.currentDetailSaccadeIndex] ==
+          self.currentTestImgActualCategory):
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="green")
+      else:
+        self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+    else:
+      self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="white")
+    self.currentDetailSaccadeIndex = (SACCADES_PER_IMAGE_TRAINING
+                                      if self.networkMode == NetworkMode.TRAINING_MODE
+                                      else SACCADES_PER_IMAGE_TESTING)-1
     self.buttonScrubLast.config(state=Tk.DISABLED)
     self.buttonScrubFwd.config(state=Tk.DISABLED)
     self.buttonScrubFirst.config(state=Tk.NORMAL)
@@ -424,7 +454,7 @@ class MainGUI(object):
         image=self.saccadeDetailImgList[self.currentDetailSaccadeIndex])
     self.saccadeCurImage.image = self.saccadeDetailImgList[
         self.currentDetailSaccadeIndex]
-    self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="red")
+    self.saccadeImgs[self.currentDetailSaccadeIndex].configure(bg="blue")
 
     if self.networkMode == NetworkMode.TESTING_MODE:
       if self.currentTestImgIsCorrect:
@@ -490,35 +520,44 @@ class MainGUI(object):
 
     # GUI Setup
     self.buttonRunTesting.config(state=Tk.NORMAL)
+    self.buttonLoadTraining.config(state=Tk.DISABLED)
     self.buttonLoadTesting.config(state=Tk.DISABLED)
     self.buttonNextImg.config(state=Tk.NORMAL)
     self.enableVisualizationsCheckbox.select()
     self.buttonNextImgCb()
 
+    if SACCADES_PER_IMAGE_TESTING < SACCADES_PER_IMAGE_TRAINING:
+      for i in range(SACCADES_PER_IMAGE_TESTING, SACCADES_PER_IMAGE_TRAINING):
+        self.saccadeImgs[i].destroy()
+
+
+
   def buttonRunTestingCb(self):
     self.buttonRunTesting.config(state=Tk.DISABLED)
+    self.enableVisualizationsCheckbox.deselect()
+    self.buttonNextImg.config(state=Tk.DISABLED)
+    self.buttonScrubLast.config(state=Tk.DISABLED)
+    self.buttonScrubFwd.config(state=Tk.DISABLED)
+    self.buttonScrubFirst.config(state=Tk.DISABLED)
+    self.buttonScrubRev.config(state=Tk.DISABLED)
 
     print "Running test..."
     threading.Thread(target=self.testNetworkBatch,
                      kwargs={"network": self.testingNetwork,
                              "queue": self.eventQueue,
-                             "process": "TEST",
-                             "numCorrect": self.testingNumCorrect}).start()
+                             "process": "TEST"}).start()
     self.root.after(100, self.processEventQueue)
 
 
   @staticmethod
-  def testNetworkBatch(network, queue, process="", numCorrect=0):
-    result = network.testNetworkBatch(batchSize=100)
+  def testNetworkBatch(network, queue, process=""):
+    result = network.testNetworkBatch(batchSize=10)
     if result is not False:
-      numCorrect += result
       queue.put({"process": process,
-                 "running": True,
-                 "numCorrect": numCorrect})
+                 "running": True})
     else:
       queue.put({"process": process,
-                 "running": False,
-                 "numCorrect": numCorrect})
+                 "running": False})
 
 
   def processEventQueue(self):
@@ -527,6 +566,8 @@ class MainGUI(object):
     """
     try:
       msg = self.eventQueue.get(0)
+
+      # SP
       if (msg["process"] == "SP" and
           msg["running"] == False):
         print "SP learning is done!"
@@ -549,10 +590,11 @@ class MainGUI(object):
                                  "queue": self.eventQueue,
                                  "process": "SP"}).start()
         self.root.after(100, self.processEventQueue)
+
+      # CLASSIFIER
       elif (msg["process"] == "CLAS" and
             msg["running"] == False):
         self.trainingNetwork.saveNetwork()
-        tkMessageBox.showinfo("INFO", "Classifier learning is done!")
         self.progressbarRunning.stop()
         self.progressbarLearning.stop()
         self.buttonLoadTesting.config(state=Tk.NORMAL)
@@ -564,24 +606,27 @@ class MainGUI(object):
                                  "queue": self.eventQueue,
                                  "process": "CLAS"}).start()
         self.root.after(100, self.processEventQueue)
+
+      # TESTING
       elif (msg["process"] == "TEST" and
             msg["running"] == False):
         print "Done testing!"
-        self.testingNumCorrect = msg["numCorrect"]
         tkMessageBox.showinfo("INFO",
                               "Classifier num correct = {num}".format(
-                                  num=msg["numCorrect"]))
+                                  num=self.testingNetwork.numCorrect))
         self.progressbarRunning.stop()
         self.progressbarLearning.stop()
       elif (msg["process"] == "TEST" and
             msg["running"] == True):
         self.progressbarLearning.step()
-        self.testingNumCorrect = msg["numCorrect"]
+        print ("Testing iteration: {iter}, % correct: {acc}"
+               .format(iter=self.testingNetwork.testingImageIndex,
+                       acc=(self.testingNetwork.numCorrect*100.0/
+                            self.testingNetwork.testingImageIndex)))
         threading.Thread(target=self.testNetworkBatch,
                          kwargs={"network": self.testingNetwork,
                                  "queue": self.eventQueue,
-                                 "process": "TEST",
-                                 "numCorrect": self.testingNumCorrect}).start()
+                                 "process": "TEST"}).start()
         self.root.after(100, self.processEventQueue)
 
     except Queue.Empty:
@@ -598,13 +643,12 @@ if __name__ == "__main__":
 
   root = Tk.Tk()
   root.title("Saccades Experiment")
-  root.geometry("{width}x{height}".format(
-      width=_APP_WIDTH, height=_APP_HEIGHT))
+  root.geometry("{width}x{height}".format(width=_APP_WIDTH, height=_APP_HEIGHT))
   root.resizable(width=Tk.FALSE, height=Tk.FALSE)
   MainGUI(root,
-          loggingDir=None, #datetimestr,
+          loggingDir=None,
           networkName=netName,
-          trainingSet="mnist/small_training",
+          trainingSet="mnist/supersmall_training",
           testingSet="mnist/testing")
   root.mainloop()
 
