@@ -45,6 +45,7 @@ from nupic.image import (serializeImage,
 from nupic.regions.PyRegion import PyRegion
 
 
+
 _REAL_NUMPY_DTYPE = GetNTAReal()
 
 
@@ -55,6 +56,7 @@ def containsConvolutionPostFilter(postFilters):
     if p[0].endswith("Convolution"):
       return True
   return False
+
 
 
 class ImageSensor(PyRegion):
@@ -123,9 +125,9 @@ class ImageSensor(PyRegion):
   nodeHelp("py.ImageSensor")
   """
 
-  def _init(self, width=1, height=1, depth=1, mode="gray", #pylint: disable=R0913
+  def __init__(self, width=1, height=1, depth=1, mode="gray", #pylint: disable=R0913
             blankWithReset=False, background=255, invertOutput=False,
-            filters=None, postFilters=None, explorer="[\"Flash\"]",
+            filters=None, postFilters=None, explorer=yaml.dump(["Flash"]),
             categoryOutputFile="", logText=False, logOutputImages=False,
             logOriginalImages=False, logFilteredImages=False,
             logLocationImages=False, logLocationOnOriginalImage=False,
@@ -324,8 +326,6 @@ class ImageSensor(PyRegion):
                                           else []))
     self._auxDataWidth = auxDataWidth
 
-  def __init__(self, *args, **kw):
-    self._init(*args, **kw)
 
   def loadSingleImage(self, imagePath, maskPath=None, categoryName=None,
                       clearImageList=True, skipExplorerUpdate=False,
@@ -372,6 +372,7 @@ class ImageSensor(PyRegion):
 
     return self.getParameter("numImages"), self.getParameter("numMasks")
 
+
   def loadSpecificImages(self, imagePaths, categoryNames=None,
                          clearImageList=True):
     """
@@ -412,36 +413,6 @@ class ImageSensor(PyRegion):
 
     return self.getParameter("numImages"), self.getParameter("numMasks")
 
-  def _walk(self, top):
-    """
-    Directory tree generator lifted from python 2.6 and then
-    stripped down.  It improves on the 2.5 os.walk() by adding
-    the 'followlinks' capability.
-    """
-
-    try:
-      # Note that listdir and error are globals in this module due
-      # to earlier import-*.
-      names = os.listdir(top)
-    except OSError:
-      raise RuntimeError("Unable to get a list of files due to an OS error."
-                         "\nDirectory: " + top +
-                         "\nThis may be due to an issue with Snow Leopard.")
-    except:
-      return
-
-    dirs, nondirs = [], []
-    for name in names:
-      if os.path.isdir(os.path.join(top, name)):
-        dirs.append(name)
-      else:
-        nondirs.append(name)
-
-    yield top, dirs, nondirs
-    for name in dirs:
-      path = os.path.join(top, name)
-      for x in self._walk(path):
-        yield x
 
   def loadMultipleImages(self, imagePath, extension=None, maskPath=None,
                          first=None, last=None, subsample=1,
@@ -643,7 +614,7 @@ class ImageSensor(PyRegion):
       #  w = os.walk(walkPath, followlinks=True)
       #else:
       #  w = os.walk(walkPath)
-      w = self._walk(walkPath)
+      w = os.walk(walkPath)
       while True:
         try:
           dirpath, dirnames, filenames = w.next()
@@ -732,6 +703,7 @@ class ImageSensor(PyRegion):
 
     return self.getParameter("numImages"), self.getParameter("numMasks")
 
+
   @staticmethod
   def _computeSequenceInfo(images):
     """
@@ -756,6 +728,7 @@ class ImageSensor(PyRegion):
       sequenceInfo.append((seqID, frameIndex))
 
     return sequenceInfo
+
 
   def loadSerializedImage(self, s, categoryName=None, clearImageList=True,
                           info=None, erode=None,
@@ -792,6 +765,7 @@ class ImageSensor(PyRegion):
 
     return self.getParameter("numImages"), self.getParameter("numMasks")
 
+
   def clearImageList(self, skipExplorerUpdate=False):
     """
     Clear the list of images.
@@ -804,6 +778,7 @@ class ImageSensor(PyRegion):
     self.prevPosition = None #pylint: disable=W0201
     if not skipExplorerUpdate:
       self.explorer[2].update(numImages=0)
+
 
   def seek(self, iteration=None, image=None, filters=None, offset=None,
            reset=None, sequenceIndex=None, frameIndex=None):
@@ -865,6 +840,7 @@ class ImageSensor(PyRegion):
       iteration //= self.explorer[2].holdFor
     self.explorer[2].seek(iteration=iteration, position=position)
 
+
   def getNumIterations(self, image=None):
     """
     Calculate how many samples the explorer will provide.
@@ -880,6 +856,7 @@ class ImageSensor(PyRegion):
 
     return self.explorer[2].getNumIterations(image) * self.explorer[2].holdFor
 
+
   def getSequenceCount(self):
     """
     Calculates how many sequences the sensor will provide.
@@ -889,6 +866,7 @@ class ImageSensor(PyRegion):
       return -1
     else:
       return self._imageList[-1]["sequenceIndex"]+1
+
 
   def getFrameCount(self, sequenceIndex):
     """
@@ -909,6 +887,7 @@ class ImageSensor(PyRegion):
       while sequenceIndex>=self._imageList[i]["sequenceIndex"]:
         i+=1
       return self._imageList[i-1]["frameIndex"]+1
+
 
   def getIterationRange(self, sequenceIndex=None):
     """
@@ -965,6 +944,7 @@ class ImageSensor(PyRegion):
       return (self._imageList[iteration]["sequenceIndex"],
               self._imageList[iteration]["frameIndex"])
 
+
   def saveImagesToFile(self, filename):
     """
     Save imageList, categoryInfo, and filters to the specified file.
@@ -993,6 +973,7 @@ class ImageSensor(PyRegion):
                 protocol=pickle.HIGHEST_PROTOCOL)
     f.close()
 
+
   def loadImagesFromFile(self, filename):
     """
     Load from a file created with saveImagesToFile.
@@ -1013,6 +994,7 @@ class ImageSensor(PyRegion):
     self.setParameter("categoryInfo", -1, sCategoryInfo)
 
     return self.getParameter("numImages"), self.getParameter("numMasks")
+
 
   def _addImage(self, image=None, imagePath=None, maskPath=None,
                 categoryName=None, erode=None, userAuxData=None, auxPath=None,
@@ -1067,6 +1049,7 @@ class ImageSensor(PyRegion):
       # Image is already present, just prepare it
       # Not necessary if it was already loaded for categoryInfo
       self._loadImage(len(self._imageList) - 1, setErodeFlag=setErodeFlag)
+
 
   def _loadImage(self, index, returnOriginal=False, setErodeFlag=True):
     """
@@ -1187,6 +1170,7 @@ class ImageSensor(PyRegion):
     if returnOriginal:
       return original
 
+
   def _applyFilter(self, image, imageIndex, filterIndex):
     """Apply the specified filter to the image."""
 
@@ -1252,6 +1236,7 @@ class ImageSensor(PyRegion):
         index += 1
 
     return filtered
+
 
   def _applyPostFilters(self, image, filterIndex=0):
     """
@@ -1337,6 +1322,7 @@ class ImageSensor(PyRegion):
 
     return responses, rawOutput
 
+
   def _applyAllFilters(self, image=None):
     """
     Run all filters on the specified image or all images.
@@ -1360,6 +1346,7 @@ class ImageSensor(PyRegion):
         if filterPosition == [0] * len(self.filters):
           break
 
+
   def _getOriginalImage(self, index=None):
     """
     Get the specified image, loading it if necessary.
@@ -1376,6 +1363,7 @@ class ImageSensor(PyRegion):
       self._loadImage(index)
 
     return self._imageList[index]["image"]
+
 
   def _getFilteredImages(self, position=None):
     """
@@ -1442,6 +1430,7 @@ class ImageSensor(PyRegion):
 
     return allFilteredImages[filterPosition]
 
+
   def _getImageInfo(self, imageIndex=None):
     """
     Get the dictionary of info for the image, excluding actual PIL images.
@@ -1455,6 +1444,7 @@ class ImageSensor(PyRegion):
     item.pop("image")
     item.pop("filtered")
     return item
+
 
   def _getOutputImages(self):
     """Get the current image(s) to send out, based on the current position.
@@ -1549,6 +1539,7 @@ class ImageSensor(PyRegion):
 
       return croppedImages, finalOutput
 
+
   def _logCommand(self, reportList=None, argList="auto"):
     """
     Print information about the calling command to the ImageSensor log file.
@@ -1622,6 +1613,7 @@ class ImageSensor(PyRegion):
       % (repr(callerName), argStr, reportStr) + os.linesep
     self.logFile.flush()
 
+
   def _logOutputImages(self):
     """
     Save the output images to disk.
@@ -1642,6 +1634,7 @@ class ImageSensor(PyRegion):
       name = os.path.join(outputLogDir, outputImageName)
       self.outputImage.split()[0].save(name)
 
+
   def _logBoundingBox(self, bbox):
     """
     Log the current bounding box
@@ -1661,6 +1654,7 @@ class ImageSensor(PyRegion):
                                                bbox[3])
     self.bboxLogFile.flush()
 
+
   def _logOriginalImage(self):
     """
     Save the original, unfiltered image to disk.
@@ -1675,6 +1669,7 @@ class ImageSensor(PyRegion):
     originalImageName = "%09d.png" % self._iteration
     image = self._getOriginalImage().split()[0]
     image.save(os.path.join(originalLogDir, originalImageName))
+
 
   def _logLocationImage(self):
     """
@@ -1691,6 +1686,7 @@ class ImageSensor(PyRegion):
       self.locationImage = self._createLocationImage() #pylint: disable=W0201
     locationImageName = "%09d.png" % self._iteration
     self.locationImage.save(os.path.join(locationLogDir, locationImageName))
+
 
   def _createLocationImage(self):
     """
@@ -1726,6 +1722,7 @@ class ImageSensor(PyRegion):
 
     return locationImage
 
+
   def _writeCategoryToFile(self, category):
     """
     Write the specified category index to the file at self.categoryOutputFile.
@@ -1740,6 +1737,7 @@ class ImageSensor(PyRegion):
         self._categoryOutputFile.write("1" + os.linesep)
       self._categoryOutputFile.write(str(category) + os.linesep)
       self._categoryOutputFile.flush()
+
 
   def _setFilters(self, filters):
     """
@@ -1813,6 +1811,7 @@ class ImageSensor(PyRegion):
           numFilters=len(filters),
           numFilterOutputs=self._getNumFilterOutputs(self.filters))
 
+
   def _setPostFilters(self, postFilters):
     """
     Change one or more postFilters, and recompute the ones that changed.
@@ -1849,6 +1848,7 @@ class ImageSensor(PyRegion):
     self.postFilters = postFilters  #pylint: disable=W0201
     self._importFilters(self.postFilters)
 
+
   @staticmethod
   def _getNumFilterOutputs(filters):
     """
@@ -1869,6 +1869,7 @@ class ImageSensor(PyRegion):
             "%s filter must return an int or a " % f[0] + " "
             "list/tuple of two ints from getOutputCount()")
     return numFilterOutputs
+
 
   def _importFilters(self, filters):
     """
@@ -1907,6 +1908,7 @@ class ImageSensor(PyRegion):
       # Instantiate the filter
       filters[i].append(filterClass(**copy.deepcopy(filters[i][1])))
       filters[i][2].update(mode=self.mode, background=self.background)
+
 
   def _setExplorer(self, explorer):
     """
@@ -2907,8 +2909,6 @@ class ImageSensor(PyRegion):
       return 1
     else:
       raise Exception("Unknown output: " + name)
-
-
 
 
 
