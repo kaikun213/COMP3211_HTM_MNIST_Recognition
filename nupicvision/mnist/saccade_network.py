@@ -20,6 +20,7 @@
 # ----------------------------------------------------------------------
 
 import copy
+import collections
 import itertools
 import operator
 import time
@@ -481,7 +482,7 @@ class SaccadeNetwork(object):
                                            Image.ANTIALIAS)
           saccadeHistList.append(ImageTk.PhotoImage(saccadeHist))
 
-      inferredCategory = self.getMostCommonCategory(inferredCategoryList)
+      inferredCategory = self._getMostCommonCategory(inferredCategoryList)
       isCorrectClassification = False
       if self.networkSensor.getOutputData("categoryOut") == inferredCategory:
         isCorrectClassification = True
@@ -512,7 +513,7 @@ class SaccadeNetwork(object):
         self.net.run(1)
         inferredCategoryList.append(
             self.networkClassifier.getOutputData("categoriesOut").argmax())
-      inferredCategory = self.getMostCommonCategory(inferredCategoryList)
+      inferredCategory = self._getMostCommonCategory(inferredCategoryList)
       if self.networkSensor.getOutputData("categoryOut") == inferredCategory:
         self.numCorrect += 1
 
@@ -527,19 +528,8 @@ class SaccadeNetwork(object):
 
 
   @staticmethod
-  def getMostCommonCategory(categoryList):
-    # from http://stackoverflow.com/questions/1518522/python-most-common-element-in-a-list #pylint: disable=C0301
-    SL = sorted((x, i) for i, x in enumerate(categoryList))
-    groups = itertools.groupby(SL, key=operator.itemgetter(0))
-    def _auxfun(g):
-      item, iterable = g
-      count = 0
-      min_index = len(categoryList)
-      for _, where in iterable:
-        count += 1
-        min_index = min(min_index, where)
-      return count, -min_index
-    return max(groups, key=_auxfun)[0]
+  def _getMostCommonCategory(categoryList):
+    return collections.Counter(categoryList).most_common(1)[0][0]
 
 
   def setLearningMode(self,

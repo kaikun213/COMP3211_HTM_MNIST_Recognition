@@ -28,6 +28,8 @@ import Tkinter as Tk
 import tkMessageBox
 import ttk as Ttk
 
+from enum import Enum
+
 from saccade_network import (
     SaccadeNetwork,
     SACCADES_PER_IMAGE_TRAINING,
@@ -53,7 +55,7 @@ _NETWORK_DIR_NAME = "networks"
 
 
 
-class NetworkMode(object):
+class NetworkMode(Enum):
   TRAINING_MODE = 1
   TESTING_MODE = 2
 
