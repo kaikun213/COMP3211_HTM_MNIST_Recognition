@@ -126,16 +126,16 @@ class ImageSensor(PyRegion):
   """
 
   def __init__(self, width=1, height=1, depth=1, mode="gray", #pylint: disable=R0913
-            blankWithReset=False, background=255, invertOutput=False,
-            filters=None, postFilters=None, explorer=yaml.dump(["Flash"]),
-            categoryOutputFile="", logText=False, logOutputImages=False,
-            logOriginalImages=False, logFilteredImages=False,
-            logLocationImages=False, logLocationOnOriginalImage=False,
-            logBoundingBox=False, logDir="imagesensor_log",
-            automaskingTolerance=0, automaskingPadding=0, memoryLimit=100,
-            minimalBoundingBox=False, dataOut=None, categoryOut=None,
-            partitionOut=None, resetOut=None, bboxOut=None, alphaOut=None,
-            auxDataWidth=None, **keywds):
+               blankWithReset=False, background=255, invertOutput=False,
+               filters=None, postFilters=None, explorer=yaml.dump(["Flash"]),
+               categoryOutputFile="", logText=False, logOutputImages=False,
+               logOriginalImages=False, logFilteredImages=False,
+               logLocationImages=False, logLocationOnOriginalImage=False,
+               logBoundingBox=False, logDir="imagesensor_log",
+               automaskingTolerance=0, automaskingPadding=0, memoryLimit=100,
+               minimalBoundingBox=False, dataOut=None, categoryOut=None,
+               partitionOut=None, resetOut=None, bboxOut=None, alphaOut=None,
+               auxDataWidth=None, **keywds):
     """
     width -- Width of the sensor's output to the network (pixels).
     height -- Height of the sensor's output to the network (pixels).
@@ -2353,6 +2353,14 @@ class ImageSensor(PyRegion):
       self.memoryLimit = parameterValue #pylint: disable=W0201
       self._meetMemoryLimit()
 
+    elif parameterName == "numSaccades":
+      if self.explorer[0] == "RandomSaccade":
+        self.explorer[2].update(numSaccades=parameterValue)
+      else:
+        raise Exception(
+            "The current explorer type ({type}) does not support saccades"
+            .format(type=self.explorer[0]))
+
     else:
       if not hasattr(self, parameterName):
         raise Exception(
@@ -2586,6 +2594,15 @@ class ImageSensor(PyRegion):
                 count=0,
                 constraints="",
                 accessMode="ReadWrite"),
+            numSaccades=dict(
+                description="""The number of saccades a RandomSaccade explorer
+                  should make. 0 if the explorer isn't a RandomSaccade
+                  explorer.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="ReadWrite"
+            ),
             logOutputImages=dict(
                 description="""Toggle for writing each output to disk (as an
                   image) on each iteration.""",
