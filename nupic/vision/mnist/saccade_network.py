@@ -21,8 +21,6 @@
 
 import copy
 import collections
-import itertools
-import operator
 import time
 
 from PIL import ImageTk, ImageDraw, Image
@@ -30,8 +28,9 @@ import yaml
 
 from nupic.engine import Network
 
-from nupic.vision.regions.ImageSensor import ImageSensor
+from nupic.vision.regions.SaccadeSensor import SaccadeSensor
 from nupic.vision.image import deserializeImage
+from sensorimotor.TMRegion import TMRegion
 
 
 
@@ -62,7 +61,7 @@ DEFAULT_IMAGESENSOR_PARAMS = {
 DEFAULT_SP_PARAMS = {
     "columnCount": 4096,
     "spatialImp": "cpp",
-    "inputWidth": 768,
+    "inputWidth": 784,
     "spVerbosity": 1,
     "synPermConnected": 0.2,
     "synPermActiveInc": 0.0,
@@ -72,6 +71,26 @@ DEFAULT_SP_PARAMS = {
     "globalInhibition": 1,
     "potentialPct": 0.9,
     "maxBoost": 1.0
+}
+
+DEFAULT_TM_PARAMS = {
+    "columnDimensions": 0,
+#    "numberOfDistalInput": 0,
+    "cellsPerColumn": 8,
+    "initialPermanence": 0.4,
+    "connectedPermanence": 0.5,
+    "minThreshold": 20,
+    "activationThreshold": 20,
+#    "newSynapseCount": 50,
+#    "newDistalSynapseCount": 50,
+    "permanenceIncrement": 0.1,
+    "permanenceDecrement": 0.02,
+    "learnOnOneCell": 1,
+#    "learnDistalInputs": True,
+#    "learnLateralConnections": False,
+#    "globalDecay": 0,
+#    "burnIn": 1,
+#    "verbosity": 0
 }
 
 DEFAULT_CLASSIFIER_PARAMS = {
@@ -84,7 +103,7 @@ DEFAULT_CLASSIFIER_PARAMS = {
 class SaccadeNetwork(object):
   """
   A HTM network structured as follows:
-  ImageSensor (RandomSaccade) -> SP -> ?
+  SaccadeSensor (RandomSaccade) -> SP -> TM -> Classifier (KNN)
   """
   def __init__(self,
                networkName,
@@ -122,21 +141,26 @@ class SaccadeNetwork(object):
     self.networkClassifier = None
     self.networkDutyCycles = None
     self.networkSP = None
+    self.networkTM = None
     self.networkSensor = None
     self.numTrainingImages = 0
     self.numTestingImages = 0
     self.trainingImageIndex = 0
     self.testingImageIndex = 0
+    self.numCorrect = 0
 
     if createNetwork:
       self.createNet()
+
 
   def createNet(self):
     """ Set up the structure of the network """
     net = Network()
 
-    Network.unregisterRegion(ImageSensor.__name__)
-    Network.registerRegion(ImageSensor)
+    Network.unregisterRegion(SaccadeSensor.__name__)
+    Network.registerRegion(SaccadeSensor)
+
+    Network.registerRegion(TMRegion)
 
     imageSensorParams = copy.deepcopy(DEFAULT_IMAGESENSOR_PARAMS)
     if self.loggingDir is not None:
@@ -147,22 +171,36 @@ class SaccadeNetwork(object):
       imageSensorParams["logLocationImages"] = 1
       imageSensorParams["logLocationOnOriginalImage"] = 1
 
-    net.addRegion("sensor", "py.ImageSensor",
+    net.addRegion("sensor", "py.SaccadeSensor",
                   yaml.dump(imageSensorParams))
+    sensor = net.regions["sensor"].getSelf()
+
+    DEFAULT_SP_PARAMS["columnCount"] = sensor.getOutputElementCount("dataOut")
     net.addRegion("SP", "py.SPRegion", yaml.dump(DEFAULT_SP_PARAMS))
+    sp = net.regions["SP"].getSelf()
+
+    DEFAULT_TM_PARAMS["columnDimensions"] = (sp.getOutputElementCount("bottomUpOut"),)
+    net.addRegion("TM", "py.TMRegion", yaml.dump(DEFAULT_TM_PARAMS))
+
     net.addRegion("classifier","py.KNNClassifierRegion",
                   yaml.dump(DEFAULT_CLASSIFIER_PARAMS))
 
+
     net.link("sensor", "SP", "UniformLink", "",
-             srcOutput = "dataOut", destInput = "bottomUpIn")
-    net.link("SP", "classifier", "UniformLink", "",
-             srcOutput = "bottomUpOut", destInput = "bottomUpIn")
+             srcOutput="dataOut", destInput="bottomUpIn")
+    net.link("SP", "TM", "UniformLink", "",
+             srcOutput="bottomUpOut", destInput="activeColumns")
+    net.link("sensor", "TM", "UniformLink", "",
+             srcOutput="saccadeOut", destInput="activeExternalCells")
+    net.link("TM", "classifier", "UniformLink", "",
+             srcOutput="predictedActiveCells", destInput="bottomUpIn")
     net.link("sensor", "classifier", "UniformLink", "",
-             srcOutput = "categoryOut", destInput = "categoryIn")
+             srcOutput="categoryOut", destInput="categoryIn")
 
     self.net = net
     self.networkSensor = self.net.regions["sensor"]
     self.networkSP = self.net.regions["SP"]
+    self.networkTM = self.net.regions["TM"]
     self.networkClassifier = self.net.regions["classifier"]
 
 
@@ -171,8 +209,10 @@ class SaccadeNetwork(object):
     :param filename: Where the network should be loaded from
     """
     print "Loading network from {file}...".format(file=filename)
-    Network.unregisterRegion(ImageSensor.__name__)
-    Network.registerRegion(ImageSensor)
+    Network.unregisterRegion(SaccadeSensor.__name__)
+    Network.registerRegion(SaccadeSensor)
+
+    Network.registerRegion(TMRegion)
 
     self.net = Network(filename)
 
@@ -181,9 +221,6 @@ class SaccadeNetwork(object):
 
     self.networkSP = self.net.regions["SP"]
     self.networkClassifier = self.net.regions["classifier"]
-
-    self.setLearningMode(learningSP=False,
-                         learningClassifier=False)
 
     self.numCorrect = 0
 
@@ -198,12 +235,6 @@ class SaccadeNetwork(object):
     print "Load time for training images:", t2-t1
     print "Number of training images", numTrainingImages
 
-    # Set up the SP parameters
-    print "============= SP training ================="
-    self.networkClassifier.setParameter("inferenceMode", 0)
-    self.networkClassifier.setParameter("learningMode", 0)
-    self.networkSP.setParameter("learningMode", 1)
-    self.networkSP.setParameter("inferenceMode", 0)
     self.numTrainingImages = numTrainingImages
     self.trainingImageIndex = 0
 
@@ -227,6 +258,9 @@ class SaccadeNetwork(object):
       saccadeHistList = []
       saccadeDetailList = []
       originalImage = None
+
+      self.networkTM.executeCommand(["reset"])
+
       for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
         if originalImage is None:
@@ -322,10 +356,10 @@ class SaccadeNetwork(object):
                                            Image.ANTIALIAS)
           saccadeHistList.append(ImageTk.PhotoImage(saccadeHist))
 
+      self.trainingImageIndex += 1
       print ("Iteration: {iter}; Category: {cat}"
              .format(iter=self.trainingImageIndex,
                      cat=self.networkSensor.getOutputData("categoryOut")))
-      self.trainingImageIndex += 1
 
       if enableViz:
         return (saccadeImgsList, saccadeDetailList, saccadeHistList,
@@ -336,19 +370,6 @@ class SaccadeNetwork(object):
       return False
 
 
-  def run(self):
-    """ Run the network until all images have been seen """
-    while self.trainingImageIndex < self.numTrainingImages:
-      for i in range(SACCADES_PER_IMAGE_TRAINING):
-        self.net.run(1)
-
-      if self.trainingImageIndex % (self.numTrainingImages/100) == 0:
-        print ("Iteration: {iter}; Category: {cat}"
-               .format(iter=self.trainingImageIndex,
-                       cat=self.networkSensor.getOutputData("categoryOut")))
-      self.trainingImageIndex += 1
-
-
   def runNetworkBatch(self, batchSize):
     """ Run the network in batches.
 
@@ -357,6 +378,7 @@ class SaccadeNetwork(object):
       Otherwise False.
     """
     while self.trainingImageIndex < self.numTrainingImages:
+      self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
 
@@ -385,6 +407,7 @@ class SaccadeNetwork(object):
       inferredCategoryList = []
       originalImage = None
 
+      self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         if originalImage is None:
@@ -509,6 +532,7 @@ class SaccadeNetwork(object):
 
     while self.testingImageIndex < self.numTestingImages:
       inferredCategoryList = []
+      self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         inferredCategoryList.append(
@@ -534,6 +558,7 @@ class SaccadeNetwork(object):
 
   def setLearningMode(self,
                       learningSP=False,
+                      learningTM=False,
                       learningClassifier=False):
     if learningSP:
       self.networkSP.setParameter("learningMode", 1)
@@ -541,6 +566,11 @@ class SaccadeNetwork(object):
     else:
       self.networkSP.setParameter("learningMode", 0)
       self.networkSP.setParameter("inferenceMode", 1)
+
+    if learningTM:
+      self.networkTM.setParameter("learningMode", 1)
+    else:
+      self.networkTM.setParameter("learningMode", 0)
 
     if learningClassifier:
       self.networkClassifier.setParameter("learningMode", 1)

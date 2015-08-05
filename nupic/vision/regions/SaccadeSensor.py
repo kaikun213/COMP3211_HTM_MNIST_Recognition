@@ -48,7 +48,7 @@ from nupic.regions.PyRegion import PyRegion
 
 
 _REAL_NUMPY_DTYPE = GetNTAReal()
-
+_CATEGORY_ENCODER_SIZE = 84
 
 
 def containsConvolutionPostFilter(postFilters):
@@ -327,9 +327,7 @@ class SaccadeSensor(PyRegion):
                                           else []))
     self._auxDataWidth = auxDataWidth
 
-    self.saccadeOutSize = 0
-
-    self.motorEncoder = SDRCategoryEncoder(n=84, w=21)
+    self.motorEncoder = SDRCategoryEncoder(n=_CATEGORY_ENCODER_SIZE, w=21)
 
 
   def loadSingleImage(self, imagePath, maskPath=None, categoryName=None,
@@ -2296,9 +2294,6 @@ class SaccadeSensor(PyRegion):
       metadata["catName"] = self.categoryInfo[metadata["catIndex"]][0]
       return str(metadata)
 
-    elif parameterName == "saccadeOutSize":
-      return self.saccadeOutSize
-
     else:
       return PyRegion.getParameter(self, parameterName, index)
 
@@ -2376,9 +2371,6 @@ class SaccadeSensor(PyRegion):
         raise Exception(
             "The current explorer type ({type}) does not support saccades"
             .format(type=self.explorer[0]))
-
-    elif parameterName == "saccadeOutSize":
-      self.saccadeOutSize = parameterValue
 
     else:
       if not hasattr(self, parameterName):
@@ -2931,12 +2923,6 @@ class SaccadeSensor(PyRegion):
                 count=1,
                 constraints="",
                 accessMode="Read",),
-            saccadeOutSize=dict(
-                description=""" """,
-                dataType="UInt32",
-                count=1,
-                constraints="",
-                accessMode="ReadWrite"),
         ),
         commands=dict(
             loadSingleImage=dict(description="load a single image"),
@@ -2958,9 +2944,7 @@ class SaccadeSensor(PyRegion):
     elif name == "alphaOut":
       return 1
     elif name == "saccadeOut":
-      return self.saccadeOutSize
-      #self.getOutputElementCount("dataOut")
-      # The TM expects the same # of inputs from bottomUpOut (SP) and saccadeOut
+      return _CATEGORY_ENCODER_SIZE
     else:
       raise Exception("Unknown output: " + name)
 

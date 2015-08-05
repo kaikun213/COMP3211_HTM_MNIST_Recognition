@@ -256,6 +256,7 @@ class MainGUI(object):
     self.trainingNetwork.createNet()
     self.trainingNetwork.loadExperiment()
     self.trainingNetwork.setLearningMode(learningSP=True,
+                                         learningTM=False,
                                          learningClassifier=False)
 
     # Update GUI
@@ -502,19 +503,23 @@ class MainGUI(object):
     :param queue: The queue to send results to
     :param process: The name of the process. Used in sending results to queue
     """
-    result = network.runNetworkBatch(batchSize=10)
+    result = network.runNetworkBatch(batchSize=1)
     queue.put({"process": process,
                "running": result})
 
 
   def buttonLoadTestingCb(self):
     self.networkMode = NetworkMode.TESTING_MODE
-    self.networkName = "{networksDir}/{network}".format(
-        networksDir=_NETWORK_DIR_NAME,
-        network=os.listdir(_NETWORK_DIR_NAME)[-1])
-    self.testingNetwork.loadFromFile(self.networkName)
+    #self.networkName = "{networksDir}/{network}".format(
+    #    networksDir=_NETWORK_DIR_NAME,
+    #    network=os.listdir(_NETWORK_DIR_NAME)[-1])
+    #self.testingNetwork.loadFromFile(self.networkName)
+    self.testingNetwork = self.trainingNetwork
+    self.testingNetwork.networkSensor.setParameter("numSaccades", SACCADES_PER_IMAGE_TESTING)
+
 
     self.testingNetwork.setLearningMode(learningSP=False,
+                                        learningTM=False,
                                         learningClassifier=False)
 
     print "Loading testing images..."
@@ -553,7 +558,7 @@ class MainGUI(object):
 
   @staticmethod
   def testNetworkBatch(network, queue, process=""):
-    result = network.testNetworkBatch(batchSize=10)
+    result = network.testNetworkBatch(batchSize=1)
     if result is not False:
       queue.put({"process": process,
                  "running": True})
@@ -575,14 +580,15 @@ class MainGUI(object):
         print "SP learning is done!"
         self.progressbarRunning.stop()
         self.progressbarLearning.stop()
-        # Classifier
+        # TM
         self.trainingNetwork.setLearningMode(learningSP=False,
-                                             learningClassifier=True)
+                                             learningTM=True,
+                                             learningClassifier=False)
         self.trainingNetwork.resetIndex()
         threading.Thread(target=self.runNetworkBatch,
                          kwargs={"network": self.trainingNetwork,
                                  "queue": self.eventQueue,
-                                 "process": "CLAS"}).start()
+                                 "process": "TM"}).start()
         self.root.after(100, self.processEventQueue)
       elif (msg["process"] == "SP" and
             msg["running"] == True):
@@ -593,10 +599,35 @@ class MainGUI(object):
                                  "process": "SP"}).start()
         self.root.after(100, self.processEventQueue)
 
+      # TM
+      elif (msg["process"] == "TM" and
+          msg["running"] == False):
+        print "TM learning is done!"
+        self.progressbarRunning.stop()
+        self.progressbarLearning.stop()
+        # Classifier
+        self.trainingNetwork.setLearningMode(learningSP=False,
+                                             learningTM=False,
+                                             learningClassifier=True)
+        self.trainingNetwork.resetIndex()
+        threading.Thread(target=self.runNetworkBatch,
+                         kwargs={"network": self.trainingNetwork,
+                                 "queue": self.eventQueue,
+                                 "process": "CLAS"}).start()
+        self.root.after(100, self.processEventQueue)
+      elif (msg["process"] == "TM" and
+            msg["running"] == True):
+        self.progressbarLearning.step()
+        threading.Thread(target=self.runNetworkBatch,
+                         kwargs={"network": self.trainingNetwork,
+                                 "queue": self.eventQueue,
+                                 "process": "TM"}).start()
+        self.root.after(100, self.processEventQueue)
+
       # CLASSIFIER
       elif (msg["process"] == "CLAS" and
             msg["running"] == False):
-        self.trainingNetwork.saveNetwork()
+        #self.trainingNetwork.saveNetwork()
         self.progressbarRunning.stop()
         self.progressbarLearning.stop()
         self.buttonLoadTesting.config(state=Tk.NORMAL)
