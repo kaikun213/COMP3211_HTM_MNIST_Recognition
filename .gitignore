@@ -2,3 +2,9 @@
 *.swo
 *.pyc
 *~
+
+# IDE project files
+.idea
+
+# PIP Stuff
+nupic.vision.egg-info/
