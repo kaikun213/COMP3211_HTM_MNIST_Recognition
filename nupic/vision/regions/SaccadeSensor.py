@@ -39,6 +39,7 @@ from PIL import (Image,
                  ImageDraw)
 
 from nupic.bindings.math import GetNTAReal
+from nupic.encoders import SDRCategoryEncoder
 from nupic.image import (serializeImage,
                          deserializeImage,
                          imageExtensions)
@@ -59,7 +60,7 @@ def containsConvolutionPostFilter(postFilters):
 
 
 
-class ImageSensor(PyRegion):
+class SaccadeSensor(PyRegion):
 
   """
   ImageSensor is an extensible sensor for grayscale and black and white images.
@@ -325,6 +326,10 @@ class ImageSensor(PyRegion):
                                           if postFilters
                                           else []))
     self._auxDataWidth = auxDataWidth
+
+    self.saccadeOutSize = 0
+
+    self.motorEncoder = SDRCategoryEncoder(n=84, w=21)
 
 
   def loadSingleImage(self, imagePath, maskPath=None, categoryName=None,
@@ -747,7 +752,7 @@ class ImageSensor(PyRegion):
       calculating it.
 
     To serialize an image before passing it to this command, do the following:
-    from nupic.vision.ImageSensor import serializeImage
+    from nupicvision.ImageSensor import serializeImage
     s = serializeImage(image)
     """
     if clearImageList:
@@ -1886,7 +1891,7 @@ class ImageSensor(PyRegion):
       # If name is of the form 'ModuleName.ClassName' (useful to try multiple
       # versions of the same filter): names = ['ModuleName', 'ClassName']
       # By default, ImageSensor searches for filters in
-      # nupic.vision.regions.ImageSensorFilters. If the import fails, it tries
+      # nupicvision.regions.ImageSensorFilters. If the import fails, it tries
       # the import unmodified - so you may use filters that are located
       # anywhere that Python knows about.
       if not "." in filters[i][0]:
@@ -1897,7 +1902,7 @@ class ImageSensor(PyRegion):
         className = components[-1]
       try:
         # Search in ImageSensorFilters first
-        filterModule = __import__("nupic.vision.regions.ImageSensorFilters.%s"
+        filterModule = __import__("nupicvision.regions.ImageSensorFilters.%s"
                                   % moduleName, {}, {}, className)
       except:
         try:
@@ -1935,7 +1940,7 @@ class ImageSensor(PyRegion):
     # If name is of the form 'ModuleName.ClassName' (useful to try multiple
     # versions of the same explorer): names = ['ModuleName', 'ClassName']
     # By default, ImageSensor searches for explorers in
-    # nupic.vision.regions.ImageSensorExplorers. If the import fails, it tries
+    # nupicvision.regions.ImageSensorExplorers. If the import fails, it tries
     # the import unmodified - so you may use explorers that are located
     # anywhere that Python knows about.
     if not "." in explorer[0]:
@@ -1946,7 +1951,7 @@ class ImageSensor(PyRegion):
       className = components[-1]
     try:
       # Search in ImageSensorExplorers first
-      explorerModule = __import__("nupic.vision.regions.ImageSensorExplorers.%s"
+      explorerModule = __import__("nupicvision.regions.ImageSensorExplorers.%s"
                                   % moduleName, {}, {}, className)
     except ImportError:
       try:
@@ -2132,6 +2137,12 @@ class ImageSensor(PyRegion):
       outputs["categoryOut"][:] = \
         numpy.array([float(category)], _REAL_NUMPY_DTYPE)
 
+      # saccadeOut - the saccade
+      outputs["saccadeOut"] =  numpy.array(
+          self.motorEncoder.encode(self.explorer[2].prevSaccade["direction"]),
+        dtype=_REAL_NUMPY_DTYPE)
+
+
       # auxDataOut - auxiliary data
       auxDataOut = imageInfo["auxData"]
       if auxDataOut is not None:
@@ -2169,6 +2180,8 @@ class ImageSensor(PyRegion):
           partition = 0
         outputs["partitionOut"][:] = numpy.array([float(partition)],
                                                  _REAL_NUMPY_DTYPE)
+
+
 
 
   def getParameter(self, parameterName, index=-1):
@@ -2214,6 +2227,13 @@ class ImageSensor(PyRegion):
     elif parameterName == "nextImageInfo":
       if self.explorer[2].position and self._imageList:
         return yaml.dump(self._getImageInfo())
+      else:
+        return None
+
+    elif parameterName == "prevSaccadeInfo":
+      if (self.explorer[0] == "RandomSaccade" and
+          self.explorer[2].position is not None and len(self._imageList) > 0):
+        return yaml.dump(self.explorer[2].prevSaccade)
       else:
         return None
 
@@ -2275,6 +2295,9 @@ class ImageSensor(PyRegion):
       metadata["catIndex"] = self._getImageInfo(imageIdx)["categoryIndex"]
       metadata["catName"] = self.categoryInfo[metadata["catIndex"]][0]
       return str(metadata)
+
+    elif parameterName == "saccadeOutSize":
+      return self.saccadeOutSize
 
     else:
       return PyRegion.getParameter(self, parameterName, index)
@@ -2345,6 +2368,17 @@ class ImageSensor(PyRegion):
     elif parameterName == "memoryLimit":
       self.memoryLimit = parameterValue #pylint: disable=W0201
       self._meetMemoryLimit()
+
+    elif parameterName == "numSaccades":
+      if self.explorer[0] == "RandomSaccade":
+        self.explorer[2].update(numSaccades=parameterValue)
+      else:
+        raise Exception(
+            "The current explorer type ({type}) does not support saccades"
+            .format(type=self.explorer[0]))
+
+    elif parameterName == "saccadeOutSize":
+      self.saccadeOutSize = parameterValue
 
     else:
       if not hasattr(self, parameterName):
@@ -2456,7 +2490,7 @@ class ImageSensor(PyRegion):
     """Return the Spec for this Region."""
 
     ns = dict(
-        description=ImageSensor.__doc__,
+        description=SaccadeSensor.__doc__,
         singleNodeOnly=False,
         inputs = {},
         outputs = dict(
@@ -2510,6 +2544,14 @@ class ImageSensor(PyRegion):
                 count=0,
                 regionLevel=True,
                 isDefaultOutput=False),
+
+            saccadeOut=dict(
+                description="""SDR? representing the direction and size of the
+                previous saccade. """,
+                dataType="Real32",
+                count=0,
+                regionLevel=True,
+                isDefaultOutput=False)
         ),
         parameters = dict(
             outputImageWithAlpha=dict(
@@ -2517,7 +2559,7 @@ class ImageSensor(PyRegion):
                   image(s) with the alpha channel. If depth > 1, multiple
                   serialized images  will be returned in a list.
                   To deserialize:
-                  from nupic.vision.image import deserializeImage
+                  from nupicvision.image import deserializeImage
                   outputImage = deserializeImage(
                       yaml.load((sensor.getParameter('outputImageWithAlpha')))
                   """,
@@ -2528,7 +2570,7 @@ class ImageSensor(PyRegion):
             originalImage=dict(
                 description="""YAML serialized version of the original,
                   unfiltered version of the current image. To deserialize:
-                  from nupic.vision.image import deserializeImage
+                  from nupicvision.image import deserializeImage
                   originalImage = deserializeImage(
                       yaml.load((sensor.getParameter('originalImage')))""",
                 dataType="Byte",
@@ -2540,7 +2582,7 @@ class ImageSensor(PyRegion):
                   'location image', which shows the position of the sensor
                   overlaid on the filtered image (optionally, the original
                   image). To deserialize:
-                  from nupic.vision.image import deserializeImage
+                  from nupicvision.image import deserializeImage
                   locationImage = deserializeImage(
                       yaml.load((sensor.getParameter('locationImage')))""",
                 dataType="Byte",
@@ -2579,6 +2621,15 @@ class ImageSensor(PyRegion):
                 count=0,
                 constraints="",
                 accessMode="ReadWrite"),
+            numSaccades=dict(
+                description="""The number of saccades a RandomSaccade explorer
+                  should make. 0 if the explorer isn't a RandomSaccade
+                  explorer.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="ReadWrite"
+            ),
             logOutputImages=dict(
                 description="""Toggle for writing each output to disk (as an
                   image) on each iteration.""",
@@ -2616,7 +2667,7 @@ class ImageSensor(PyRegion):
                 description="""YAML serialized version of the current output
                   image(s). If depth > 1, multiple serialized images will be
                   returned in a list. To deserialize:
-                  from nupic.vision.image import deserializeImage
+                  from nupicvision.image import deserializeImage
                   outputImage = deserializeImage(
                       yaml.load(sensor.getParameter('outputImage')))""",
                 dataType="Byte",
@@ -2660,6 +2711,14 @@ class ImageSensor(PyRegion):
             nextImageInfo=dict(
                 description="""YAML serialized dictionary of information for
                   the image which will be used for the next compute.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            prevSaccadeInfo=dict(
+                description="""YAML serialized dictionary of information about
+                  the previous saccade a RandomSaccade explorer made. NoneType
+                  if the explorer isn't a RandomSaccade explorer.""",
                 dataType="Byte",
                 count=0,
                 constraints="",
@@ -2788,7 +2847,7 @@ class ImageSensor(PyRegion):
                   category that the sensor has learned. The tuple contains
                   the category name (i.e. 'dog') and a serialized version of an
                   example image for the category. To deserialize the image:
-                  from nupic.vision.regions.ImageSensor import (
+                  from nupicvision.regions.ImageSensor import (
                       deserializeCategoryInfo)
                   categoryInfo = deserializeCategoryInfo(
                       sensor.getParameter('categoryInfo'))""",
@@ -2871,7 +2930,13 @@ class ImageSensor(PyRegion):
                 dataType="UInt32",
                 count=1,
                 constraints="",
-                accessMode="Read")
+                accessMode="Read",),
+            saccadeOutSize=dict(
+                description=""" """,
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="ReadWrite"),
         ),
         commands=dict(
             loadSingleImage=dict(description="load a single image"),
@@ -2892,6 +2957,10 @@ class ImageSensor(PyRegion):
       return self.width * self.height * self.depth
     elif name == "alphaOut":
       return 1
+    elif name == "saccadeOut":
+      return self.saccadeOutSize
+      #self.getOutputElementCount("dataOut")
+      # The TM expects the same # of inputs from bottomUpOut (SP) and saccadeOut
     else:
       raise Exception("Unknown output: " + name)
 
