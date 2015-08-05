@@ -750,7 +750,7 @@ class SaccadeSensor(PyRegion):
       calculating it.
 
     To serialize an image before passing it to this command, do the following:
-    from nupicvision.ImageSensor import serializeImage
+    from nupic.vision.ImageSensor import serializeImage
     s = serializeImage(image)
     """
     if clearImageList:
@@ -1889,7 +1889,7 @@ class SaccadeSensor(PyRegion):
       # If name is of the form 'ModuleName.ClassName' (useful to try multiple
       # versions of the same filter): names = ['ModuleName', 'ClassName']
       # By default, ImageSensor searches for filters in
-      # nupicvision.regions.ImageSensorFilters. If the import fails, it tries
+      # nupic.vision.regions.ImageSensorFilters. If the import fails, it tries
       # the import unmodified - so you may use filters that are located
       # anywhere that Python knows about.
       if not "." in filters[i][0]:
@@ -1900,7 +1900,7 @@ class SaccadeSensor(PyRegion):
         className = components[-1]
       try:
         # Search in ImageSensorFilters first
-        filterModule = __import__("nupicvision.regions.ImageSensorFilters.%s"
+        filterModule = __import__("nupic.vision.regions.ImageSensorFilters.%s"
                                   % moduleName, {}, {}, className)
       except:
         try:
@@ -1938,7 +1938,7 @@ class SaccadeSensor(PyRegion):
     # If name is of the form 'ModuleName.ClassName' (useful to try multiple
     # versions of the same explorer): names = ['ModuleName', 'ClassName']
     # By default, ImageSensor searches for explorers in
-    # nupicvision.regions.ImageSensorExplorers. If the import fails, it tries
+    # nupic.vision.regions.ImageSensorExplorers. If the import fails, it tries
     # the import unmodified - so you may use explorers that are located
     # anywhere that Python knows about.
     if not "." in explorer[0]:
@@ -1949,7 +1949,7 @@ class SaccadeSensor(PyRegion):
       className = components[-1]
     try:
       # Search in ImageSensorExplorers first
-      explorerModule = __import__("nupicvision.regions.ImageSensorExplorers.%s"
+      explorerModule = __import__("nupic.vision.regions.ImageSensorExplorers.%s"
                                   % moduleName, {}, {}, className)
     except ImportError:
       try:
@@ -2551,7 +2551,7 @@ class SaccadeSensor(PyRegion):
                   image(s) with the alpha channel. If depth > 1, multiple
                   serialized images  will be returned in a list.
                   To deserialize:
-                  from nupicvision.image import deserializeImage
+                  from nupic.vision.image import deserializeImage
                   outputImage = deserializeImage(
                       yaml.load((sensor.getParameter('outputImageWithAlpha')))
                   """,
@@ -2562,7 +2562,7 @@ class SaccadeSensor(PyRegion):
             originalImage=dict(
                 description="""YAML serialized version of the original,
                   unfiltered version of the current image. To deserialize:
-                  from nupicvision.image import deserializeImage
+                  from nupic.vision.image import deserializeImage
                   originalImage = deserializeImage(
                       yaml.load((sensor.getParameter('originalImage')))""",
                 dataType="Byte",
@@ -2574,7 +2574,7 @@ class SaccadeSensor(PyRegion):
                   'location image', which shows the position of the sensor
                   overlaid on the filtered image (optionally, the original
                   image). To deserialize:
-                  from nupicvision.image import deserializeImage
+                  from nupic.vision.image import deserializeImage
                   locationImage = deserializeImage(
                       yaml.load((sensor.getParameter('locationImage')))""",
                 dataType="Byte",
@@ -2659,7 +2659,7 @@ class SaccadeSensor(PyRegion):
                 description="""YAML serialized version of the current output
                   image(s). If depth > 1, multiple serialized images will be
                   returned in a list. To deserialize:
-                  from nupicvision.image import deserializeImage
+                  from nupic.vision.image import deserializeImage
                   outputImage = deserializeImage(
                       yaml.load(sensor.getParameter('outputImage')))""",
                 dataType="Byte",
@@ -2839,7 +2839,7 @@ class SaccadeSensor(PyRegion):
                   category that the sensor has learned. The tuple contains
                   the category name (i.e. 'dog') and a serialized version of an
                   example image for the category. To deserialize the image:
-                  from nupicvision.regions.ImageSensor import (
+                  from nupic.vision.regions.ImageSensor import (
                       deserializeCategoryInfo)
                   categoryInfo = deserializeCategoryInfo(
                       sensor.getParameter('categoryInfo'))""",
