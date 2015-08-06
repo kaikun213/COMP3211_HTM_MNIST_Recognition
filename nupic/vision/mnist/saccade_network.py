@@ -377,6 +377,7 @@ class SaccadeNetwork(object):
     :return: True if there are more images left to be saccaded over.
       Otherwise False.
     """
+    startTime = time.time()
     while self.trainingImageIndex < self.numTrainingImages:
       self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TRAINING):
@@ -384,9 +385,10 @@ class SaccadeNetwork(object):
 
       self.trainingImageIndex += 1
       if self.trainingImageIndex % batchSize == 0:
-        print ("Iteration: {iter}; Category: {cat}"
+        print ("Iteration: {iter}; Category: {cat}; Time per batch: {t}"
                .format(iter=self.trainingImageIndex,
-                       cat=self.networkSensor.getOutputData("categoryOut")))
+                       cat=self.networkSensor.getOutputData("categoryOut"),
+                       t=time.time()-startTime))
         return True
     return False
 
