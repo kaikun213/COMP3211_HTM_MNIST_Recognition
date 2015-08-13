@@ -515,7 +515,8 @@ class MainGUI(object):
     #    network=os.listdir(_NETWORK_DIR_NAME)[-1])
     #self.testingNetwork.loadFromFile(self.networkName)
     self.testingNetwork = self.trainingNetwork
-    self.testingNetwork.networkSensor.setParameter("numSaccades", SACCADES_PER_IMAGE_TESTING)
+    self.testingNetwork.networkSensor.setParameter(
+      "numSaccades", SACCADES_PER_IMAGE_TESTING)
 
 
     self.testingNetwork.setLearningMode(learningSP=False,
