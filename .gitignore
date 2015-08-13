@@ -8,3 +8,6 @@
 
 # PIP Stuff
 nupic.vision.egg-info/
+
+# Other
+.DS_Store
