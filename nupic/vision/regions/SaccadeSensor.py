@@ -39,6 +39,7 @@ from PIL import (Image,
                  ImageDraw)
 
 from nupic.bindings.math import GetNTAReal
+from nupic.encoders import SDRCategoryEncoder
 from nupic.image import (serializeImage,
                          deserializeImage,
                          imageExtensions)
@@ -47,7 +48,7 @@ from nupic.regions.PyRegion import PyRegion
 
 
 _REAL_NUMPY_DTYPE = GetNTAReal()
-
+_CATEGORY_ENCODER_SIZE = 84
 
 
 def containsConvolutionPostFilter(postFilters):
@@ -59,7 +60,7 @@ def containsConvolutionPostFilter(postFilters):
 
 
 
-class ImageSensor(PyRegion):
+class SaccadeSensor(PyRegion):
 
   """
   ImageSensor is an extensible sensor for grayscale and black and white images.
@@ -325,6 +326,8 @@ class ImageSensor(PyRegion):
                                           if postFilters
                                           else []))
     self._auxDataWidth = auxDataWidth
+
+    self.motorEncoder = SDRCategoryEncoder(n=_CATEGORY_ENCODER_SIZE, w=21)
 
 
   def loadSingleImage(self, imagePath, maskPath=None, categoryName=None,
@@ -2132,6 +2135,12 @@ class ImageSensor(PyRegion):
       outputs["categoryOut"][:] = \
         numpy.array([float(category)], _REAL_NUMPY_DTYPE)
 
+      # saccadeOut - the saccade
+      outputs["saccadeOut"] =  numpy.array(
+          self.motorEncoder.encode(self.explorer[2].prevSaccade["direction"]),
+        dtype=_REAL_NUMPY_DTYPE)
+
+
       # auxDataOut - auxiliary data
       auxDataOut = imageInfo["auxData"]
       if auxDataOut is not None:
@@ -2169,6 +2178,8 @@ class ImageSensor(PyRegion):
           partition = 0
         outputs["partitionOut"][:] = numpy.array([float(partition)],
                                                  _REAL_NUMPY_DTYPE)
+
+
 
 
   def getParameter(self, parameterName, index=-1):
@@ -2214,6 +2225,13 @@ class ImageSensor(PyRegion):
     elif parameterName == "nextImageInfo":
       if self.explorer[2].position and self._imageList:
         return yaml.dump(self._getImageInfo())
+      else:
+        return None
+
+    elif parameterName == "prevSaccadeInfo":
+      if (self.explorer[0] == "RandomSaccade" and
+          self.explorer[2].position is not None and len(self._imageList) > 0):
+        return yaml.dump(self.explorer[2].prevSaccade)
       else:
         return None
 
@@ -2346,6 +2364,14 @@ class ImageSensor(PyRegion):
       self.memoryLimit = parameterValue #pylint: disable=W0201
       self._meetMemoryLimit()
 
+    elif parameterName == "numSaccades":
+      if self.explorer[0] == "RandomSaccade":
+        self.explorer[2].update(numSaccades=parameterValue)
+      else:
+        raise Exception(
+            "The current explorer type ({type}) does not support saccades"
+            .format(type=self.explorer[0]))
+
     else:
       if not hasattr(self, parameterName):
         raise Exception(
@@ -2456,7 +2482,7 @@ class ImageSensor(PyRegion):
     """Return the Spec for this Region."""
 
     ns = dict(
-        description=ImageSensor.__doc__,
+        description=SaccadeSensor.__doc__,
         singleNodeOnly=False,
         inputs = {},
         outputs = dict(
@@ -2510,6 +2536,14 @@ class ImageSensor(PyRegion):
                 count=0,
                 regionLevel=True,
                 isDefaultOutput=False),
+
+            saccadeOut=dict(
+                description="""SDR? representing the direction and size of the
+                previous saccade. """,
+                dataType="Real32",
+                count=0,
+                regionLevel=True,
+                isDefaultOutput=False)
         ),
         parameters = dict(
             outputImageWithAlpha=dict(
@@ -2579,6 +2613,15 @@ class ImageSensor(PyRegion):
                 count=0,
                 constraints="",
                 accessMode="ReadWrite"),
+            numSaccades=dict(
+                description="""The number of saccades a RandomSaccade explorer
+                  should make. 0 if the explorer isn't a RandomSaccade
+                  explorer.""",
+                dataType="UInt32",
+                count=1,
+                constraints="",
+                accessMode="ReadWrite"
+            ),
             logOutputImages=dict(
                 description="""Toggle for writing each output to disk (as an
                   image) on each iteration.""",
@@ -2660,6 +2703,14 @@ class ImageSensor(PyRegion):
             nextImageInfo=dict(
                 description="""YAML serialized dictionary of information for
                   the image which will be used for the next compute.""",
+                dataType="Byte",
+                count=0,
+                constraints="",
+                accessMode="Read"),
+            prevSaccadeInfo=dict(
+                description="""YAML serialized dictionary of information about
+                  the previous saccade a RandomSaccade explorer made. NoneType
+                  if the explorer isn't a RandomSaccade explorer.""",
                 dataType="Byte",
                 count=0,
                 constraints="",
@@ -2871,7 +2922,7 @@ class ImageSensor(PyRegion):
                 dataType="UInt32",
                 count=1,
                 constraints="",
-                accessMode="Read")
+                accessMode="Read",),
         ),
         commands=dict(
             loadSingleImage=dict(description="load a single image"),
@@ -2892,6 +2943,8 @@ class ImageSensor(PyRegion):
       return self.width * self.height * self.depth
     elif name == "alphaOut":
       return 1
+    elif name == "saccadeOut":
+      return _CATEGORY_ENCODER_SIZE
     else:
       raise Exception("Unknown output: " + name)
 
