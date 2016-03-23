@@ -20,6 +20,7 @@
 # ----------------------------------------------------------------------
 
 from PIL import Image
+import numpy
 
 DEBUG = 0
 
@@ -85,6 +86,7 @@ class VisionTestBench(object):
 
 
   def train(self, trainingVectors, trainingTags, classifier, maxCycles=10,
+      minAccuracy=100.0):
     """
     This routine trains the spatial pooler using the bit vectors produced from
     the training images by using these vectors as input to the SP.  It continues
@@ -98,7 +100,7 @@ class VisionTestBench(object):
     establish the correct categories even if the order of the input vectors is
     changed.
     """
-    minAccuracy=100.0):
+    
     # Get rid of permanence and connection images from previous training
     self.permanencesImage = None
     self.connectionsImage = None
