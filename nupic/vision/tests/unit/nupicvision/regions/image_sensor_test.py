@@ -29,17 +29,21 @@ import numpy
 
 from nupic.engine import Network
 from nupic.vision.regions.ImageSensor import ImageSensor
+from nupic.vision.regions.PCANode import PCANode
 
 
 
 class ImageSensorTest(unittest.TestCase):
 
+
+  def setUp(self):
+    Network.registerRegion(ImageSensor)
+    Network.registerRegion(PCANode)
+
+
   def testGetSelf(self):
     # Create network
     net = Network()
-
-    # Register ImageSensor region
-    Network.registerRegion(ImageSensor)
 
     # Add sensor
     sensor = net.addRegion("sensor", "py.ImageSensor",
@@ -75,9 +79,6 @@ class ImageSensorTest(unittest.TestCase):
     # Test setting and getting parameters
     net = Network()
 
-    # Register ImageSensor region
-    Network.registerRegion(ImageSensor)
-
     # Add sensor to the network
     sensor = net.addRegion("sensor", "py.ImageSensor",
         "{width: 100, height: 50}")
@@ -95,7 +96,6 @@ class ImageSensorTest(unittest.TestCase):
     # Create a simple network with an ImageSensor. You can't actually run
     # the network because the region isn't connected to anything
     net = Network()
-    Network.registerRegion(ImageSensor)
     net.addRegion("sensor", "py.ImageSensor", "{width: 32, height: 32}")
     sensor = net.regions['sensor']
 
@@ -141,7 +141,6 @@ class ImageSensorTest(unittest.TestCase):
     inputSize = 8
 
     net = Network()
-    Network.registerRegion(ImageSensor)
     net.addRegion('sensor', 'py.ImageSensor' ,
           '{ width: %d, height: %d }' % (inputSize, inputSize))
 
