@@ -39,10 +39,10 @@ from PIL import (Image,
                  ImageDraw)
 
 from nupic.bindings.math import GetNTAReal
-from nupic.image import (serializeImage,
+from nupic.vision.image import (serializeImage,
                          deserializeImage,
                          imageExtensions)
-from nupic.regions.PyRegion import PyRegion
+from nupic.bindings.regions.PyRegion import PyRegion
 
 
 
