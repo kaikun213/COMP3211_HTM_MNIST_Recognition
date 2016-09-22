@@ -2582,7 +2582,7 @@ class ImageSensor(PyRegion):
             logOutputImages=dict(
                 description="""Toggle for writing each output to disk (as an
                   image) on each iteration.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2592,7 +2592,7 @@ class ImageSensor(PyRegion):
                     the sides of the image. Set to False to avoid chopping
                     edges off certain images, or True if that is not an issue
                     and you wish to use a sweeping explorer.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2608,7 +2608,7 @@ class ImageSensor(PyRegion):
                   if the two images do not have the same size, and may be
                   nonsensical even if they do (for example, if a filter moved
                   the object within the image).""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2626,7 +2626,7 @@ class ImageSensor(PyRegion):
             logFilteredImages=dict(
                 description="""Toggle for writing the intermediate versions of
                   images to disk as they pass through the filter chain.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2653,7 +2653,7 @@ class ImageSensor(PyRegion):
             logLocationImages=dict(
                 description="""Toggle for writing an image to disk on each
                   iteration which shows the location of the sensor window.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2682,7 +2682,7 @@ class ImageSensor(PyRegion):
             logText=dict(
                 description="""Toggle for verbose logging to
                   imagesensor_log.txt.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2708,7 +2708,7 @@ class ImageSensor(PyRegion):
             useAux=dict(
                 description="""Use auxiliary input data at the classifier
                   level""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2779,7 +2779,7 @@ class ImageSensor(PyRegion):
                   sending an image to the network. If invertOutput is enabled,
                   a white object on a black background becomes a black object
                   on a white background.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2806,7 +2806,7 @@ class ImageSensor(PyRegion):
             logOriginalImages=dict(
                 description="""Toggle for writing the original, unfiltered
                   version of the current image to disk on each iteration.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2832,7 +2832,7 @@ class ImageSensor(PyRegion):
             logBoundingBox=dict(
                 description="""Toggle for logging the bounding box information
                   on each iteration.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
@@ -2841,7 +2841,7 @@ class ImageSensor(PyRegion):
                   every time the explorer generates a reset signal (such as
                   when beginning a new sweep). Turning on blanks increases the
                   number of iterations.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
                 constraints="bool",
                 accessMode="ReadWrite"),
