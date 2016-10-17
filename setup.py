@@ -34,7 +34,7 @@ REPO_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def getRequirements():
   with open(os.path.join(REPO_DIR, "requirements.txt")) as requirementsFile:
-    requirements = [req.strip() for req in requirementsFile.readlines()]
+    return [req.strip() for req in requirementsFile.readlines()]
 
 def getVersion():
   with open(os.path.join(REPO_DIR, "VERSION")) as versionFile:
