@@ -41,7 +41,7 @@ from StringIO import StringIO
 from PIL import (Image,
                  ImageChops)
 
-from nupic.regions.PyRegion import PyRegion, RealNumpyDType
+from nupic.bindings.regions.PyRegion import PyRegion, RealNumpyDType
 from nupic.regions.Spec import *
 
 # Global counter used for some debugging operations
