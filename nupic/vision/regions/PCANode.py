@@ -24,7 +24,7 @@
 
 import numpy
 
-from nupic.regions.PyRegion import PyRegion
+from nupic.bindings.regions.PyRegion import PyRegion
 
 
 
