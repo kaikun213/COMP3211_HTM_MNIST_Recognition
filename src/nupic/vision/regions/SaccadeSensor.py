@@ -41,7 +41,7 @@ from PIL import (Image,
 from nupic.bindings.math import GetNTAReal
 from nupic.bindings.regions.PyRegion import PyRegion
 from nupic.encoders import SDRCategoryEncoder
-from nupic.image import (serializeImage,
+from nupic.vision.image import (serializeImage,
                          deserializeImage,
                          imageExtensions)
 
@@ -2136,7 +2136,7 @@ class SaccadeSensor(PyRegion):
         numpy.array([float(category)], _REAL_NUMPY_DTYPE)
 
       # saccadeOut - the saccade
-      outputs["saccadeOut"] =  numpy.array(
+      outputs["saccadeOut"][:] =  numpy.array(
           self.motorEncoder.encode(self.explorer[2].prevSaccade["direction"]),
         dtype=_REAL_NUMPY_DTYPE)
 
@@ -2625,9 +2625,10 @@ class SaccadeSensor(PyRegion):
             logOutputImages=dict(
                 description="""Toggle for writing each output to disk (as an
                   image) on each iteration.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             minimalBoundingBox=dict(
                 description="""Whether the bounding box found by looking at the
@@ -2635,9 +2636,10 @@ class SaccadeSensor(PyRegion):
                     the sides of the image. Set to False to avoid chopping
                     edges off certain images, or True if that is not an issue
                     and you wish to use a sweeping explorer.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             numImages=dict(
                 description="""Number of images that the sensor has loaded.""",
@@ -2651,9 +2653,10 @@ class SaccadeSensor(PyRegion):
                   if the two images do not have the same size, and may be
                   nonsensical even if they do (for example, if a filter moved
                   the object within the image).""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             outputImage=dict(
                 description="""YAML serialized version of the current output
@@ -2669,9 +2672,10 @@ class SaccadeSensor(PyRegion):
             logFilteredImages=dict(
                 description="""Toggle for writing the intermediate versions of
                   images to disk as they pass through the filter chain.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             width=dict(
                 description="""Width of the image, in pixels.""",
@@ -2696,9 +2700,10 @@ class SaccadeSensor(PyRegion):
             logLocationImages=dict(
                 description="""Toggle for writing an image to disk on each
                   iteration which shows the location of the sensor window.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             nextImageInfo=dict(
                 description="""YAML serialized dictionary of information for
@@ -2733,9 +2738,9 @@ class SaccadeSensor(PyRegion):
             logText=dict(
                 description="""Toggle for verbose logging to
                   imagesensor_log.txt.""",
-                dataType="bool",
+                dataType="Bool",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             explorer=dict(
                 description="""A YAML serialized list containing the name of an
@@ -2759,9 +2764,10 @@ class SaccadeSensor(PyRegion):
             useAux=dict(
                 description="""Use auxiliary input data at the classifier
                   level""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             automaskingTolerance=dict(
                 description="""Controls the process by which bounding box masks
@@ -2830,9 +2836,10 @@ class SaccadeSensor(PyRegion):
                   sending an image to the network. If invertOutput is enabled,
                   a white object on a black background becomes a black object
                   on a white background.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             categoryInfo=dict(
                 description="""YAML serialized list with a tuple for each
@@ -2857,9 +2864,10 @@ class SaccadeSensor(PyRegion):
             logOriginalImages=dict(
                 description="""Toggle for writing the original, unfiltered
                   version of the current image to disk on each iteration.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             enabledHeight=dict(
                 description="""Height of the enabled 'window', in pixels.""",
@@ -2883,18 +2891,20 @@ class SaccadeSensor(PyRegion):
             logBoundingBox=dict(
                 description="""Toggle for logging the bounding box information
                   on each iteration.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             blankWithReset=dict(
                 description="""** DEPRECATED ** Whether to send a blank output
                   every time the explorer generates a reset signal (such as
                   when beginning a new sweep). Turning on blanks increases the
                   number of iterations.""",
-                dataType="bool",
+                dataType="Bool",
+                defaultValue="false",
                 count=1,
-                constraints="bool",
+                constraints="",
                 accessMode="ReadWrite"),
             metadata=dict(
                 description="""Parameter that contains a dict of metadata for

@@ -30,7 +30,7 @@ import ttk as Ttk
 
 from enum import Enum
 
-from saccade_network import (
+from nupic.vision.mnist.saccade_network import (
     SaccadeNetwork,
     SACCADES_PER_IMAGE_TRAINING,
     SACCADES_PER_IMAGE_TESTING,
@@ -682,7 +682,7 @@ if __name__ == "__main__":
   MainGUI(root,
           loggingDir=None,
           networkName=netName,
-          trainingSet="mnist/supersmall_training",
+          trainingSet="mnist/small_training",
           testingSet="mnist/testing")
   root.mainloop()
 
