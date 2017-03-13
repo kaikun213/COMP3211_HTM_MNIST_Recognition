@@ -1,3 +1,4 @@
-nupic==0.5.6
+nupic==0.5.7
+nupic.research
 pillow==2.3.0
 enum34==1.0.4

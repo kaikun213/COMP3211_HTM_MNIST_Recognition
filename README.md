@@ -1,26 +1,10 @@
-## nupic.vision
+## NuPIC Vision Toolkit
 
-This tool kit is intended to help people who are interested in using Numenta's 
-nupic on vision related problems.
-
-There are several examples of how this tool kit can be used in the nupic.vision directory.  The simplest is demo.py which can be run by typing this:
-
-python demo.py
-
-
-## Other examples include:
-
-train_and_test.py
-
-parameter_search.py
-
-sp_capacity.py
-
+This tool kit is intended to help people who are interested in using
+Numenta's NuPIC on vision problems.
 
 ## Dependencies
 
-* pip
-* python 2.7
-* `pip install nupic numpy Pillow`
-
-`export PYTHONPATH=$PYTHONPATH:$PWD`
+Follow the instructions for installing nupic.research, which requires
+nupic and nupic.bindings (from nupic.research.core), and then use
+pip to install nupic.vision.

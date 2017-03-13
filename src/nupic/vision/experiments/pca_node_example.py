@@ -26,6 +26,9 @@ from nupic.engine import Network
 from nupic.vision.regions.ImageSensor import ImageSensor
 from nupic.vision.regions.PCANode import PCANode
 
+Network.registerRegion(ImageSensor)
+Network.registerRegion(PCANode)
+
 
 
 def runExperiment():

@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------
 # Numenta Platform for Intelligent Computing (NuPIC)
-# Copyright (C) 2015, Numenta, Inc.  Unless you have an agreement
+# Copyright (C) 2015-2017, Numenta, Inc.  Unless you have an agreement
 # with Numenta, Inc., for a separate license for this software code, the
 # following terms and conditions apply:
 #
@@ -30,7 +30,7 @@ from nupic.engine import Network
 
 from nupic.vision.regions.SaccadeSensor import SaccadeSensor
 from nupic.vision.image import deserializeImage
-from sensorimotor.TMRegion import TMRegion
+from htmresearch.regions.ExtendedTMRegion import ExtendedTMRegion as TMRegion
 
 
 
@@ -179,8 +179,8 @@ class SaccadeNetwork(object):
     net.addRegion("SP", "py.SPRegion", yaml.dump(DEFAULT_SP_PARAMS))
     sp = net.regions["SP"].getSelf()
 
-    DEFAULT_TM_PARAMS["columnDimensions"] = (sp.getOutputElementCount("bottomUpOut"),)
-    net.addRegion("TM", "py.TMRegion", yaml.dump(DEFAULT_TM_PARAMS))
+    #DEFAULT_TM_PARAMS["columnDimensions"] = (sp.getOutputElementCount("bottomUpOut"),)
+    #net.addRegion("TM", "py.TMRegion", yaml.dump(DEFAULT_TM_PARAMS))
 
     net.addRegion("classifier","py.KNNClassifierRegion",
                   yaml.dump(DEFAULT_CLASSIFIER_PARAMS))
@@ -188,19 +188,21 @@ class SaccadeNetwork(object):
 
     net.link("sensor", "SP", "UniformLink", "",
              srcOutput="dataOut", destInput="bottomUpIn")
-    net.link("SP", "TM", "UniformLink", "",
-             srcOutput="bottomUpOut", destInput="activeColumns")
-    net.link("sensor", "TM", "UniformLink", "",
-             srcOutput="saccadeOut", destInput="activeExternalCells")
-    net.link("TM", "classifier", "UniformLink", "",
-             srcOutput="predictedActiveCells", destInput="bottomUpIn")
+    net.link("SP", "classifier", "UniformLink", "",
+             srcOutput="bottomUpOut", destInput="bottomUpIn")
+    #net.link("SP", "TM", "UniformLink", "",
+    #         srcOutput="bottomUpOut", destInput="activeColumns")
+    #net.link("sensor", "TM", "UniformLink", "",
+    #         srcOutput="saccadeOut", destInput="activeExternalCells")
+    #net.link("TM", "classifier", "UniformLink", "",
+    #         srcOutput="predictedActiveCells", destInput="bottomUpIn")
     net.link("sensor", "classifier", "UniformLink", "",
              srcOutput="categoryOut", destInput="categoryIn")
 
     self.net = net
     self.networkSensor = self.net.regions["sensor"]
     self.networkSP = self.net.regions["SP"]
-    self.networkTM = self.net.regions["TM"]
+    #self.networkTM = self.net.regions["TM"]
     self.networkClassifier = self.net.regions["classifier"]
 
 
@@ -259,7 +261,7 @@ class SaccadeNetwork(object):
       saccadeDetailList = []
       originalImage = None
 
-      self.networkTM.executeCommand(["reset"])
+      #self.networkTM.executeCommand(["reset"])
 
       for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
@@ -379,7 +381,7 @@ class SaccadeNetwork(object):
     """
     startTime = time.time()
     while self.trainingImageIndex < self.numTrainingImages:
-      self.networkTM.executeCommand(["reset"])
+      #self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
 
@@ -409,7 +411,7 @@ class SaccadeNetwork(object):
       inferredCategoryList = []
       originalImage = None
 
-      self.networkTM.executeCommand(["reset"])
+      #self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         if originalImage is None:
@@ -534,7 +536,7 @@ class SaccadeNetwork(object):
 
     while self.testingImageIndex < self.numTestingImages:
       inferredCategoryList = []
-      self.networkTM.executeCommand(["reset"])
+      #self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         inferredCategoryList.append(
@@ -569,10 +571,10 @@ class SaccadeNetwork(object):
       self.networkSP.setParameter("learningMode", 0)
       self.networkSP.setParameter("inferenceMode", 1)
 
-    if learningTM:
-      self.networkTM.setParameter("learningMode", 1)
-    else:
-      self.networkTM.setParameter("learningMode", 0)
+    #if learningTM:
+    #  self.networkTM.setParameter("learningMode", 1)
+    #else:
+    #  self.networkTM.setParameter("learningMode", 0)
 
     if learningClassifier:
       self.networkClassifier.setParameter("learningMode", 1)
