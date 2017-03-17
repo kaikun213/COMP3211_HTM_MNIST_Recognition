@@ -28,7 +28,6 @@ import os
 
 from nupic.bindings.math import GetNTAReal
 from nupic.engine import Network
-from nupic.research import fdrutilities
 
 from nupic.vision.regions.ImageSensor import ImageSensor
 
@@ -180,7 +179,7 @@ def trainNetwork(net, networkFile="mnist_net.nta"):
   print "============= Training statistics ================="
   print "Training time:",time.time() - start
   tenPct= nTrainingIterations/10
-  print "My duty cycles:",fdrutilities.numpyStr(dutyCycles, format="%g")
+  print "My duty cycles:", numpy.array_str(dutyCycles)
   print "Number of nonzero duty cycles:",len(dutyCycles.nonzero()[0])
   print "Mean/Max duty cycles:",dutyCycles.mean(), dutyCycles.max()
   print "Number of columns that won for > 10% patterns",\

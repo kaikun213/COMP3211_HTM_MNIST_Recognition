@@ -2540,7 +2540,7 @@ class SaccadeSensor(PyRegion):
             saccadeOut=dict(
                 description="""SDR? representing the direction and size of the
                 previous saccade. """,
-                dataType="Real32",
+                dataType="UInt32",
                 count=0,
                 regionLevel=True,
                 isDefaultOutput=False)
