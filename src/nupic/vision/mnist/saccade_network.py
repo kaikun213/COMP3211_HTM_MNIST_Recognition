@@ -26,13 +26,12 @@ import time
 from PIL import ImageTk, ImageDraw, Image
 import yaml
 
+from htmresearch.regions.ColumnPoolerRegion import ColumnPoolerRegion
+from htmresearch.regions.ExtendedTMRegion import ExtendedTMRegion
 from nupic.engine import Network
 
 from nupic.vision.regions.SaccadeSensor import SaccadeSensor
 from nupic.vision.image import deserializeImage
-from htmresearch.regions.ExtendedTMRegion import ExtendedTMRegion as TMRegion
-
-
 
 SACCADES_PER_IMAGE_TRAINING = 60
 SACCADES_PER_IMAGE_TESTING = 20
@@ -59,21 +58,22 @@ DEFAULT_IMAGESENSOR_PARAMS = {
 }
 
 DEFAULT_SP_PARAMS = {
-    "columnCount": 4096,
+    "columnCount": 2048,
     "spatialImp": "cpp",
     "inputWidth": 784,
     "spVerbosity": 1,
     "synPermConnected": 0.2,
-    "synPermActiveInc": 0.0,
-    "synPermInactiveDec": 0.0,
+    "synPermActiveInc": 0.1,
+    "synPermInactiveDec": 0.03,
     "seed": 1956,
-    "numActiveColumnsPerInhArea": 240,
+    "numActiveColumnsPerInhArea": 40,
     "globalInhibition": 1,
-    "potentialPct": 0.9,
+    "potentialPct": 0.8,
     "maxBoost": 1.0
 }
 
 DEFAULT_TM_PARAMS = {
+    "implementation": "etm_cpp",
     "columnDimensions": 0,
 #    "numberOfDistalInput": 0,
     "cellsPerColumn": 8,
@@ -85,12 +85,35 @@ DEFAULT_TM_PARAMS = {
 #    "newDistalSynapseCount": 50,
     "permanenceIncrement": 0.1,
     "permanenceDecrement": 0.02,
-    "learnOnOneCell": 1,
+    "maxSegmentsPerCell": 16,
+    "learnOnOneCell": "true",
 #    "learnDistalInputs": True,
 #    "learnLateralConnections": False,
 #    "globalDecay": 0,
 #    "burnIn": 1,
-#    "verbosity": 0
+#    "verbosity": 0,
+    "apicalInputWidth": 2048,
+}
+
+DEFAULT_TP_PARAMS = {
+    "learningMode": True,
+    "cellCount": 2048,
+    "inputWidth": 2048*8,
+    "numOtherCorticalColumns": 0,
+    "sdrSize": 40,
+    "synPermProximalInc": 0.1,
+    "synPermProximalDec": 0.001,
+    "initialProximalPermanence": 0.6,
+    "sampleSizeProximal": 20,
+    "minThresholdProximal": 1,
+    "connectedPermanenceProximal": 0.5,
+    "synPermDistalInc": 0.1,
+    "synPermDistalDec": 0.001,
+    "initialDistalPermanence": 0.41,
+    "sampleSizeDistal": 20,
+    "activationThresholdDistal": 13,
+    "connectedPermanenceDistal": 0.5,
+    "seed": 42,
 }
 
 DEFAULT_CLASSIFIER_PARAMS = {
@@ -109,7 +132,7 @@ class SaccadeNetwork(object):
                networkName,
                trainingSet,
                testingSet,
-               loggingDir = None,
+               loggingDir=None,
                validationSet=None,
                detailedSaccadeWidth=IMAGE_WIDTH,
                detailedSaccadeHeight=IMAGE_HEIGHT,
@@ -138,10 +161,12 @@ class SaccadeNetwork(object):
 
     self.net = None
     self.trainingImageIndex = None
-    self.networkClassifier = None
     self.networkDutyCycles = None
+    self.networkSensor = None
     self.networkSP = None
     self.networkTM = None
+    self.networkTP = None
+    self.networkClassifier = None
     self.networkSensor = None
     self.numTrainingImages = 0
     self.numTestingImages = 0
@@ -159,8 +184,10 @@ class SaccadeNetwork(object):
 
     Network.unregisterRegion(SaccadeSensor.__name__)
     Network.registerRegion(SaccadeSensor)
-
-    Network.registerRegion(TMRegion)
+    Network.unregisterRegion(ExtendedTMRegion.__name__)
+    Network.registerRegion(ExtendedTMRegion)
+    Network.unregisterRegion(ColumnPoolerRegion.__name__)
+    Network.registerRegion(ColumnPoolerRegion)
 
     imageSensorParams = copy.deepcopy(DEFAULT_IMAGESENSOR_PARAMS)
     if self.loggingDir is not None:
@@ -179,8 +206,11 @@ class SaccadeNetwork(object):
     net.addRegion("SP", "py.SPRegion", yaml.dump(DEFAULT_SP_PARAMS))
     sp = net.regions["SP"].getSelf()
 
-    #DEFAULT_TM_PARAMS["columnDimensions"] = (sp.getOutputElementCount("bottomUpOut"),)
-    #net.addRegion("TM", "py.TMRegion", yaml.dump(DEFAULT_TM_PARAMS))
+    DEFAULT_TM_PARAMS["columnDimensions"] = (sp.getOutputElementCount("bottomUpOut"),)
+    DEFAULT_TM_PARAMS["basalInputWidth"] = sensor.getOutputElementCount("saccadeOut")
+    net.addRegion("TM", "py.ExtendedTMRegion", yaml.dump(DEFAULT_TM_PARAMS))
+
+    net.addRegion("TP", "py.ColumnPoolerRegion", yaml.dump(DEFAULT_TP_PARAMS))
 
     net.addRegion("classifier","py.KNNClassifierRegion",
                   yaml.dump(DEFAULT_CLASSIFIER_PARAMS))
@@ -188,12 +218,16 @@ class SaccadeNetwork(object):
 
     net.link("sensor", "SP", "UniformLink", "",
              srcOutput="dataOut", destInput="bottomUpIn")
-    net.link("SP", "classifier", "UniformLink", "",
-             srcOutput="bottomUpOut", destInput="bottomUpIn")
-    #net.link("SP", "TM", "UniformLink", "",
-    #         srcOutput="bottomUpOut", destInput="activeColumns")
-    #net.link("sensor", "TM", "UniformLink", "",
-    #         srcOutput="saccadeOut", destInput="activeExternalCells")
+    net.link("SP", "TM", "UniformLink", "",
+             srcOutput="bottomUpOut", destInput="feedForwardInput")
+    net.link("sensor", "TM", "UniformLink", "",
+             srcOutput="saccadeOut", destInput="externalBasalInput")
+    net.link("TM", "TP", "UniformLink", "",
+            srcOutput="predictedActiveCells", destInput="feedforwardInput")
+    net.link("TP", "TM", "UniformLink", "",
+            srcOutput="feedForwardOutput", destInput="externalApicalInput")
+    net.link("TP", "classifier", "UniformLink", "",
+             srcOutput="feedForwardOutput", destInput="bottomUpIn")
     #net.link("TM", "classifier", "UniformLink", "",
     #         srcOutput="predictedActiveCells", destInput="bottomUpIn")
     net.link("sensor", "classifier", "UniformLink", "",
@@ -202,7 +236,8 @@ class SaccadeNetwork(object):
     self.net = net
     self.networkSensor = self.net.regions["sensor"]
     self.networkSP = self.net.regions["SP"]
-    #self.networkTM = self.net.regions["TM"]
+    self.networkTM = self.net.regions["TM"]
+    self.networkTP = self.net.regions["TP"]
     self.networkClassifier = self.net.regions["classifier"]
 
 
@@ -214,7 +249,7 @@ class SaccadeNetwork(object):
     Network.unregisterRegion(SaccadeSensor.__name__)
     Network.registerRegion(SaccadeSensor)
 
-    Network.registerRegion(TMRegion)
+    Network.registerRegion(ExtendedTMRegion)
 
     self.net = Network(filename)
 
@@ -261,7 +296,7 @@ class SaccadeNetwork(object):
       saccadeDetailList = []
       originalImage = None
 
-      #self.networkTM.executeCommand(["reset"])
+      self.networkTM.executeCommand(["reset"])
 
       for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
@@ -381,7 +416,7 @@ class SaccadeNetwork(object):
     """
     startTime = time.time()
     while self.trainingImageIndex < self.numTrainingImages:
-      #self.networkTM.executeCommand(["reset"])
+      self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TRAINING):
         self.net.run(1)
 
@@ -411,7 +446,7 @@ class SaccadeNetwork(object):
       inferredCategoryList = []
       originalImage = None
 
-      #self.networkTM.executeCommand(["reset"])
+      self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         if originalImage is None:
@@ -536,7 +571,7 @@ class SaccadeNetwork(object):
 
     while self.testingImageIndex < self.numTestingImages:
       inferredCategoryList = []
-      #self.networkTM.executeCommand(["reset"])
+      self.networkTM.executeCommand(["reset"])
       for i in range(SACCADES_PER_IMAGE_TESTING):
         self.net.run(1)
         inferredCategoryList.append(
@@ -563,6 +598,7 @@ class SaccadeNetwork(object):
   def setLearningMode(self,
                       learningSP=False,
                       learningTM=False,
+                      learningTP=False,
                       learningClassifier=False):
     if learningSP:
       self.networkSP.setParameter("learningMode", 1)
@@ -571,10 +607,15 @@ class SaccadeNetwork(object):
       self.networkSP.setParameter("learningMode", 0)
       self.networkSP.setParameter("inferenceMode", 1)
 
-    #if learningTM:
-    #  self.networkTM.setParameter("learningMode", 1)
-    #else:
-    #  self.networkTM.setParameter("learningMode", 0)
+    if learningTM:
+      self.networkTM.setParameter("learningMode", 1)
+    else:
+      self.networkTM.setParameter("learningMode", 0)
+
+    if learningTM:
+      self.networkTP.setParameter("learningMode", 1)
+    else:
+      self.networkTP.setParameter("learningMode", 0)
 
     if learningClassifier:
       self.networkClassifier.setParameter("learningMode", 1)

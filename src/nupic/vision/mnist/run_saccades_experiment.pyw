@@ -257,6 +257,7 @@ class MainGUI(object):
     self.trainingNetwork.loadExperiment()
     self.trainingNetwork.setLearningMode(learningSP=True,
                                          learningTM=False,
+                                         learningTP=False,
                                          learningClassifier=False)
 
     # Update GUI
@@ -521,7 +522,8 @@ class MainGUI(object):
 
     self.testingNetwork.setLearningMode(learningSP=False,
                                         learningTM=False,
-                                        learningClassifier=False)
+                                        learningTP=True,
+                                        learningClassifier=True)
 
     print "Loading testing images..."
     self.testingNetwork.setupNetworkTest()
@@ -584,6 +586,7 @@ class MainGUI(object):
         # TM
         self.trainingNetwork.setLearningMode(learningSP=False,
                                              learningTM=True,
+                                             learningTP=False,
                                              learningClassifier=False)
         self.trainingNetwork.resetIndex()
         threading.Thread(target=self.runNetworkBatch,
@@ -609,6 +612,7 @@ class MainGUI(object):
         # Classifier
         self.trainingNetwork.setLearningMode(learningSP=False,
                                              learningTM=False,
+                                             learningTP=True,
                                              learningClassifier=True)
         self.trainingNetwork.resetIndex()
         threading.Thread(target=self.runNetworkBatch,
@@ -682,7 +686,7 @@ if __name__ == "__main__":
   MainGUI(root,
           loggingDir=None,
           networkName=netName,
-          trainingSet="mnist/small_training",
+          trainingSet="mnist/supersmall_training",
           testingSet="mnist/testing")
   root.mainloop()
 
