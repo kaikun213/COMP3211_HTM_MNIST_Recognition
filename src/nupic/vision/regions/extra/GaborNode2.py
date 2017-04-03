@@ -808,7 +808,7 @@ class GaborNode2(PyRegion):
 
   #+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=+=+=+=+=+=+
 
-  def initialize(self, dims, splitterMaps):
+  def initialize(self):
     """Build the gaborfilter bank.
 
     This method is called after construction.

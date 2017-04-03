@@ -2942,7 +2942,7 @@ class SaccadeSensor(PyRegion):
     return ns
 
 
-  def initialize(self, dims, splitterMaps):
+  def initialize(self):
     pass
 
 

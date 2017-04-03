@@ -118,7 +118,7 @@ class PCANode(PyRegion):
     )
 
 
-  def initialize(self, dims, splitterMaps):
+  def initialize(self):
     pass
 
 

@@ -2881,7 +2881,7 @@ class ImageSensor(PyRegion):
     return ns
 
 
-  def initialize(self, dims, splitterMaps):
+  def initialize(self):
     pass
 
 
