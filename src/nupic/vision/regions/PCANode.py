@@ -44,7 +44,7 @@ class PCANode(PyRegion):
     self._testInputs = None
 
     if bottomUpCount:
-      bottomUpOut=bottomUpCount
+      self._bottomUpCount=bottomUpCount
 
     self._SVDSampleCount = SVDSampleCount
     self._SVDDimCount = SVDDimCount
