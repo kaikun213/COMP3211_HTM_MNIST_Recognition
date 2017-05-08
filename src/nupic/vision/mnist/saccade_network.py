@@ -69,11 +69,11 @@ DEFAULT_SP_PARAMS = {
     "numActiveColumnsPerInhArea": 40,
     "globalInhibition": 1,
     "potentialPct": 0.8,
-    "maxBoost": 1.0
+    "boostStrength": 0.0,
 }
 
 DEFAULT_TM_PARAMS = {
-    "implementation": "etm_cpp",
+    "implementation": "etm",
     "columnDimensions": 0,
 #    "numberOfDistalInput": 0,
     "cellsPerColumn": 8,
@@ -219,13 +219,13 @@ class SaccadeNetwork(object):
     net.link("sensor", "SP", "UniformLink", "",
              srcOutput="dataOut", destInput="bottomUpIn")
     net.link("SP", "TM", "UniformLink", "",
-             srcOutput="bottomUpOut", destInput="feedForwardInput")
+             srcOutput="bottomUpOut", destInput="activeColumns")
     net.link("sensor", "TM", "UniformLink", "",
-             srcOutput="saccadeOut", destInput="externalBasalInput")
+             srcOutput="saccadeOut", destInput="basalInput")
     net.link("TM", "TP", "UniformLink", "",
             srcOutput="predictedActiveCells", destInput="feedforwardInput")
     net.link("TP", "TM", "UniformLink", "",
-            srcOutput="feedForwardOutput", destInput="externalApicalInput")
+            srcOutput="feedForwardOutput", destInput="apicalInput")
     net.link("TP", "classifier", "UniformLink", "",
              srcOutput="feedForwardOutput", destInput="bottomUpIn")
     #net.link("TM", "classifier", "UniformLink", "",
@@ -608,9 +608,9 @@ class SaccadeNetwork(object):
       self.networkSP.setParameter("inferenceMode", 1)
 
     if learningTM:
-      self.networkTM.setParameter("learningMode", 1)
+      self.networkTM.setParameter("learn", 1)
     else:
-      self.networkTM.setParameter("learningMode", 0)
+      self.networkTM.setParameter("learn", 0)
 
     if learningTM:
       self.networkTP.setParameter("learningMode", 1)

@@ -27,13 +27,14 @@ import os
 from PIL import Image, ImageDraw
 
 from nupic.engine import Network
+from nupic.vision.regions.ImageSensor import ImageSensor
 
 
 
 class ImageKNNTest(unittest.TestCase):
   """
   This test is a simple end to end test. It creates a simple network with an
-  ImageSensor and a KNNClassifier region. It creates a 'dataset' with two random
+  ImageSensor and a KNNClassifier region. It creates a "dataset" with two random
   images, trains the network and then runs inference to ensures we can correctly
   classify them.  This tests that the plumbing is working well.
   """
@@ -41,6 +42,7 @@ class ImageKNNTest(unittest.TestCase):
 
 
   def testSimpleImageNetwork(self):
+    Network.registerRegion(ImageSensor)
 
     # Create the network and get region instances
     net = Network()
@@ -52,61 +54,63 @@ class ImageKNNTest(unittest.TestCase):
     net.link("sensor", "classifier", "UniformLink", "",
              srcOutput = "categoryOut", destInput = "categoryIn")
     net.initialize()
-    sensor = net.regions['sensor']
-    classifier = net.regions['classifier']
+    sensor = net.regions["sensor"]
+    classifier = net.regions["classifier"]
 
     # Create a dataset with two categories, one image in each category
     # Each image consists of a unique rectangle
     tmpDir = tempfile.mkdtemp()
-    os.makedirs(os.path.join(tmpDir,'0'))
-    os.makedirs(os.path.join(tmpDir,'1'))
+    os.makedirs(os.path.join(tmpDir,"0"))
+    os.makedirs(os.path.join(tmpDir,"1"))
 
     im0 = Image.new("L",(32,32))
     draw = ImageDraw.Draw(im0)
     draw.rectangle((10,10,20,20), outline=255)
-    im0.save(os.path.join(tmpDir,'0','im0.png'))
+    im0.save(os.path.join(tmpDir,"0","im0.png"))
 
     im1 = Image.new("L",(32,32))
     draw = ImageDraw.Draw(im1)
     draw.rectangle((15,15,25,25), outline=255)
-    im1.save(os.path.join(tmpDir,'1','im1.png'))
+    im1.save(os.path.join(tmpDir,"1","im1.png"))
 
     # Load the dataset
     sensor.executeCommand(["loadMultipleImages", tmpDir])
-    numImages = sensor.getParameter('numImages')
+    numImages = sensor.getParameter("numImages")
     self.assertEqual(numImages, 2)
 
     # Ensure learning is turned ON
-    self.assertEqual(classifier.getParameter('learningMode'), 1)
+    self.assertEqual(classifier.getParameter("learningMode"), 1)
 
     # Train the network (by default learning is ON in the classifier)
     # and then turn off learning and turn on inference mode
     net.run(2)
-    classifier.setParameter('inferenceMode', 1)
-    classifier.setParameter('learningMode', 0)
+    classifier.setParameter("inferenceMode", 1)
+    classifier.setParameter("learningMode", 0)
 
     # Check to make sure learning is turned OFF and that the classifier learned
     # something
-    self.assertEqual(classifier.getParameter('learningMode'), 0)
-    self.assertEqual(classifier.getParameter('inferenceMode'), 1)
-    self.assertEqual(classifier.getParameter('categoryCount'),2)
-    self.assertEqual(classifier.getParameter('patternCount'),2)
+    self.assertEqual(classifier.getParameter("learningMode"), 0)
+    self.assertEqual(classifier.getParameter("inferenceMode"), 1)
+    self.assertEqual(classifier.getParameter("categoryCount"),2)
+    self.assertEqual(classifier.getParameter("patternCount"),2)
 
     # Now test the network to make sure it categories the images correctly
     numCorrect = 0
     for i in range(2):
       net.run(1)
-      inferredCategory = classifier.getOutputData('categoriesOut').argmax()
-      if sensor.getOutputData('categoryOut') == inferredCategory:
+      inferredCategory = classifier.getOutputData("categoriesOut").argmax()
+      if sensor.getOutputData("categoryOut") == inferredCategory:
         numCorrect += 1
 
     self.assertEqual(numCorrect,2)
 
     # Cleanup the temp files
-    os.unlink(os.path.join(tmpDir,'0','im0.png'))
-    os.unlink(os.path.join(tmpDir,'1','im1.png'))
-    os.removedirs(os.path.join(tmpDir,'0'))
-    os.removedirs(os.path.join(tmpDir,'1'))
+    os.unlink(os.path.join(tmpDir,"0","im0.png"))
+    os.unlink(os.path.join(tmpDir,"1","im1.png"))
+    os.removedirs(os.path.join(tmpDir,"0"))
+    os.removedirs(os.path.join(tmpDir,"1"))
+
+
 
 if __name__ == "__main__":
   unittest.main()

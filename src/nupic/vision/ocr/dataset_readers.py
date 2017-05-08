@@ -26,8 +26,10 @@ sets come in different formats so there are routines for reading each format
 that has been used with nupic.vision.
 """
 
-from PIL import Image
+import pkg_resources
 from xml.dom import minidom
+
+from PIL import Image
 
 DEBUG = 0
 
@@ -38,12 +40,13 @@ def getImagesAndTags(filename):
   This routine reads the XML files that contain the paths to the images and the
   tags which indicate what is in the image (i.e. "ground truth").
   """
+  filename = pkg_resources.resource_filename("nupic.vision.data", filename)
   print
   print "Reading data set: ", filename
   print
   xmldoc = minidom.parse(filename)
   # Find the path to the XML file so it can be used to find the image files.
-  directoryPath = filename.replace(filename.split("/")[-1],"")
+  directoryPath = filename.replace(filename.split("/")[-1], "")
   # Read the image list from the XML file and populate images and tags.
   imageList = xmldoc.getElementsByTagName('image')
   images = []
