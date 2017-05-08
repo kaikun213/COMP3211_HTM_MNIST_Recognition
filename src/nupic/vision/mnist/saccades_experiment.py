@@ -23,8 +23,6 @@
 
 import pkg_resources
 
-import capnp
-from nupic.proto import ExtendedTemporalMemoryProto_capnp
 from nupic.vision.mnist.saccade_network import SaccadeNetwork
 
 TRAIN_IMAGES = pkg_resources.resource_filename("nupic.vision.mnist", "mnist/small_training")

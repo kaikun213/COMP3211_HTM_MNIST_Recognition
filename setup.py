@@ -48,5 +48,6 @@ setup(
     package_dir = {"": "src"},
     packages = find_packages("src"),
     namespace_packages=["nupic"],
+    package_data={"nupic.vision.data": ["*.jpg", "*.xml"]},
     zip_safe=False,
 )
