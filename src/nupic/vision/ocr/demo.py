@@ -28,7 +28,7 @@ classification abilities are tested on the images listed in the XML file
 specified by testingDataset.
 """
 
-from nupic.research.spatial_pooler import SpatialPooler
+from nupic.algorithms.spatial_pooler import SpatialPooler
 
 from nupic.vision.ocr import dataset_readers
 from nupic.vision.ocr import image_encoders as encoder
