@@ -28,13 +28,37 @@ doing vision-related work.
 """
 
 import os
+import pkg_resources
 from setuptools import setup, find_packages
 
 REPO_DIR = os.path.dirname(os.path.realpath(__file__))
 
+def _getPrereleasePackages():
+  skipPkgs = []
+
+  try:
+    nupicDist = pkg_resources.get_distribution("nupic")
+    if pkg_resources.parse_version(nupicDist.version).is_prerelease:
+      skipPkgs.append("nupic")
+  except pkg_resources.DistributionNotFound:
+    pass
+
+  try:
+    pkg_resources.get_distribution("htmresearch")
+    skipPkgs.append("htmresearch")
+  except pkg_resources.DistributionNotFound:
+    pass
+
+  return skipPkgs
+
 def getRequirements():
+  skipPkgs = _getPrereleasePackages()
+  reqs = []
   with open(os.path.join(REPO_DIR, "requirements.txt")) as requirementsFile:
-    return [req.strip() for req in requirementsFile.readlines()]
+    for req in requirementsFile.readlines():
+      if req.strip().split("=")[0] not in skipPkgs:
+        reqs.append(req.strip())
+  return reqs
 
 def getVersion():
   with open(os.path.join(REPO_DIR, "VERSION")) as versionFile:

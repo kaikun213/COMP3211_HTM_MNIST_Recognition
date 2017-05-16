@@ -1,5 +1,10 @@
 pillow==2.3.0
 enum34==1.0.4
 
-nupic
+# This should come from htmresearch but isn't explicitly specified in
+# htmresearch requirements yet
+nupic==0.6.0
+
+# This should be version locked but it isn't available on PyPI so doesn't
+# really matter right now.
 htmresearch
