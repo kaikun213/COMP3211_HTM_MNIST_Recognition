@@ -256,14 +256,11 @@ def checkNet(net):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument("--data-dir", dest="dataDir", default=None,
+  parser.add_argument("--data-dir", dest="dataDir", default="data",
                       help=("Location of MNIST data files downloaded by "
                             "nupic.vision.mnist.download"))
   args =parser.parse_args()
-  if args.dataDir is None:
-    dataDir = os.getcwd()
-  else:
-    dataDir = os.path.join(os.getcwd(), args.dataDir)
+  dataDir = os.path.join(os.getcwd(), args.dataDir)
 
   net = createNetwork()
   datetimestr = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")

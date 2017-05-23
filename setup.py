@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------
 # Numenta Platform for Intelligent Computing (NuPIC)
-# Copyright (C) 2016, Numenta, Inc.  Unless you have an agreement
+# Copyright (C) 2016-2017, Numenta, Inc.  Unless you have an agreement
 # with Numenta, Inc., for a separate license for this software code, the
 # following terms and conditions apply:
 #
@@ -30,8 +30,10 @@ doing vision-related work.
 import os
 import pkg_resources
 from setuptools import setup, find_packages
+import subprocess
 
 REPO_DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 def _getPrereleasePackages():
   skipPkgs = []
@@ -51,6 +53,7 @@ def _getPrereleasePackages():
 
   return skipPkgs
 
+
 def getRequirements():
   skipPkgs = _getPrereleasePackages()
   reqs = []
@@ -60,18 +63,37 @@ def getRequirements():
         reqs.append(req.strip())
   return reqs
 
+
 def getVersion():
   with open(os.path.join(REPO_DIR, "VERSION")) as versionFile:
     return versionFile.read().strip()
+
+
+def buildMnistCpp():
+  cwd = os.getcwd()
+  workDir = os.path.join(os.path.dirname(__file__),
+                         "src/nupic/vision/mnist/data")
+  os.chdir(workDir)
+  try:
+    subprocess.check_call("./build.sh", shell=True)
+  finally:
+    os.chdir(cwd)
+
+
+buildMnistCpp()
+
 
 setup(
     name="nupic.vision",
     version=getVersion(),
     description=__doc__,
     install_requires=getRequirements(),
-    package_dir = {"": "src"},
-    packages = find_packages("src"),
+    package_dir={"": "src"},
+    packages=find_packages("src"),
     namespace_packages=["nupic"],
-    package_data={"nupic.vision.data": ["*.jpg", "*.xml"]},
+    package_data={
+        "nupic.vision.data": ["*.jpg", "*.xml"],
+        "nupic.vision.mnist.data": ["extract_mnist"],
+    },
     zip_safe=False,
 )

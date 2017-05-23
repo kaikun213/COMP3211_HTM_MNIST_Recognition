@@ -84,7 +84,7 @@ void _doProcessing(const char * szImagePath,
   //  ........
   //  xxxx     unsigned byte   ??               label
   //
-  //  The labels values are 0 to 9. 
+  //  The labels values are 0 to 9.
   //
 
   // Open label files
@@ -186,7 +186,7 @@ void _doProcessing(const char * szImagePath,
   const unsigned char * pcImagePtr = (const unsigned char *)pcImage;
   memset(anCounts, 0x0, sizeof(anCounts));
   for (k=0; k<sImageHeader.nNumImages; k++) {
-    nLabel = pcLabel[k]; 
+    nLabel = pcLabel[k];
     sprintf(szDstPath, "%s/%d/%06d.txt", szDisposition, nLabel, anCounts[nLabel]);
     fprintf(stdout, "Writing: %s\n", szDstPath);
     anCounts[nLabel]++;
@@ -212,12 +212,12 @@ void _doProcessing(const char * szImagePath,
 
 
 int main(int argc, char * argv[]) {
-  
+
   const char * szTrainImagePath = "train-images-idx3-ubyte";
   const char * szTrainLabelPath = "train-labels-idx1-ubyte";
   const char * szTestImagePath = "t10k-images-idx3-ubyte";
   const char * szTestLabelPath = "t10k-labels-idx1-ubyte";
-  
+
   // Process training/testing data
   _doProcessing(szTrainImagePath, szTrainLabelPath, "training");
   _doProcessing(szTestImagePath, szTestLabelPath, "testing");
