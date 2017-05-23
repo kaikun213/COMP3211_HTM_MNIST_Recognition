@@ -25,8 +25,8 @@ import pkg_resources
 
 from nupic.vision.mnist.saccade_network import SaccadeNetwork
 
-TRAIN_IMAGES = pkg_resources.resource_filename("nupic.vision.mnist", "mnist/small_training")
-TEST_IMAGES = pkg_resources.resource_filename("nupic.vision.mnist", "mnist/small_training")
+TRAIN_IMAGES = "data/small_training"
+TEST_IMAGES = "data/small_training"
 #LOG_DIR = pkg_resources.resource_filename("nupic.vision.mnist", "logs")
 LOG_DIR = None
 
