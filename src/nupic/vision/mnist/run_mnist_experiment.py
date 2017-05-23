@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # ----------------------------------------------------------------------
 # Numenta Platform for Intelligent Computing (NuPIC)
-# Copyright (C) 2015, Numenta, Inc.  Unless you have an agreement
+# Copyright (C) 2015-2017, Numenta, Inc.  Unless you have an agreement
 # with Numenta, Inc., for a separate license for this software code, the
 # following terms and conditions apply:
 #
@@ -19,19 +19,6 @@
 #
 # http://numenta.org/licenses/
 # ----------------------------------------------------------------------
-
-import datetime
-import time
-import yaml
-import numpy
-import os
-
-from nupic.bindings.math import GetNTAReal
-from nupic.engine import Network
-
-from nupic.vision.regions.ImageSensor import ImageSensor
-
-
 
 """
 Setups a simple Network and runs it on the MNIST dataset. Assumes you have
@@ -60,13 +47,24 @@ synPermConnected            = 0.2
 minPctOverlapDutyCycles     = 0.001
 minPctActiveDutyCycles      = 0.001
 dutyCyclePeriod             = 1000
-maxBoost                    = 1
+boostStrength               = 1
 wrapAround                  = 1
 CPP SP seed                 = 1956
 
 """
 
+import argparse
+import datetime
+import time
+import yaml
+import numpy
+import os
+import pkg_resources
 
+from nupic.bindings.math import GetNTAReal
+from nupic.engine import Network
+
+from nupic.vision.regions.ImageSensor import ImageSensor
 
 DEFAULT_IMAGESENSOR_PARAMS ={
     "width": 32,
@@ -88,7 +86,7 @@ DEFAULT_SP_PARAMS = {
     "numActiveColumnsPerInhArea": 240,
     "globalInhibition": 1,
     "potentialPct": 0.9,
-    "maxBoost": 1.0
+    "boostStrength": 0.0
 }
 
 DEFAULT_CLASSIFIER_PARAMS = {
@@ -131,7 +129,7 @@ def createNetwork():
 
 
 
-def trainNetwork(net, networkFile="mnist_net.nta"):
+def trainNetwork(net, dataDir, networkFile="mnist_net.nta"):
   # Some stuff we will need later
   sensor = net.regions["sensor"]
   sp = net.regions["SP"]
@@ -141,7 +139,7 @@ def trainNetwork(net, networkFile="mnist_net.nta"):
 
   print "============= Loading training images ================="
   t1 = time.time()
-  sensor.executeCommand(["loadMultipleImages", "mnist/training"])
+  sensor.executeCommand(["loadMultipleImages", os.path.join(dataDir, "training")])
   numTrainingImages = sensor.getParameter("numImages")
   start = time.time()
   print "Load time for training images:",start-t1
@@ -193,7 +191,7 @@ def trainNetwork(net, networkFile="mnist_net.nta"):
 
 
 
-def testNetwork(testPath="mnist/testing", savedNetworkFile="mnist_net.nta"):
+def testNetwork(testPath, savedNetworkFile="mnist_net.nta"):
   net = Network(savedNetworkFile)
   sensor = net.regions["sensor"]
   sp = net.regions["SP"]
@@ -257,19 +255,26 @@ def checkNet(net):
 
 
 if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument("--data-dir", dest="dataDir", default="data",
+                      help=("Location of MNIST data files downloaded by "
+                            "nupic.vision.mnist.download"))
+  args =parser.parse_args()
+  dataDir = os.path.join(os.getcwd(), args.dataDir)
+
   net = createNetwork()
   datetimestr = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
   networkDirName = "networks"
   if not os.path.exists(networkDirName):
     os.makedirs(networkDirName)
   netName = "%s/%s_mnist_net.nta" % (networkDirName, datetimestr)
-  trainNetwork(net, netName)
+  trainNetwork(net, dataDir, netName)
   checkNet(net)
   # As a debugging step, verify we've learned the training set well
   # This assumes you have a small subset of the training images in
   # mnist/small_training
   print "Test on small part of training set"
-  testNetwork("mnist/small_training", netName)
+  testNetwork(os.path.join(dataDir, "small_training"), netName)
   checkNet(net)
   print "Test on full test set"
-  testNetwork(savedNetworkFile=netName)
+  testNetwork(os.path.join(dataDir, "testing"), savedNetworkFile=netName)

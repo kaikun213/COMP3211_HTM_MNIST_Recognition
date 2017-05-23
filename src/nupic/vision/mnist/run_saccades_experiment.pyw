@@ -686,8 +686,8 @@ if __name__ == "__main__":
   MainGUI(root,
           loggingDir=None,
           networkName=netName,
-          trainingSet="mnist/supersmall_training",
-          testingSet="mnist/testing")
+          trainingSet="data/supersmall_training",
+          testingSet="data/testing")
   root.mainloop()
 
   exit()
