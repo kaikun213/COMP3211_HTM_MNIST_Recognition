@@ -262,17 +262,25 @@ if __name__ == "__main__":
   args =parser.parse_args()
   dataDir = os.path.join(os.getcwd(), args.dataDir)
 
+  # Create network and train it
   net = createNetwork()
   datetimestr = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
   networkDirName = "networks"
   if not os.path.exists(networkDirName):
     os.makedirs(networkDirName)
   netName = "%s/%s_mnist_net.nta" % (networkDirName, datetimestr)
-  trainNetwork(net, dataDir, netName)
+  # train network
+  #trainNetwork(net, dataDir, netName)
+
+  # load network instead of train newly
+  netName = "networks/2017_11_22_17_59_11_mnist_net.nta"
+  net = Network(netName)
   checkNet(net)
+
   # As a debugging step, verify we've learned the training set well
   # This assumes you have a small subset of the training images in
   # mnist/small_training
+
   print "Test on small part of training set"
   testNetwork(os.path.join(dataDir, "small_training"), netName)
   checkNet(net)

@@ -1,0 +1,42 @@
+Version: 2
+Regions:
+  - name: sensor
+    nodeType: py.ImageSensor
+    dimensions:
+      - 1
+    phases:
+      - 0
+    label: R0
+  - name: SP
+    nodeType: py.SPRegion
+    dimensions:
+      - 1
+    phases:
+      - 1
+    label: R1
+  - name: classifier
+    nodeType: py.KNNClassifierRegion
+    dimensions:
+      - 1
+    phases:
+      - 2
+    label: R2
+Links:
+  - type: UniformLink
+    params: ""
+    srcRegion: sensor
+    srcOutput: dataOut
+    destRegion: SP
+    destInput: bottomUpIn
+  - type: UniformLink
+    params: ""
+    srcRegion: SP
+    srcOutput: bottomUpOut
+    destRegion: classifier
+    destInput: bottomUpIn
+  - type: UniformLink
+    params: ""
+    srcRegion: sensor
+    srcOutput: categoryOut
+    destRegion: classifier
+    destInput: categoryIn
